@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import "./globals.css"
+import ReactQueryProvider from "@/providers/ReactQueryProvider"
 
 export const metadata: Metadata = {
   title: "Khidma.ma - Trouvez votre emploi au Maroc",
@@ -20,8 +21,11 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+
+      <ReactQueryProvider>
         <Suspense fallback={null}>{children}</Suspense>
         <Analytics />
+      </ReactQueryProvider>
       </body>
     </html>
   )

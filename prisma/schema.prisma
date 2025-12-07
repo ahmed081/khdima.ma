@@ -1,9 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// =====================================
+//   GENERATOR & DATASOURCE
+// =====================================
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -13,21 +10,223 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  role     String // job_seeker | employer
-  jobs     Job[]
+// =====================================
+//   ENUMS
+// =====================================
+enum UserRole {
+  JOB_SEEKER
+  EMPLOYER
+  ADMIN
 }
 
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  FREELANCE
+  INTERNSHIP
+  CONTRACT
+}
+
+enum JobMode {
+  ONSITE
+  REMOTE
+  HYBRID
+}
+
+enum AppStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// =====================================
+//   COUNTRY & CITY
+// =====================================
+model Country {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  cities City[]
+  users  User[]
+  jobs   Job[]
+}
+
+model City {
+  id        Int     @id @default(autoincrement())
+  name      String
+  countryId Int
+  country   Country @relation(fields: [countryId], references: [id])
+
+  users User[]
+  jobs  Job[]
+
+  @@unique([name, countryId]) // City name is unique per country
+}
+
+// =====================================
+//   USER
+// =====================================
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+
+  role UserRole @default(JOB_SEEKER)
+
+  phone   String?
+  address String?
+  age     Int?
+  gender  String?
+  bio     String?
+
+  // Employer-specific details
+  companyName    String?
+  companyWebsite String?
+  companyLogoUrl String?
+
+  // Location (optional)
+  cityId Int?
+  city   City? @relation(fields: [cityId], references: [id])
+
+  countryId Int?
+  country   Country? @relation(fields: [countryId], references: [id])
+
+  // Relations
+  skills       UserSkill[]
+  jobs         Job[] // If employer
+  applications Application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =====================================
+//   SKILLS & CONTEXTS
+// =====================================
+model SkillContext {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  skills Skill[]
+}
+
+model Skill {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  contextId Int?
+  context   SkillContext? @relation(fields: [contextId], references: [id])
+
+  users UserSkill[]
+  jobs  JobSkill[]
+}
+
+// USER ↔ SKILL
+model UserSkill {
+  userId  Int
+  skillId Int
+
+  user  User  @relation(fields: [userId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@id([userId, skillId])
+}
+
+// JOB ↔ SKILL
+model JobSkill {
+  jobId   Int
+  skillId Int
+
+  job   Job   @relation(fields: [jobId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
+
+  @@id([jobId, skillId])
+}
+
+// =====================================
+//   JOB ATTRIBUTE TABLES
+// =====================================
+model JobCategory {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  jobs Job[]
+}
+
+model ExperienceLevel {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  jobs Job[]
+}
+
+model ContractType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  jobs Job[]
+}
+
+// =====================================
+//   JOB MODEL
+// =====================================
 model Job {
-  id          Int      @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   title       String
   description String
-  location    String
-  domain      String
-  createdAt   DateTime @default(now())
-  employer    User     @relation(fields: [employerId], references: [id])
-  employerId  Int
+
+  // --- NEW FIELDS TO MATCH YOUR FORM ---
+  competencies String[] @default([]) // Compétences principales
+  requirements String[] @default([]) // Qualifications / compétences
+  benefits     String[] @default([]) // Avantages
+
+  // --- Job metadata ---
+  salary String?
+  type   JobType @default(FULL_TIME)
+  mode   JobMode @default(ONSITE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // --- Location ---
+  cityId Int?
+  city   City? @relation(fields: [cityId], references: [id])
+
+  countryId Int?
+  country   Country? @relation(fields: [countryId], references: [id])
+
+  // --- Employer ---
+  employerId Int
+  employer   User @relation(fields: [employerId], references: [id])
+
+  // --- Relations ---
+  skills JobSkill[]
+
+  categoryId Int?
+  category   JobCategory? @relation(fields: [categoryId], references: [id])
+
+  experienceLevelId Int?
+  experienceLevel   ExperienceLevel? @relation(fields: [experienceLevelId], references: [id])
+
+  contractTypeId Int?
+  contractType   ContractType? @relation(fields: [contractTypeId], references: [id])
+
+  applications Application[]
+}
+
+// =====================================
+//   APPLICATIONS
+// =====================================
+model Application {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  status    AppStatus @default(PENDING)
+
+  coverLetter String?
+  cvUrl       String?
+
+  jobId Int
+  job   Job @relation(fields: [jobId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 }
