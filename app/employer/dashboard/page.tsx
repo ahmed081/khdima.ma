@@ -70,7 +70,6 @@ export default function EmployerDashboard() {
 
   return (
     <div className="min-h-screen">
-      <Header />
       <main className="bg-muted/20 py-12">
         <div className="container mx-auto px-4">
           <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -219,7 +218,6 @@ export default function EmployerDashboard() {
           </Tabs>
         </div>
       </main>
-      <Footer />
     </div>
   )
 }

@@ -44,7 +44,6 @@ export default function SearchPage() {
 
   return (
       <div className="min-h-screen">
-        <Header />
 
         <main className="bg-muted/20">
 
@@ -144,7 +143,6 @@ export default function SearchPage() {
 
         </main>
 
-        <Footer />
       </div>
   )
 }

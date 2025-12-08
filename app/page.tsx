@@ -9,7 +9,7 @@ import { Testimonials } from "@/components/testimonials"
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      <Header />
+
       <main>
         <HeroSection />
         <StatsSection />
@@ -17,7 +17,6 @@ export default function HomePage() {
         <HowItWorks />
         <Testimonials />
       </main>
-      <Footer />
     </div>
   )
 }

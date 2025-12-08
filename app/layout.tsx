@@ -6,6 +6,10 @@ import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import "./globals.css"
 import ReactQueryProvider from "@/providers/ReactQueryProvider"
+import Providers from "@/store/Providers";
+import {Header} from "@/components/header";
+import {Footer} from "@/components/footer";
+import {BackButton} from "@/components/ui/back-button";
 
 export const metadata: Metadata = {
   title: "Khidma.ma - Trouvez votre emploi au Maroc",
@@ -21,11 +25,15 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+      <Providers>
+          <ReactQueryProvider>
+              <Header />
+              <Suspense fallback={null}>{children}</Suspense>
+              <Analytics />
+              <Footer />
 
-      <ReactQueryProvider>
-        <Suspense fallback={null}>{children}</Suspense>
-        <Analytics />
-      </ReactQueryProvider>
+          </ReactQueryProvider>
+      </Providers>
       </body>
     </html>
   )
