@@ -185,13 +185,12 @@ export default async function JobDetailPage(props: { params: Promise<{ id: strin
 
             {/* Apply button */}
             <CardContent className="border-t bg-accent/30 p-4">
-              <Button
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                  size="lg"
-              >
-                <Send className="mr-2 h-4 w-4" />
-                Postuler maintenant
-              </Button>
+                <Link href={`/jobs/${jobId}/apply`}>
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" size="lg">
+                        <Send className="mr-2 h-4 w-4" />
+                        Postuler maintenant
+                    </Button>
+                </Link>
             </CardContent>
 
           </Card>
