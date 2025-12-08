@@ -79,7 +79,7 @@ export default function PostJobPage() {
   // ------------------------------------------
   const mutation = useMutation({
     mutationFn: async (payload: any) => {
-      const res = await fetch("/api/jobs", {
+      const res = await fetch("/api/jobs/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

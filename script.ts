@@ -1,30 +1,25 @@
-import { prisma } from './lib/prisma'
-import bcrypt from "bcryptjs"
-import {PrismaClient} from "@/generated/prisma/client";
-
-
+import { prisma } from "./lib/prisma";
+import bcrypt from "bcryptjs";
+import { PrismaClient } from "@/generated/prisma/client";
 
 const SALT_ROUNDS = 10;
 
-/** Utility: sleep */
+// Delay helper
 const wait = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
-/**
- * Transaction wrapper with automatic retry on timeout.
- */
-async function transactional<T>(fn: (tx: PrismaClient) => Promise<T>, retry = 3): Promise<T> {
+// Retry-safe transactional wrapper
+async function transactional<T>(
+    fn: (tx: PrismaClient) => Promise<T>,
+    retry = 3
+): Promise<T> {
     try {
         return await prisma.$transaction(async (tx) => fn(tx), {
-            timeout: 60000, // 15 seconds
+            timeout: 90000, // 60s
             maxWait: 5000,
         });
     } catch (err: any) {
-        if (
-            retry > 0 &&
-            err?.message?.includes("transaction") &&
-            err?.message?.includes("timeout")
-        ) {
-            console.warn("⏳ Transaction timeout — retrying in 1 sec...");
+        if (retry > 0 && err.message?.includes("timeout")) {
+            console.warn("⏳ Transaction timeout — retrying...");
             await wait(1000);
             return transactional(fn, retry - 1);
         }
@@ -36,16 +31,16 @@ async function main() {
     console.log("🌱 Starting seed...");
 
     await transactional(async (tx) => {
-        // ==========================
-        // 1️⃣ COUNTRIES & CITIES
-        // ==========================
+        // ----------------------------------
+        // 1️⃣ Country + Cities
+        // ----------------------------------
         const morocco = await tx.country.upsert({
             where: { name: "Morocco" },
             update: {},
             create: { name: "Morocco" },
         });
 
-        const cities = [
+        const cityNames = [
             "Casablanca",
             "Rabat",
             "Marrakech",
@@ -58,21 +53,20 @@ async function main() {
             "Kénitra",
         ];
 
-        for (const city of cities) {
-            await tx.city.create({
-                data: {
-                    name: city,
-                    countryId: morocco.id,
-                },
+        for (const name of cityNames) {
+            await tx.city.upsert({
+                where: { name_countryId: { name, countryId: morocco.id } },
+                update: {},
+                create: { name, countryId: morocco.id },
             });
         }
 
         const allCities = await tx.city.findMany();
 
-        // ==========================
-        // 2️⃣ JOB CATEGORIES
-        // ==========================
-        const jobCategories = [
+        // ----------------------------------
+        // 2️⃣ Job categories
+        // ----------------------------------
+        const categories = [
             "Technologie & IT",
             "Marketing & Communication",
             "Finance & Comptabilité",
@@ -82,7 +76,7 @@ async function main() {
             "Éducation",
         ];
 
-        for (const name of jobCategories) {
+        for (const name of categories) {
             await tx.jobCategory.upsert({
                 where: { name },
                 update: {},
@@ -90,19 +84,19 @@ async function main() {
             });
         }
 
-        const categories = await tx.jobCategory.findMany();
+        const allCategories = await tx.jobCategory.findMany();
 
-        // ==========================
-        // 3️⃣ EXPERIENCE LEVELS
-        // ==========================
-        const experienceLevels = [
+        // ----------------------------------
+        // 3️⃣ Experience levels
+        // ----------------------------------
+        const expLevels = [
             "Débutant (0-1 an)",
             "Junior (1-3 ans)",
             "Intermédiaire (3-5 ans)",
             "Senior (5+ ans)",
         ];
 
-        for (const name of experienceLevels) {
+        for (const name of expLevels) {
             await tx.experienceLevel.upsert({
                 where: { name },
                 update: {},
@@ -110,11 +104,11 @@ async function main() {
             });
         }
 
-        const expLevels = await tx.experienceLevel.findMany();
+        const experienceLevels = await tx.experienceLevel.findMany();
 
-        // ==========================
-        // 4️⃣ CONTRACT TYPES
-        // ==========================
+        // ----------------------------------
+        // 4️⃣ Contract types
+        // ----------------------------------
         const contractTypes = ["CDI", "CDD", "Stage", "Freelance", "Temps partiel"];
 
         for (const name of contractTypes) {
@@ -125,12 +119,12 @@ async function main() {
             });
         }
 
-        const contracts = await tx.contractType.findMany();
+        const allContracts = await tx.contractType.findMany();
 
-        // ==========================
-        // 5️⃣ SKILL CONTEXTS + SKILLS
-        // ==========================
-        const skillData = [
+        // ----------------------------------
+        // 5️⃣ Skills & contexts
+        // ----------------------------------
+        const skillGroups = [
             {
                 context: "Technologie",
                 skills: ["React", "Node.js", "TypeScript", "Docker", "SQL", "Kubernetes"],
@@ -145,31 +139,28 @@ async function main() {
             },
         ];
 
-        for (const group of skillData) {
+        for (const g of skillGroups) {
             const ctx = await tx.skillContext.upsert({
-                where: { name: group.context },
+                where: { name: g.context },
                 update: {},
-                create: { name: group.context },
+                create: { name: g.context },
             });
 
-            for (const skill of group.skills) {
+            for (const sk of g.skills) {
                 await tx.skill.upsert({
-                    where: { name: skill },
+                    where: { name: sk },
                     update: {},
-                    create: {
-                        name: skill,
-                        contextId: ctx.id,
-                    },
+                    create: { name: sk, contextId: ctx.id },
                 });
             }
         }
 
         const allSkills = await tx.skill.findMany();
 
-        // ==========================
-        // 6️⃣ USERS (with bcrypt)
-        // ==========================
-        const hashedPassword = await bcrypt.hash("password123", SALT_ROUNDS);
+        // ----------------------------------
+        // 6️⃣ Users (bcrypt)
+        // ----------------------------------
+        const hashed = await bcrypt.hash("password123", SALT_ROUNDS);
 
         const employer = await tx.user.upsert({
             where: { email: "employer@khidma.ma" },
@@ -177,7 +168,7 @@ async function main() {
             create: {
                 name: "TechCorp",
                 email: "employer@khidma.ma",
-                password: hashedPassword,
+                password: hashed,
                 role: "EMPLOYER",
                 countryId: morocco.id,
                 cityId: allCities[0].id,
@@ -192,7 +183,7 @@ async function main() {
             create: {
                 name: "Ahmed Benali",
                 email: "user@khidma.ma",
-                password: hashedPassword,
+                password: hashed,
                 role: "JOB_SEEKER",
                 countryId: morocco.id,
                 cityId: allCities[1].id,
@@ -202,49 +193,44 @@ async function main() {
         // Assign skills to job seeker
         for (const s of allSkills.slice(0, 3)) {
             await tx.userSkill.create({
-                data: {
-                    userId: jobSeeker.id,
-                    skillId: s.id,
-                },
+                data: { userId: jobSeeker.id, skillId: s.id },
             });
         }
 
-        // ==========================
-        // 7️⃣ JOBS + SKILLS + APPLICATION
-        // ==========================
-        const job1 = await tx.job.create({
+        // ----------------------------------
+        // 7️⃣ Create job (MATCHES SCHEMA)
+        // ----------------------------------
+        const job = await tx.job.create({
             data: {
                 title: "Développeur Full Stack",
-                description: "<p>Nous recherchons un développeur passionné...</p>",
-                domain: "IT",
+                description: "Nous recherchons un développeur passionné...",
+                competencies: ["React", "Node.js", "Création d'API"],
+                requirements: ["3 ans d'expérience", "Connaissance Docker"],
+                benefits: ["Assurance santé", "Télétravail", "Prime annuelle"],
+                salary: "12,000 - 18,000 MAD",
+
                 employerId: employer.id,
                 countryId: morocco.id,
                 cityId: allCities[0].id,
-                categoryId: categories[0].id,
-                experienceLevelId: expLevels[1].id,
-                contractTypeId: contracts[0].id,
-                salary: "12,000 - 18,000 MAD",
-                requirements: ["React", "Node.js", "MongoDB"],
-                responsibilities: ["Développer", "Collaborer", "Maintenir"],
+                categoryId: allCategories[0].id,
+                experienceLevelId: experienceLevels[1].id,
+                contractTypeId: allContracts[0].id,
             },
         });
 
         // Add skills to job
-        for (const s of allSkills.slice(0, 3)) {
+        for (const sk of allSkills.slice(0, 3)) {
             await tx.jobSkill.create({
-                data: {
-                    jobId: job1.id,
-                    skillId: s.id,
-                },
+                data: { jobId: job.id, skillId: sk.id },
             });
         }
 
-        // Create application
+        // Application
         await tx.application.create({
             data: {
-                jobId: job1.id,
+                jobId: job.id,
                 userId: jobSeeker.id,
-                coverLetter: "Motivé pour rejoindre votre équipe.",
+                coverLetter: "Je suis très motivé pour ce poste.",
             },
         });
     });

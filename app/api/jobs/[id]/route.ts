@@ -1,57 +1,50 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-interface Params {
-    params: { id: string }
-}
-
-export async function GET(req: Request, { params }: Params) {
+// GET /api/jobs/[id]
+export async function GET(
+    req: Request,
+    context: { params: { id: string } }
+) {
     try {
-        const jobId = Number(params.id)
+        const jobId = Number(context.params.id);
 
         if (isNaN(jobId)) {
-            return NextResponse.json({ error: "Invalid job ID" }, { status: 400 })
+            return NextResponse.json({ error: "Invalid job ID" }, { status: 400 });
         }
 
         const job = await prisma.job.findUnique({
             where: { id: jobId },
             include: {
-                employer: {
-                    select: {
-                        id: true,
-                        name: true,
-                        companyName: true,
-                        companyLogoUrl: true,
-                    },
-                },
-                city: true,
-                country: true,
-                contractType: true,
-                category: true,
-                experienceLevel: true,
+                employer: true,
                 skills: {
-                    include: {
-                        skill: true,
-                    },
-                },
-                applications: {
-                    select: {
-                        id: true,
-                        createdAt: true,
-                        status: true,
-                        userId: true,
-                    },
+                    include: { skill: true }, // if using JobSkill relation
                 },
             },
-        })
+        });
 
         if (!job) {
-            return NextResponse.json({ error: "Job not found" }, { status: 404 })
+            return NextResponse.json(
+                { error: "Job not found" },
+                { status: 404 }
+            );
         }
 
-        return NextResponse.json(job)
-    } catch (error) {
-        console.error("❌ Error fetching job:", error)
-        return NextResponse.json({ error: "Erreur interne" }, { status: 500 })
+        // If skills is JobSkill[] → flatten to skill object
+        const formattedJob = {
+            ...job,
+            skills: job.skills.map((js) => ({
+                id: js.skill.id,
+                name: js.skill.name,
+            })),
+        };
+
+        return NextResponse.json(formattedJob);
+    } catch (err) {
+        console.error("❌ GET /api/jobs/[id] error:", err);
+        return NextResponse.json(
+            { error: "Server error" },
+            { status: 500 }
+        );
     }
 }

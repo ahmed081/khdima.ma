@@ -95,13 +95,15 @@ export function FeaturedJobs() {
           )}
 
           <div className="mt-12 text-center">
-            <Button
-                variant="outline"
-                size="lg"
-                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-            >
-              Voir toutes les offres
-            </Button>
+            <Link href="/search">
+              <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                Voir toutes les offres
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

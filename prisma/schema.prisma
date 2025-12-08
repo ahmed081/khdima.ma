@@ -174,12 +174,11 @@ model Job {
   title       String
   description String
 
-  // --- NEW FIELDS TO MATCH YOUR FORM ---
-  competencies String[] @default([]) // Compétences principales
-  requirements String[] @default([]) // Qualifications / compétences
-  benefits     String[] @default([]) // Avantages
+  // Matches your form
+  competencies String[] @default([])
+  requirements String[] @default([])
+  benefits     String[] @default([])
 
-  // --- Job metadata ---
   salary String?
   type   JobType @default(FULL_TIME)
   mode   JobMode @default(ONSITE)
@@ -187,20 +186,21 @@ model Job {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // --- Location ---
+  // Location
   cityId Int?
   city   City? @relation(fields: [cityId], references: [id])
 
   countryId Int?
   country   Country? @relation(fields: [countryId], references: [id])
 
-  // --- Employer ---
+  // Employer
   employerId Int
   employer   User @relation(fields: [employerId], references: [id])
 
-  // --- Relations ---
+  // Skills pivot
   skills JobSkill[]
 
+  // References to categories
   categoryId Int?
   category   JobCategory? @relation(fields: [categoryId], references: [id])
 
