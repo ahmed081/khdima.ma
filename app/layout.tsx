@@ -1,32 +1,39 @@
 import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
-import { Suspense } from "react"
+import {Suspense} from "react"
+import type {Metadata} from "next"
+import {GeistSans} from "geist/font/sans"
+import {GeistMono} from "geist/font/mono"
+import {Analytics} from "@vercel/analytics/next"
 import "./globals.css"
 import ReactQueryProvider from "@/providers/ReactQueryProvider"
+import Providers from "@/store/Providers";
+import {Header} from "@/components/header";
+import {Footer} from "@/components/footer";
+import {HowItWorks} from "@/components/how-it-works";
 
 export const metadata: Metadata = {
-  title: "Khidma.ma - Trouvez votre emploi au Maroc",
-  description: "La plateforme simple et transparente qui connecte les chercheurs d'emploi et les employeurs marocains",
-  generator: "v0.app",
+    title: "Khidma.ma - Trouvez votre emploi au Maroc",
+    description: "La plateforme simple et transparente qui connecte les chercheurs d'emploi et les employeurs marocains",
+    generator: "v0.app",
 }
 
 export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
+                                       children,
+                                   }: Readonly<{
+    children: React.ReactNode
 }>) {
-  return (
-    <html lang="fr">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+    return (<html lang="fr">
+        <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <Providers>
+            <ReactQueryProvider>
+                <Header/>
+                <Suspense fallback={null}>{children}</Suspense>
+                <Analytics/>
+                <HowItWorks/>
+                <Footer/>
 
-      <ReactQueryProvider>
-        <Suspense fallback={null}>{children}</Suspense>
-        <Analytics />
-      </ReactQueryProvider>
-      </body>
-    </html>
-  )
+            </ReactQueryProvider>
+        </Providers>
+        </body>
+        </html>)
 }
