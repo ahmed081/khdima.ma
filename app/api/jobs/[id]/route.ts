@@ -7,8 +7,8 @@ export async function GET(
     context: { params: { id: string } }
 ) {
     try {
-        const jobId = Number(context.params.id);
-
+        const {id} = await context.params
+        const jobId = Number(id);
         if (isNaN(jobId)) {
             return NextResponse.json({ error: "Invalid job ID" }, { status: 400 });
         }

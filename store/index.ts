@@ -3,6 +3,7 @@ import createSagaMiddleware from "redux-saga";
 import rootSaga from "./rootSaga";
 import authReducer from "./slices/authSlice";
 import appReducer from "./slices/appSlice";
+import toastReducer from "./slices/toastSlice";
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -10,6 +11,8 @@ export const store = configureStore({
     reducer: {
         auth: authReducer,
         app: appReducer,
+        toast: toastReducer,
+
     },
     middleware: (getDefault) => getDefault({ thunk: false }).concat(sagaMiddleware),
 });

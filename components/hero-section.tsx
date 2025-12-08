@@ -29,7 +29,7 @@ export function HeroSection() {
                 Trouver un emploi
               </Button>
             </Link>
-            <Link href="/post-job">
+            <Link href="/employers/post-job">
               <Button
                 size="lg"
                 variant="outline"

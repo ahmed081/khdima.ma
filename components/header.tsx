@@ -29,8 +29,8 @@ export function Header() {
 
                 {/* DESKTOP MENU */}
                 <nav className="hidden md:flex items-center gap-6">
-                    <Link href="/jobs" className="nav-link">Offres</Link>
-                    <Link href="/companies" className="nav-link">Entreprises</Link>
+                    <Link href="/search" className="nav-link">Offres</Link>
+                    <Link href="/employers" className="nav-link">Entreprises</Link>
                     <Link href="/about" className="nav-link">À propos</Link>
                 </nav>
 
@@ -39,11 +39,11 @@ export function Header() {
                     {!user ? (
                         <>
                             <Button variant="ghost" asChild><Link href="/login">Connexion</Link></Button>
-                            <Button asChild><Link href="/post-job">Publier une offre</Link></Button>
+                            <Button asChild><Link href="/employers/post-job">Publier une offre</Link></Button>
                         </>
                     ) : (
                         <div className="flex items-center gap-3">
-                            <Link href="/profile" className="flex items-center gap-2">
+                            <Link href={user.role === 'EMPLOYER' ?'/employers/dashboard' : '/profile'} className="flex items-center gap-2">
                                 <User className="h-5 w-5" />
                                 {user.name ?? "Profil"}
                             </Link>
@@ -82,14 +82,14 @@ export function Header() {
 
                                     <SheetClose asChild>
                                         <Button asChild>
-                                            <Link href="/post-job">Publier une offre</Link>
+                                            <Link href="/employers/post-job">Publier une offre</Link>
                                         </Button>
                                     </SheetClose>
                                 </>
                             ) : (
                                 <>
                                     <SheetClose asChild>
-                                        <Link href="/profile" className="flex items-center gap-2 text-lg">
+                                        <Link href={user.role === 'EMPLOYER' ?'/employers/dashboard' : '/profile'} className="flex items-center gap-2 text-lg">
                                             <User className="h-5 w-5" />
                                             {user.name ?? "Mon Profil"}
                                         </Link>

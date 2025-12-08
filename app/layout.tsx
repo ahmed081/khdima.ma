@@ -10,6 +10,7 @@ import Providers from "@/store/Providers";
 import {Header} from "@/components/header";
 import {Footer} from "@/components/footer";
 import {HowItWorks} from "@/components/how-it-works";
+import GlobalToast from "@/components/global-toast";
 
 export const metadata: Metadata = {
     title: "Khidma.ma - Trouvez votre emploi au Maroc",
@@ -27,7 +28,10 @@ export default function RootLayout({
         <Providers>
             <ReactQueryProvider>
                 <Header/>
-                <Suspense fallback={null}>{children}</Suspense>
+                <Suspense fallback={null}>
+                    <GlobalToast />
+                    {children}
+                </Suspense>
                 <Analytics/>
                 <HowItWorks/>
                 <Footer/>

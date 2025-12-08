@@ -1,148 +1,182 @@
-"use client"
+"use client";
 
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import {
-  Search,
-  MapPin,
-  Briefcase,
-  DollarSign,
-  Building2,
-  Clock
-} from "lucide-react"
-import Link from "next/link"
-import { useState } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { searchJobs } from "@/queries/jobs"
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
+
+import { Search, MapPin, Briefcase, DollarSign } from "lucide-react";
+
+import { searchJobs, getJobFilters } from "@/queries/jobs";
+import { JobCard } from "@/components/jobs/job-card";
 
 export default function SearchPage() {
-  const [filters, setFilters] = useState({
-    search: "",
-    city: "",
-    jobType: "",
-    salaryRange: ""
-  })
+    const [filters, setFilters] = useState({
+        search: "",
+        city: "",
+        contract: "",
+        salaryRange: "",
+    });
 
-  const { data: jobs = [], isLoading, refetch } = useQuery({
-    queryKey: ["jobs", filters],
-    queryFn: () => searchJobs(filters),
-  })
+    const [shouldSearch, setShouldSearch] = useState(false);
 
-  function updateFilter(key: string, value: string) {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
+    // Fetch filter options (cities, contract types, salary ranges)
+    const { data: filterData, isLoading: filtersLoading } = useQuery({
+        queryKey: ["job-filters"],
+        queryFn: getJobFilters,
+    });
 
-  return (
-      <div className="min-h-screen">
+    // Trigger search only when clicking "Rechercher"
+    const {
+        data: jobs = [],
+        isLoading: jobsLoading,
+        refetch,
+    } = useQuery({
+        queryKey: ["jobs-search", filters],
+        queryFn: () => searchJobs(filters),
+        enabled: shouldSearch,
+    });
 
-        <main className="bg-muted/20">
+    function updateFilter(key: string, value: string) {
+        setFilters((prev) => ({ ...prev, [key]: value }));
+    }
 
-          {/* Filters */}
-          <section className="border-b bg-background py-8">
-            <div className="container mx-auto px-4">
-              <h1 className="mb-6 text-3xl font-bold">Rechercher des offres d'emploi</h1>
+    async function handleSearch() {
+        setShouldSearch(true);
+        refetch();
+    }
 
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <div className="flex items-center gap-3 rounded-lg border px-4 py-3 lg:col-span-2">
-                  <Search className="h-5 w-5 text-muted-foreground" />
-                  <Input
-                      placeholder="Titre du poste..."
-                      value={filters.search}
-                      onChange={(e) => updateFilter("search", e.target.value)}
-                      className="border-0 bg-transparent p-0"
-                  />
-                </div>
+    return (
+        <div className="min-h-screen bg-muted/20">
+            <main>
 
-                <Select value={filters.city} onValueChange={(v) => updateFilter("city", v)}>
-                  <SelectTrigger>
-                    <MapPin className="mr-2 h-4 w-4" />
-                    <SelectValue placeholder="Ville" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Casablanca">Casablanca</SelectItem>
-                    <SelectItem value="Rabat">Rabat</SelectItem>
-                    <SelectItem value="Marrakech">Marrakech</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* FILTER AREA */}
+                <section className="border-b bg-background py-8">
+                    <div className="container mx-auto px-4">
 
-                <Select value={filters.jobType} onValueChange={(v) => updateFilter("jobType", v)}>
-                  <SelectTrigger>
-                    <Briefcase className="mr-2 h-4 w-4" />
-                    <SelectValue placeholder="Contrat" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="FULL_TIME">CDI</SelectItem>
-                    <SelectItem value="PART_TIME">CDD</SelectItem>
-                    <SelectItem value="INTERNSHIP">Stage</SelectItem>
-                  </SelectContent>
-                </Select>
+                        <h1 className="mb-6 text-3xl font-bold">Rechercher des offres d'emploi</h1>
 
-                {/* Button triggers refetch */}
-                <Button onClick={() => refetch()}>Rechercher</Button>
-              </div>
+                        {/* FILTER ROW */}
+                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 
-              {/* Salary */}
-              <div className="mt-4">
-                <Select
-                    value={filters.salaryRange}
-                    onValueChange={(v) => updateFilter("salaryRange", v)}
-                >
-                  <SelectTrigger className="w-[200px]">
-                    <DollarSign className="mr-2 h-4 w-4" />
-                    <SelectValue placeholder="Salaire" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0-5000">0 - 5,000 MAD</SelectItem>
-                    <SelectItem value="5000-10000">5,000 - 10,000 MAD</SelectItem>
-                    <SelectItem value="10000-15000">10,000 - 15,000 MAD</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </section>
+                            {/* Search Input */}
+                            <div className="flex items-center gap-3 rounded-lg border px-4 py-3 lg:col-span-2">
+                                <Search className="h-5 w-5 text-muted-foreground" />
+                                <Input
+                                    placeholder="Titre du poste..."
+                                    value={filters.search}
+                                    onChange={(e) => updateFilter("search", e.target.value)}
+                                    className="border-0 bg-transparent p-0"
+                                />
+                            </div>
 
-          {/* Results */}
-          <section className="py-12">
-            <div className="container mx-auto px-4">
+                            {/* City */}
+                            <Select
+                                disabled={filtersLoading}
+                                value={filters.city}
+                                onValueChange={(v) => updateFilter("city", v)}
+                            >
+                                <SelectTrigger>
+                                    <MapPin className="mr-2 h-4 w-4" />
+                                    <SelectValue placeholder="Ville" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {filterData?.cities?.map((city: string) => (
+                                        <SelectItem key={city} value={city}>
+                                            {city}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-              {isLoading ? (
-                  <p className="text-muted-foreground">Chargement...</p>
-              ) : (
-                  <p className="text-muted-foreground">{jobs.length} offres trouvées</p>
-              )}
+                            {/* Contract Type */}
+                            <Select
+                                disabled={filtersLoading}
+                                value={filters.contract}
+                                onValueChange={(v) => updateFilter("contract", v)}
+                            >
+                                <SelectTrigger>
+                                    <Briefcase className="mr-2 h-4 w-4" />
+                                    <SelectValue placeholder="Contrat" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {filterData?.contracts?.map((ct: any) => (
+                                        <SelectItem key={ct.id} value={ct.name}>
+                                            {ct.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-              <div className="grid gap-6 mt-6">
-                {jobs.map((job: any) => (
-                    <Card key={job.id} className="p-6">
-                      <div className="flex justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold">{job.title}</h3>
-                          <p className="text-muted-foreground">{job.location}</p>
-                          <p className="text-sm">{job.salary}</p>
+                            {/* Search button */}
+                            <Button onClick={handleSearch} disabled={jobsLoading}>
+                                {jobsLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <span className="loading loading-spinner loading-sm"></span>
+                                        Recherche...
+                                    </div>
+                                ) : (
+                                    "Rechercher"
+                                )}
+                            </Button>
                         </div>
 
-                        <Link href={`/jobs/${job.id}`}>
-                          <Button variant="outline">Voir l'offre</Button>
-                        </Link>
-                      </div>
-                    </Card>
-                ))}
-              </div>
-            </div>
-          </section>
+                        {/* Salary Range */}
+                        <div className="mt-4">
+                            <Select
+                                disabled={filtersLoading}
+                                value={filters.salaryRange}
+                                onValueChange={(v) => updateFilter("salaryRange", v)}
+                            >
+                                <SelectTrigger className="w-[200px]">
+                                    <DollarSign className="mr-2 h-4 w-4" />
+                                    <SelectValue placeholder="Salaire" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {filterData?.salaryRanges?.map((range: string) => (
+                                        <SelectItem key={range} value={range}>
+                                            {range.replace("-", " - ")} MAD
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-        </main>
+                    </div>
+                </section>
 
-      </div>
-  )
+                {/* RESULTS */}
+                <section className="py-12">
+                    <div className="container mx-auto px-4">
+
+                        {shouldSearch && !jobsLoading && (
+                            <p className="text-muted-foreground">
+                                {jobs.length} offres trouvées
+                            </p>
+                        )}
+
+                        <div className="grid gap-6 mt-6">
+                            {jobsLoading && (
+                                <p className="text-muted-foreground">Recherche en cours...</p>
+                            )}
+
+                            {!jobsLoading &&
+                                jobs.map((job: any) => (
+                                    <JobCard key={job.id} job={job} variant="public" />
+                                ))}
+                        </div>
+
+                    </div>
+                </section>
+            </main>
+        </div>
+    );
 }

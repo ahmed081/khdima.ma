@@ -63,7 +63,7 @@ export function Footer() {
             <h3 className="mb-4 text-sm font-semibold text-foreground">Pour les employeurs</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/post-job" className="text-muted-foreground hover:text-foreground">
+                <Link href="/employers/post-job" className="text-muted-foreground hover:text-foreground">
                   Publier une offre
                 </Link>
               </li>

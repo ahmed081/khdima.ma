@@ -22,6 +22,8 @@ export interface JobDetail {
         companyName: string | null;
     };
     skills: JobSkill[];
+    status?: string;
+    view?: number;
 }
 
 async function fetchJob(id: number): Promise<JobDetail> {

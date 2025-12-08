@@ -19,3 +19,9 @@ export async function createJob(payload: any) {
     const res = await api.post("/jobs/create", payload)
     return res.data
 }
+
+export async function getJobFilters() {
+    const res = await fetch("/api/jobs/filters");
+    if (!res.ok) throw new Error("Erreur chargement filtres");
+    return res.json();
+}
