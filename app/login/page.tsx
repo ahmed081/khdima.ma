@@ -20,7 +20,7 @@ export default function LoginPage() {
 
     // Redirect to dashboard if already logged in
     useEffect(() => {
-        if (user) router.push("/dashboard");
+        if (user) router.push(user.role === 'EMPLOYER' ?'/employers/dashboard' : '/profile');
     }, [user, router]);
 
     const [email, setEmail] = useState("");

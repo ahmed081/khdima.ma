@@ -2,32 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
-export function BackButton({
-                               fallback = "/jobs",
-                               className = "",
-                           }: {
-    fallback?: string;
-    className?: string;
-}) {
+export function BackButton({ label = "Retour" }: { label?: string }) {
     const router = useRouter();
-
-    function handleBack() {
-        if (typeof window !== "undefined" && window.history.length > 1) {
-            router.back();
-        } else {
-            router.push(fallback);
-        }
-    }
 
     return (
         <button
-            onClick={handleBack}
-            className={`inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary ${className}`}
+            onClick={() => router.back()}
+            className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
         >
             <ArrowLeft className="h-4 w-4" />
-            Retour
+            {label}
         </button>
     );
 }

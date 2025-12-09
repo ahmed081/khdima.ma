@@ -1,15 +1,21 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getUserFromAuth } from "@/lib/auth";
+import {JobStatus} from "@/generated/prisma/enums";
+import {formatRelativeDate} from "@/lib/date";
 
-function formatRelativeDate(date: Date): string {
-    const diff = Date.now() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    if (days === 0) return "Aujourd'hui";
-    if (days === 1) return "Il y a 1 jour";
-    if (days < 7) return `Il y a ${days} jours`;
-    const weeks = Math.floor(days / 7);
-    return `Il y a ${weeks} semaine${weeks > 1 ? "s" : ""}`;
+
+
+// 🔵 Mapping function for job status
+function mapJobStatus(status: JobStatus) {
+    switch (status) {
+        case "PENDING_REVIEW":
+            return "En attente";
+        case "ACTIVE":
+            return "validé";
+        default:
+            return "inconnu";
+    }
 }
 
 export async function GET() {
@@ -18,8 +24,12 @@ export async function GET() {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // 🔥 Get ONLY active + pending jobs
     const jobs = await prisma.job.findMany({
-        where: { employerId: user.id },
+        where: {
+            employerId: user.id,
+            // status: { in: ["PENDING_REVIEW", "ACTIVE"] },
+        },
         include: {
             _count: { select: { applications: true } },
         },
@@ -37,6 +47,8 @@ export async function GET() {
     });
 
     const activeOffers = jobs.filter((j) => j.status === "ACTIVE").length;
+    const pendingOffers = jobs.filter((j) => j.status === "PENDING_REVIEW").length;
+    const deletedOffers = jobs.filter((j) => j.status === "DELETED").length;
     const totalApplications = applications.length;
     const totalViews = jobs.reduce((sum, j) => sum + (j.views ?? 0), 0);
 
@@ -45,11 +57,14 @@ export async function GET() {
             activeOffers,
             totalApplications,
             totalViews,
+            pendingOffers,
+            deletedOffers
         },
-        offers: jobs.map((job) => ({
+        offers: jobs.filter((j) => j.status !== "DELETED").map((job) => ({
             id: job.id,
             title: job.title,
-            status: job.status === "ACTIVE" ? "active" : "closed",
+            status: job.status, // 👈 mapped value
+            statusLibele: mapJobStatus(job.status), // 👈 mapped value
             applicants: job._count.applications,
             views: job.views ?? 0,
             postedAt: formatRelativeDate(job.createdAt),

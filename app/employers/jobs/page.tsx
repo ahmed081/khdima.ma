@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getUserFromAuth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { JobCard } from "@/components/jobs/job-card";
+import {BackButton} from "@/components/ui/back-button";
 
 export default async function EmployerJobsPage() {
     const employer = await getUserFromAuth();
@@ -11,8 +12,10 @@ export default async function EmployerJobsPage() {
     }
 
     const jobs = await prisma.job.findMany({
-        where: { employerId: employer.id },
+        where: {  employerId: employer.id,
+            status: { in: ["PENDING_REVIEW", "ACTIVE"] }, },
         include: {
+
             _count: { select: { applications: true } },
         },
         orderBy: { createdAt: "desc" },
@@ -21,6 +24,8 @@ export default async function EmployerJobsPage() {
     return (
         <div className="min-h-screen bg-muted/20 py-10">
             <div className="container mx-auto max-w-3xl px-4">
+                <BackButton label="Retour vers le tableau de bord" />
+
                 <h1 className="text-3xl font-bold mb-6">Mes offres d’emploi</h1>
 
                 {jobs.length === 0 ? (

@@ -6,41 +6,35 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-
 import {
-    MapPin,
-    Clock,
-    Bookmark,
-    Users,
-    TrendingUp,
-    Edit,
-    Eye,
-    Trash2,
+    Bookmark, Clock, Edit, Eye, MapPin, Trash2,
+    TrendingUp, Users
 } from "lucide-react";
 
-import { useDeleteJob } from "@/hooks/useDeleteJob";
+import { useUpdateJobStatus } from "@/hooks/useUpdateJobStatus";
+import { toast } from "@/hooks/use-toast";
 
-export function JobCard({
-                            job,
-                            variant = "public",
-                        }: {
-    job: any;
-    variant?: "public" | "employer";
-}) {
+export function JobCard({ job, variant = "public" }: { job: any; variant?: "public" | "employer" }) {
     const isEmployer = variant === "employer";
 
     const [confirmDelete, setConfirmDelete] = useState(false);
 
-    const deleteMutation = useDeleteJob(job.id, () => {
-        // Refresh after delete
-        window.location.reload();
+    const updateStatus = useUpdateJobStatus(job.id, () => {
+        toast({
+            title: "Succès",
+            description: "Statut mis à jour !",
+        });
+        setConfirmDelete(false);
     });
 
-    const handleDelete = () => deleteMutation.mutate(job.id);
+    const handleDelete = () => {
+        updateStatus.mutate("DELETED");
+    };
 
     return (
         <Card className="group transition-all hover:shadow-lg relative">
             <CardContent className="p-6">
+
                 {/* Header */}
                 <div className="mb-4 flex items-start justify-between">
                     <div className="flex-1">
@@ -56,13 +50,13 @@ export function JobCard({
                     </div>
 
                     {!isEmployer && (
-                        <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-primary">
+                        <Button variant="ghost" size="icon">
                             <Bookmark className="h-4 w-4" />
                         </Button>
                     )}
                 </div>
 
-                {/* Meta Info */}
+                {/* Meta information */}
                 <div className="mb-4 space-y-2">
                     {!isEmployer && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -87,53 +81,29 @@ export function JobCard({
                     </div>
 
                     {isEmployer && (
-                        <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
-
+                        <div className="flex gap-4 text-sm text-muted-foreground mt-2">
                             <div className="flex items-center gap-1">
                                 <Users className="h-4 w-4" />
                                 {job._count?.applications ?? 0} candidatures
                             </div>
 
-                            {typeof job.views === "number" && (
-                                <div className="flex items-center gap-1">
-                                    <TrendingUp className="h-4 w-4" />
-                                    {job.views} vues
-                                </div>
-                            )}
+                            <div className="flex items-center gap-1">
+                                <TrendingUp className="h-4 w-4" />
+                                {job.views ?? 0} vues
+                            </div>
 
-                            {job.status && (
-                                <Badge
-                                    className={
-                                        job.status === "ACTIVE"
-                                            ? "bg-green-500/10 text-green-700"
-                                            : "bg-gray-300 text-gray-700"
-                                    }
-                                >
-                                    {job.status === "ACTIVE" ? "Active" : "Fermée"}
-                                </Badge>
-                            )}
+                            <Badge className={job.status === "ACTIVE" ? "bg-green-500/10 text-green-700" : "bg-gray-300"}>
+                                {job.statusLibele }
+                            </Badge>
                         </div>
                     )}
                 </div>
 
-                {/* Skills */}
-                {!isEmployer && (
-                    <div className="mb-4 flex flex-wrap gap-2">
-                        {job.skills?.map((js: any) => (
-                            <Badge key={js.skill.id} variant="outline" className="text-xs">
-                                {js.skill.name}
-                            </Badge>
-                        ))}
-                    </div>
-                )}
-
-                {/* CTA Buttons */}
+                {/* Buttons */}
                 <div className="flex gap-2">
                     {!isEmployer && (
                         <Link href={`/jobs/${job.id}`} className="w-full">
-                            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                                Voir l'offre
-                            </Button>
+                            <Button className="w-full">Voir l'offre</Button>
                         </Link>
                     )}
 
@@ -151,7 +121,6 @@ export function JobCard({
                                 </Button>
                             </Link>
 
-                            {/* Delete button */}
                             <Button
                                 variant="destructive"
                                 size="icon"
@@ -164,7 +133,7 @@ export function JobCard({
                 </div>
             </CardContent>
 
-            {/* Delete confirmation modal */}
+            {/* DELETE CONFIRMATION */}
             {confirmDelete && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                     <Card className="p-6 bg-white space-y-4 w-72">
@@ -178,9 +147,9 @@ export function JobCard({
                             <Button
                                 variant="destructive"
                                 onClick={handleDelete}
-                                disabled={deleteMutation.isPending}
+                                disabled={updateStatus.isPending}
                             >
-                                {deleteMutation.isPending ? "Suppression..." : "Supprimer"}
+                                {updateStatus.isPending ? "Suppression..." : "Supprimer"}
                             </Button>
                         </div>
                     </Card>

@@ -84,10 +84,9 @@ model User {
   companyName    String?
   companyWebsite String?
   companyLogoUrl String?
-
   // Location (optional)
-  cityId Int?
-  city   City? @relation(fields: [cityId], references: [id])
+  cityId         Int?
+  city           City?   @relation(fields: [cityId], references: [id])
 
   countryId Int?
   country   Country? @relation(fields: [countryId], references: [id])
@@ -171,12 +170,17 @@ model ContractType {
 // =====================================
 //   JOB MODEL
 // =====================================
+enum JobStatus {
+  PENDING_REVIEW
+  ACTIVE
+  DELETED
+}
+
 model Job {
   id          Int    @id @default(autoincrement())
   title       String
   description String
 
-  // Matches your form
   competencies String[] @default([])
   requirements String[] @default([])
   benefits     String[] @default([])
@@ -189,9 +193,8 @@ model Job {
   updatedAt DateTime @updatedAt
 
   // Location
-  cityId Int?
-  city   City? @relation(fields: [cityId], references: [id])
-
+  cityId    Int?
+  city      City?    @relation(fields: [cityId], references: [id])
   countryId Int?
   country   Country? @relation(fields: [countryId], references: [id])
 
@@ -199,22 +202,21 @@ model Job {
   employerId Int
   employer   User @relation(fields: [employerId], references: [id])
 
-  // Skills pivot
+  // Skills
   skills JobSkill[]
 
-  // References to categories
-  categoryId Int?
-  category   JobCategory? @relation(fields: [categoryId], references: [id])
-
+  // References
+  categoryId        Int?
+  category          JobCategory?     @relation(fields: [categoryId], references: [id])
   experienceLevelId Int?
   experienceLevel   ExperienceLevel? @relation(fields: [experienceLevelId], references: [id])
-
-  contractTypeId Int?
-  contractType   ContractType? @relation(fields: [contractTypeId], references: [id])
+  contractTypeId    Int?
+  contractType      ContractType?    @relation(fields: [contractTypeId], references: [id])
 
   applications Application[]
-  status       String?
-  views        Int?
+
+  status JobStatus @default(PENDING_REVIEW)
+  views  Int?      @default(0)
 }
 
 // =====================================
