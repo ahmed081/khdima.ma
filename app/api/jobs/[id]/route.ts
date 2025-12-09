@@ -1,14 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET /api/jobs/[id]
 export async function GET(
-    req: Request,
-    context: { params: { id: string } }
+    req: NextRequest,
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const {id} = await context.params
+        const { id } = await context.params; // MUST await
         const jobId = Number(id);
+
         if (isNaN(jobId)) {
             return NextResponse.json({ error: "Invalid job ID" }, { status: 400 });
         }
@@ -18,7 +18,7 @@ export async function GET(
             include: {
                 employer: true,
                 skills: {
-                    include: { skill: true }, // if using JobSkill relation
+                    include: { skill: true },
                 },
             },
         });
@@ -30,7 +30,6 @@ export async function GET(
             );
         }
 
-        // If skills is JobSkill[] → flatten to skill object
         const formattedJob = {
             ...job,
             skills: job.skills.map((js) => ({

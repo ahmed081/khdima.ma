@@ -1,27 +1,28 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getUserFromAuth } from "@/lib/auth";
+import {prisma} from "@/lib/prisma";
+import {getUserFromAuth} from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, context: { params: Promise<{ id: string }> }) {
+    const { id } = await context.params; // ⬅ MUST AWAIT
+
     const employer = await getUserFromAuth();
     if (!employer || employer.role !== "EMPLOYER") {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        return NextResponse.json({error: "Unauthorized"}, {status: 401});
     }
 
-    const jobId = Number(params.id);
+    const jobId = Number(id);
     const data = await req.json();
 
     const existing = await prisma.job.findUnique({
-        where: { id: jobId },
+        where: {id: jobId},
     });
 
     if (!existing || existing.employerId !== employer.id) {
-        return NextResponse.json({ error: "Job not found" }, { status: 404 });
+        return NextResponse.json({error: "Job not found"}, {status: 404});
     }
 
     const updated = await prisma.job.update({
-        where: { id: jobId },
-        data: {
+        where: {id: jobId}, data: {
             title: data.title,
             description: data.description,
             salary: data.salary,
@@ -31,5 +32,5 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         },
     });
 
-    return NextResponse.json({ success: true, job: updated });
+    return NextResponse.json({success: true, job: updated});
 }
