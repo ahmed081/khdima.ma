@@ -63,7 +63,7 @@ export default function EditJobPage() {
                                 title: job.title,
                                 description: job.description,
                                 salary: job.salary ?? "",
-                                status: job.status ?? "ACTIVE",
+                                // status: job.status ?? "ACTIVE",
                             }}
                             onSubmit={(values) => updateJobMutation.mutate(values)}
                             submitting={updateJobMutation.isPending}
