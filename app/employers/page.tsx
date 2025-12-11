@@ -57,7 +57,12 @@ export default async function EmployersPage() {
                                         )}
                                     </div>
                                 </div>
-
+                                {/* DESCRIPTION */}
+                                {employer.name && (
+                                    <p className="text-sm text-muted-foreground line-clamp-3">
+                                        {employer.name}
+                                    </p>
+                                )}
                                 {/* DESCRIPTION */}
                                 {employer.bio && (
                                     <p className="text-sm text-muted-foreground line-clamp-3">

@@ -1,15 +1,16 @@
-"use client"
-
 import { useQuery } from "@tanstack/react-query"
+import { api } from "@/lib/axios"
+import { City } from "@/types/database"
 
-export function useCities(countryId?: number) {
-    return useQuery({
+async function getCities(countryId: number): Promise<City[]> {
+    const res = await api.get<City[]>(`/constants/cities/${countryId}`)
+    return res.data
+}
+
+export function useCities(countryId: number) {
+    return useQuery<City[]>({
         queryKey: ["cities", countryId],
-        queryFn: async () => {
-            const res = await fetch(`/api/constants/cities?countryId=${countryId}`)
-            if (!res.ok) throw new Error("Erreur lors du chargement des villes")
-            return res.json()
-        },
-        enabled: !!countryId, // 🔥 Only fetch when countryId is selected
+        queryFn: () => getCities(countryId),
+        enabled: !!countryId, // ensures query runs only when countryId exists
     })
 }

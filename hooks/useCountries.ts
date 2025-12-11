@@ -1,14 +1,15 @@
-"use client"
-
 import { useQuery } from "@tanstack/react-query"
+import { api } from "@/lib/axios"
+import { Country } from "@/types/database"
+
+async function getCountries(): Promise<Country[]> {
+    const res = await api.get<Country[]>("/constants/countries")
+    return res.data
+}
 
 export function useCountries() {
-    return useQuery({
+    return useQuery<Country[]>({
         queryKey: ["countries"],
-        queryFn: async () => {
-            const res = await fetch("/api/constants/countries")
-            if (!res.ok) throw new Error("Erreur lors du chargement des pays")
-            return res.json()
-        },
+        queryFn: getCountries,
     })
 }
