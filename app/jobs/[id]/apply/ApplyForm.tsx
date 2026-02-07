@@ -39,7 +39,7 @@ export default function ApplyForm({ jobId }: { jobId: number }) {
             router.replace(`/jobs/${jobId}`);
         }
 
-        if (job.employerId === user.id) {
+        if (job.employer.id === user.id) {
             router.replace(`/jobs/${jobId}`);
         }
     }, [job, user, jobId, router]);

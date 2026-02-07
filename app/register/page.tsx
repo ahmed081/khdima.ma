@@ -254,8 +254,8 @@ export default function RegisterPage() {
                 {/* Error */}
                 {localError && <p className="text-sm text-red-600">{localError}</p>}
 
-                <Button className="w-full" disabled={registerMutation.isLoading}>
-                  {registerMutation.isLoading ? "Création du compte..." : "S'enregistrer"}
+                <Button className="w-full" disabled={registerMutation.isPending}>
+                  {registerMutation.isPending ? "Création du compte..." : "S'enregistrer"}
                 </Button>
               </form>
 

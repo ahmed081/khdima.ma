@@ -14,7 +14,7 @@ export interface JobFormValues {
     title: string;
     description: string;
     salary?: number | string;
-    status?: "ACTIVE" | "CLOSED";
+    status?: string;
 }
 
 interface JobFormProps {
