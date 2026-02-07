@@ -97,8 +97,8 @@ async function main() {
                 categoryId: category.id,
                 experienceLevelId: expJunior.id,
                 contractTypeId: contractCDI.id,
-                status: "ACTIVE",
-                views: Math.floor(Math.random() * 300),
+                // status: "ACTIVE",
+                // views: Math.floor(Math.random() * 300),
             },
         });
 
