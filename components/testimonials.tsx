@@ -8,7 +8,7 @@ export function Testimonials() {
       role: "Développeur Full Stack",
       company: "TechCasa",
       content:
-        "Grâce à Khidma.ma, j'ai trouvé mon emploi de rêve en moins de deux semaines. La plateforme est simple et les offres sont de qualité.",
+        "Grâce à khdimti.com, j'ai trouvé mon emploi de rêve en moins de deux semaines. La plateforme est simple et les offres sont de qualité.",
       rating: 5,
     },
     {
@@ -16,7 +16,7 @@ export function Testimonials() {
       role: "Responsable RH",
       company: "Maroc Telecom",
       content:
-        "Nous avons recruté plusieurs talents via Khidma.ma. Le processus est fluide et les candidats sont qualifiés.",
+        "Nous avons recruté plusieurs talents via khdimti.com. Le processus est fluide et les candidats sont qualifiés.",
       rating: 5,
     },
     {

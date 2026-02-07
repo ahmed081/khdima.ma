@@ -83,7 +83,7 @@ export default function RegisterPage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary">
               <Briefcase className="h-7 w-7 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold text-foreground">Khidma.ma</span>
+            <span className="text-2xl font-bold text-foreground">khdimti.com</span>
           </Link>
 
           <Card className="w-full max-w-md shadow-lg">

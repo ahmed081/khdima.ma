@@ -12,7 +12,7 @@ export function Footer() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
                 <Briefcase className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-foreground">Khidma.ma</span>
+              <span className="text-xl font-bold text-foreground">khdimti.com</span>
             </Link>
             <p className="mb-4 text-sm text-muted-foreground">
               La plateforme marocaine qui connecte les talents aux opportunités
@@ -113,7 +113,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-border/40 pt-8 text-center text-sm text-muted-foreground">
-          <p>© 2025 Khidma.ma. Tous droits réservés.</p>
+          <p>© 2025 khdimti.com. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

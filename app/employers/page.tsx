@@ -28,7 +28,7 @@ export default async function EmployersPage() {
                     Employeurs
                 </h1>
                 <p className="mb-6 text-sm text-muted-foreground">
-                    Découvrez les entreprises qui publient des offres sur Khidma.ma.
+                    Découvrez les entreprises qui publient des offres sur khdimti.com.
                 </p>
 
                 <div className="grid gap-4 md:grid-cols-2">

@@ -13,7 +13,7 @@ import {HowItWorks} from "@/components/how-it-works";
 import GlobalToast from "@/components/global-toast";
 
 export const metadata: Metadata = {
-    title: "Khidma.ma - Trouvez votre emploi au Maroc",
+    title: "khdimti.com - Trouvez votre emploi au Maroc",
     description: "La plateforme simple et transparente qui connecte les chercheurs d'emploi et les employeurs marocains",
     generator: "v0.app",
 }

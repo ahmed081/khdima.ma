@@ -13,7 +13,7 @@ export function HeroSection() {
       <div className="container relative mx-auto flex h-full items-center px-4">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="mb-6 text-balance text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
-            Trouvez votre prochaine opportunité avec Khidma.ma
+            Trouvez votre prochaine opportunité avec khdimti.com
           </h1>
           <p className="mb-12 text-pretty text-lg text-white/90 md:text-xl">
             La plateforme simple et transparente qui connecte les chercheurs d'emploi et les employeurs marocains
