@@ -10,7 +10,7 @@ export default function EmployerDashboard() {
 
     if (isLoading) return <div className="p-6">Chargement...</div>;
     if (error) return <div className="p-6 text-red-500">Erreur…</div>;
-
+    if(!data) return <div className="p-6">Chargement...</div>;
     return (
         <main className="bg-muted/20 py-12 min-h-screen">
             <div className="container mx-auto px-4">
