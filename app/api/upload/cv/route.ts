@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 // import OpenAI from "openai";
@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 //     apiKey: process.env.OPENAI_API_KEY!,
 // });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         // Ensure multipart form-data
         const form = await req.formData();

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import {NextRequest, NextResponse} from "next/server"
 import { prisma } from "@/lib/prisma"
 import jwt from "jsonwebtoken"
 
@@ -19,7 +19,7 @@ interface JobRequest {
     skills: number[]
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         const body: JobRequest = await req.json()
 

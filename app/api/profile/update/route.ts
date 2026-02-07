@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromAuth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
     try {
         const auth = await getUserFromAuth();
         if (!auth) {

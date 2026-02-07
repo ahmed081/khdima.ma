@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromAuth } from "@/lib/auth";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     const employer = await getUserFromAuth();
     if (!employer || employer.role !== "EMPLOYER") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,18 +28,18 @@ export async function POST(req: Request) {
         );
     }
 
-    // Save employer → candidate message
-    const saved = await prisma.message.create({
-        data: {
-            senderId: employer.id,
-            receiverId: candidateId,
-            content: message.trim(),
-        },
-    });
+    // // Save employer → candidate message
+    // const saved = await prisma.message.create({
+    //     data: {
+    //         senderId: employer.id,
+    //         receiverId: candidateId,
+    //         content: message.trim(),
+    //     },
+    // });
 
     return NextResponse.json({
         success: true,
         message: "Message sent",
-        data: saved,
+        // data: saved,
     });
 }
