@@ -16,15 +16,7 @@ function* checkAuthWorker(): any {
         yield put(authError(err.message));
     }
 }
-function* logoutWorker() {
-    // Clear cookie server-side
-    yield call(fetch, "/api/auth/logout", { method: "POST" });
-    yield put(setUser(null));
-}
-
 
 export default function* authSaga() {
     yield takeLatest(checkAuth.type, checkAuthWorker);
-    yield takeLatest("auth/logout", logoutWorker);
-
 }

@@ -14,10 +14,8 @@ function* requestFailedWorker(action: any) {
     }
 }
 
-function* requestSuccessWorker(action: any) {
-    // You can show a toast or handle global side effects
-    // Example: toast success
-    console.log("API Success:", action.payload);
+function* requestSuccessWorker(_action: any) {
+    // Handle global side effects on API success (e.g., toast notifications)
 }
 
 export default function* requestWatcherSaga() {
