@@ -145,6 +145,33 @@
     "suspended": "معلق",
     "pending": "قيد الانتظار",
     "viewProfile": "عرض الملف",
-    "notes": "ملاحظات الإدارة"
+    "notes": "ملاحظات الإدارة",
+    "categories": "الفئات",
+    "translations": "الترجمات",
+    "analytics": "الإحصائيات",
+    "providers": "مزودو الخدمات"
+  },
+  "portfolio": {
+    "title": "معرض الأعمال",
+    "add": "إضافة صورة",
+    "urlLabel": "رابط الصورة",
+    "captionLabel": "تعليق",
+    "beforeLabel": "صورة قبل",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "empty": "لا توجد صور بعد. أضف أولى صورك!",
+    "hint": "حتى 10 صور. الصور قبل/بعد توضح جودة عملك.",
+    "delete": "حذف",
+    "before": "قبل"
+  },
+  "contact": {
+    "title": "تواصل معنا",
+    "subtitle": "فريقنا في خدمتك"
+  },
+  "privacy": {
+    "title": "سياسة الخصوصية"
+  },
+  "terms": {
+    "title": "شروط الاستخدام"
   }
 }

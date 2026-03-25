@@ -5,16 +5,17 @@ import { Link } from "@/i18n/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Star, Eye, MessageCircle, Phone, Edit } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { Star, Eye, MessageCircle, Phone, Edit, Images } from "lucide-react"
+import { useTranslations, useLocale } from "next-intl"
 
 export default function ProviderDashboardPage() {
-  const t = useTranslations('provider')
-  const qc = useQueryClient()
+  const t      = useTranslations('provider')
+  const locale = useLocale()
+  const qc     = useQueryClient()
 
   const { data, isLoading } = useQuery({
     queryKey: ['provider-dashboard'],
-    queryFn: () => fetch('/api/provider/dashboard').then(r => r.json())
+    queryFn: () => fetch('/api/provider/dashboard').then(r => r.json()),
   })
 
   const toggleAvailability = useMutation({
@@ -23,16 +24,24 @@ export default function ProviderDashboardPage() {
       const res = await fetch('/api/provider/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ availability: newAvail })
+        body: JSON.stringify({ availability: newAvail }),
       })
       if (!res.ok) throw new Error('Failed to update')
       return res.json()
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['provider-dashboard'] })
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['provider-dashboard'] }),
   })
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+    return (
+      <div className="min-h-screen bg-gray-50 py-10">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-28 bg-gray-100 rounded-lg animate-pulse" />)}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   if (!data || data.error) {
@@ -41,18 +50,21 @@ export default function ProviderDashboardPage() {
 
   const { provider, stats, contactStats, recentReviews } = data
   const isAvailable = provider?.availability === 'AVAILABLE'
+  const isRTL = locale === 'ar'
 
   return (
-    <main className="min-h-screen bg-gray-50 py-10">
+    <main className="min-h-screen bg-gray-50 py-10" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="flex items-center justify-between mb-8">
+
+        {/* Header */}
+        <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">{t('dashboardTitle')}</h1>
             <p className="text-gray-500">{provider?.businessName}</p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-2 flex-wrap">
             <Button
-              variant={isAvailable ? "default" : "outline"}
+              variant={isAvailable ? 'default' : 'outline'}
               className={isAvailable ? 'bg-green-600 hover:bg-green-500' : ''}
               onClick={() => toggleAvailability.mutate()}
               disabled={toggleAvailability.isPending}
@@ -60,18 +72,27 @@ export default function ProviderDashboardPage() {
               {isAvailable ? t('available') : t('busy')}
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/provider/dashboard/edit"><Edit className="h-4 w-4 mr-1" />{t('editProfile')}</Link>
+              <Link href="/provider/dashboard/portfolio">
+                <Images className="h-4 w-4 mr-1" />
+                {locale === 'ar' ? 'معرض الأعمال' : locale === 'fr' ? 'Portfolio' : 'Portfolio'}
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/provider/dashboard/edit">
+                <Edit className="h-4 w-4 mr-1" />{t('editProfile')}
+              </Link>
             </Button>
           </div>
         </div>
 
+        {/* Pending banner */}
         {provider?.status === 'PENDING' && (
           <div className="bg-amber-50 border border-amber-200 rounded p-4 mb-6 text-amber-800 text-sm">
             {t('pendingApproval')}
           </div>
         )}
 
-        {/* Stats Cards */}
+        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardContent className="p-4 text-center">
@@ -84,21 +105,22 @@ export default function ProviderDashboardPage() {
             <CardContent className="p-4 text-center">
               <Star className="h-8 w-8 text-amber-500 mx-auto mb-2" />
               <p className="text-2xl font-bold">{stats?.rating?.toFixed(1) ?? '0.0'}</p>
-              <p className="text-xs text-gray-500">Rating</p>
+              <p className="text-xs text-gray-500">{locale === 'ar' ? 'التقييم' : locale === 'fr' ? 'Note' : 'Rating'}</p>
+              <p className="text-xs text-gray-400">{stats?.reviewCount ?? 0} {locale === 'ar' ? 'تقييم' : 'reviews'}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <MessageCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
               <p className="text-2xl font-bold">{contactStats?.whatsapp ?? 0}</p>
-              <p className="text-xs text-gray-500">WhatsApp</p>
+              <p className="text-xs text-gray-500">WhatsApp (30j)</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <Phone className="h-8 w-8 text-red-500 mx-auto mb-2" />
+              <Phone className="h-8 w-8 text-green-600 mx-auto mb-2" />
               <p className="text-2xl font-bold">{contactStats?.call ?? 0}</p>
-              <p className="text-xs text-gray-500">{t('totalContacts')}</p>
+              <p className="text-xs text-gray-500">{t('totalContacts')} (30j)</p>
             </CardContent>
           </Card>
         </div>
@@ -110,19 +132,23 @@ export default function ProviderDashboardPage() {
           </CardHeader>
           <CardContent>
             {(!recentReviews || recentReviews.length === 0) ? (
-              <p className="text-gray-500 text-sm">No reviews yet.</p>
+              <p className="text-gray-500 text-sm">
+                {locale === 'ar' ? 'لا توجد تقييمات بعد.' : locale === 'fr' ? 'Aucun avis pour le moment.' : 'No reviews yet.'}
+              </p>
             ) : (
               <div className="space-y-3">
                 {recentReviews.map((rev: any) => (
                   <div key={rev.id} className="border-b pb-3 last:border-0">
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <span className="font-medium text-sm">{rev.user?.name}</span>
                       <div className="flex">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star key={i} className={`h-3 w-3 ${i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200'}`} />
                         ))}
                       </div>
-                      <Badge variant="outline" className="text-xs">{new Date(rev.createdAt).toLocaleDateString()}</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        {new Date(rev.createdAt).toLocaleDateString()}
+                      </Badge>
                     </div>
                     {rev.comment && <p className="text-sm text-gray-600">{rev.comment}</p>}
                   </div>

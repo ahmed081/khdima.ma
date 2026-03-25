@@ -1,7 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import {routing} from './i18n/routing';
 import {NextRequest, NextResponse} from 'next/server';
-import jwt from 'jsonwebtoken';
+import { jwtVerify } from 'jose';
 
 const handleI18n = createMiddleware(routing);
 
@@ -16,7 +16,7 @@ function stripLocale(pathname: string): string {
   return pathname.replace(/^\/(fr|en|ar)/, '') || '/';
 }
 
-export function middleware(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const {pathname} = req.nextUrl;
 
   if (pathname.startsWith('/api')) {
@@ -34,13 +34,14 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL(`/${locale}/login`, req.url));
     }
     try {
-      const user: any = jwt.verify(token, process.env.JWT_SECRET!);
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
+      const { payload } = await jwtVerify(token, secret);
 
-      if (actualPath.startsWith('/admin') && user.role !== 'ADMIN') {
-        return NextResponse.redirect(new URL(`/`, req.url));
+      if (actualPath.startsWith('/admin') && payload.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL(`/${locale}/`, req.url));
       }
-      if (actualPath.startsWith('/provider/dashboard') && user.role !== 'PROVIDER') {
-        return NextResponse.redirect(new URL(`/`, req.url));
+      if (actualPath.startsWith('/provider/dashboard') && payload.role !== 'PROVIDER') {
+        return NextResponse.redirect(new URL(`/${locale}/`, req.url));
       }
     } catch {
       return NextResponse.redirect(new URL(`/${locale}/login`, req.url));

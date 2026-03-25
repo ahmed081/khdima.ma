@@ -37,10 +37,10 @@ export function HowItWorks() {
               <div key={index} className="relative text-center">
                 <div className="mb-6 flex justify-center">
                   <div className="relative">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-                      <Icon className="h-10 w-10 text-red-700" />
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+                      <Icon className="h-10 w-10 text-green-700" />
                     </div>
-                    <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white">
+                    <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-700 text-sm font-bold text-white">
                       {index + 1}
                     </div>
                   </div>

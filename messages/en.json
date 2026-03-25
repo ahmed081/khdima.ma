@@ -145,6 +145,33 @@
     "suspended": "Suspended",
     "pending": "Pending",
     "viewProfile": "View profile",
-    "notes": "Admin notes"
+    "notes": "Admin notes",
+    "categories": "Categories",
+    "translations": "Translations",
+    "analytics": "Analytics",
+    "providers": "Providers"
+  },
+  "portfolio": {
+    "title": "My Portfolio",
+    "add": "Add Image",
+    "urlLabel": "Image URL",
+    "captionLabel": "Caption",
+    "beforeLabel": "\"Before\" image",
+    "save": "Save",
+    "cancel": "Cancel",
+    "empty": "No images yet. Add your first photo!",
+    "hint": "Up to 10 images. Before/after photos showcase your work quality.",
+    "delete": "Delete",
+    "before": "Before"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Our team is here to help"
+  },
+  "privacy": {
+    "title": "Privacy Policy"
+  },
+  "terms": {
+    "title": "Terms of Use"
   }
 }

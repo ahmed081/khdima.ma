@@ -1,30 +1,121 @@
 import { put, takeLatest, call } from "redux-saga/effects";
-import { checkAuth, setUser, authError } from "../slices/authSlice";
+import {
+  checkAuth,
+  loginRequest,
+  registerRequest,
+  logoutRequest,
+  setUser,
+  authError,
+  logout,
+} from "../slices/authSlice";
+import { showToast } from "../slices/toastSlice";
 
-function fetchAuthApi() {
-    return fetch("/api/auth/me").then((res) => {
-        if (res.status === 401) throw new Error("Unauthorized");
-        return res.json();
-    });
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getLocalePrefix(): string {
+  if (typeof window === "undefined") return "/fr";
+  const seg = window.location.pathname.split("/")[1];
+  return ["fr", "en", "ar"].includes(seg) ? `/${seg}` : "/fr";
 }
+
+function redirectTo(path: string) {
+  if (typeof window !== "undefined") {
+    window.location.href = getLocalePrefix() + path;
+  }
+}
+
+async function apiFetch(url: string, options?: RequestInit) {
+  const res = await fetch(url, { credentials: "include", ...options });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data;
+}
+
+// ---------------------------------------------------------------------------
+// Workers
+// ---------------------------------------------------------------------------
 
 function* checkAuthWorker(): any {
-    try {
-        const data = yield call(fetchAuthApi);
-        yield put(setUser(data.user));
-    } catch (err: any) {
-        yield put(authError(err.message));
-    }
-}
-function* logoutWorker() {
-    // Clear cookie server-side
-    yield call(fetch, "/api/auth/logout", { method: "POST" });
+  try {
+    const data = yield call(apiFetch, "/api/auth/me");
+    yield put(setUser(data));
+  } catch {
     yield put(setUser(null));
+  }
 }
 
+function* loginWorker(action: ReturnType<typeof loginRequest>): any {
+  try {
+    yield put(showToast({ message: "Connexion en cours…", type: "success" }));
+
+    yield call(apiFetch, "/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(action.payload),
+    });
+
+    const user = yield call(apiFetch, "/api/auth/me");
+    yield put(setUser(user));
+
+    const roleMsg =
+      user.role === "ADMIN"    ? "Bienvenue, admin !" :
+      user.role === "PROVIDER" ? "Bienvenue sur votre tableau de bord !" :
+                                 "Bienvenue !";
+    yield put(showToast({ message: roleMsg, type: "success" }));
+
+    const path =
+      user.role === "ADMIN"    ? "/admin" :
+      user.role === "PROVIDER" ? "/provider/dashboard" :
+                                 "/";
+    redirectTo(path);
+  } catch (err: any) {
+    yield put(authError(err.message));
+    yield put(showToast({ message: err.message, type: "error" }));
+  }
+}
+
+function* registerWorker(action: ReturnType<typeof registerRequest>): any {
+  try {
+    yield put(showToast({ message: "Création du compte…", type: "success" }));
+
+    yield call(apiFetch, "/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(action.payload),
+    });
+
+    const user = yield call(apiFetch, "/api/auth/me");
+    yield put(setUser(user));
+    yield put(showToast({ message: "Compte créé avec succès !", type: "success" }));
+    redirectTo("/");
+  } catch (err: any) {
+    yield put(authError(err.message));
+    yield put(showToast({ message: err.message, type: "error" }));
+  }
+}
+
+function* logoutWorker(): any {
+  try {
+    yield call(apiFetch, "/api/auth/logout", { method: "POST" });
+  } catch {
+    // ignore logout API errors
+  }
+  yield put(logout());
+  yield put(showToast({ message: "Vous êtes déconnecté.", type: "success" }));
+  if (typeof window !== "undefined") {
+    window.location.href = getLocalePrefix() + "/";
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Watcher
+// ---------------------------------------------------------------------------
 
 export default function* authSaga() {
-    yield takeLatest(checkAuth.type, checkAuthWorker);
-    yield takeLatest("auth/logout", logoutWorker);
-
+  yield takeLatest(checkAuth.type,      checkAuthWorker);
+  yield takeLatest(loginRequest.type,   loginWorker);
+  yield takeLatest(registerRequest.type, registerWorker);
+  yield takeLatest(logoutRequest.type,  logoutWorker);
 }

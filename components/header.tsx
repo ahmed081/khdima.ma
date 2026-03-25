@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/navigation"
 import { useSelector, useDispatch } from "react-redux"
-import { logout, selectUser } from "@/store/slices/authSlice"
+import { logoutRequest, selectUser } from "@/store/slices/authSlice"
 import { Button } from "@/components/ui/button"
 import { Wrench, Menu, User, LogOut } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet"
@@ -14,10 +14,7 @@ export function Header() {
   const dispatch = useDispatch()
   const t = useTranslations('header')
 
-  const handleLogout = () => {
-    fetch('/api/auth/logout', { method: 'POST' })
-    dispatch(logout())
-  }
+  const handleLogout = () => dispatch(logoutRequest())
 
   const getDashboardLink = () => {
     if (user?.role === 'PROVIDER') return '/provider/dashboard'
@@ -31,7 +28,7 @@ export function Header() {
 
         {/* LOGO */}
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-700">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-700">
             <Wrench className="h-6 w-6 text-white" />
           </div>
           <span className="text-xl font-bold">khdimti.com</span>
@@ -49,7 +46,7 @@ export function Header() {
           {!user ? (
             <>
               <Button variant="ghost" asChild><Link href="/login">{t('login')}</Link></Button>
-              <Button className="bg-red-700 hover:bg-red-600" asChild>
+              <Button className="bg-green-700 hover:bg-green-600" asChild>
                 <Link href="/register">{t('register')}</Link>
               </Button>
             </>
@@ -60,7 +57,7 @@ export function Header() {
                 {user.name ?? t('profile')}
               </Link>
               {user.role === 'ADMIN' && (
-                <Link href="/admin" className="text-sm text-red-700 font-medium">{t('adminPanel')}</Link>
+                <Link href="/admin" className="text-sm text-green-700 font-medium">{t('adminPanel')}</Link>
               )}
               <Button variant="destructive" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4" />
@@ -93,7 +90,7 @@ export function Header() {
                     </Button>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Button className="bg-red-700 hover:bg-red-600" asChild>
+                    <Button className="bg-green-700 hover:bg-green-600" asChild>
                       <Link href="/register">{t('register')}</Link>
                     </Button>
                   </SheetClose>

@@ -12,9 +12,12 @@ export function HeroSection() {
   const [query, setQuery] = useState('')
 
   return (
-    <section className="relative min-h-[500px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-red-900 via-red-800 to-red-700">
-      {/* Moroccan pattern overlay */}
-      <div className="absolute inset-0 opacity-10" style={{backgroundImage: "url('/moroccan-pattern.svg')"}} />
+    <section className="relative min-h-[500px] flex items-center justify-center overflow-hidden">
+      {/* Casablanca background image */}
+      <div className="absolute inset-0 -z-10">
+        <img src="/casablanca-skyline-at-sunset-with-modern-office-bu.jpg" alt="Casablanca" className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
+      </div>
       <div className="relative container mx-auto px-4 text-center text-white">
         <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">{t('heroTitle')}</h1>
         <p className="text-xl md:text-2xl mb-10 text-white/80">{t('heroSubtitle')}</p>

@@ -1,9 +1,9 @@
 "use client"
 
 import { Link } from "@/i18n/navigation"
-import { useRouter } from "@/i18n/navigation"
 import { useState } from "react"
-import { useMutation } from "@tanstack/react-query"
+import { useDispatch, useSelector } from "react-redux"
+import { registerRequest, selectAuthLoading } from "@/store/slices/authSlice"
 import { Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,7 +12,8 @@ import { Label } from "@/components/ui/label"
 import { useTranslations } from 'next-intl'
 
 export default function RegisterPage() {
-  const router = useRouter()
+  const dispatch = useDispatch()
+  const loading  = useSelector(selectAuthLoading)
   const t = useTranslations('register')
 
   const [form, setForm] = useState({
@@ -28,26 +29,6 @@ export default function RegisterPage() {
     setForm(prev => ({ ...prev, [key]: value }))
   }
 
-  const registerMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          phone: form.phone || undefined,
-          password: form.password,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || t('serverError'))
-      return data
-    },
-    onSuccess: () => router.push('/profile'),
-    onError: (err: any) => setLocalError(err.message),
-  })
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setLocalError("")
@@ -55,7 +36,12 @@ export default function RegisterPage() {
       setLocalError(t('passwordMismatch'))
       return
     }
-    registerMutation.mutate()
+    dispatch(registerRequest({
+      name: form.name,
+      email: form.email,
+      phone: form.phone || undefined,
+      password: form.password,
+    }))
   }
 
   return (
@@ -103,8 +89,8 @@ export default function RegisterPage() {
 
               {localError && <p className="text-sm text-red-600">{localError}</p>}
 
-              <Button className="w-full" disabled={registerMutation.isPending}>
-                {registerMutation.isPending ? t('loading') : t('submit')}
+              <Button className="w-full" disabled={loading}>
+                {loading ? t('loading') : t('submit')}
               </Button>
             </form>
 
@@ -115,7 +101,7 @@ export default function RegisterPage() {
 
             <div className="mt-3 text-center text-sm">
               <span className="text-muted-foreground">{t('orRegisterAsPro')} </span>
-              <Link href="/provider/register" className="font-medium text-red-700 hover:underline">{t('registerAsPro')}</Link>
+              <Link href="/provider/register" className="font-medium text-green-700 hover:underline">{t('registerAsPro')}</Link>
             </div>
           </CardContent>
         </Card>

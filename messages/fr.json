@@ -145,6 +145,33 @@
     "suspended": "Suspendu",
     "pending": "En attente",
     "viewProfile": "Voir le profil",
-    "notes": "Notes admin"
+    "notes": "Notes admin",
+    "categories": "Catégories",
+    "translations": "Traductions",
+    "analytics": "Statistiques",
+    "providers": "Prestataires"
+  },
+  "portfolio": {
+    "title": "Mon Portfolio",
+    "add": "Ajouter une image",
+    "urlLabel": "URL de l'image",
+    "captionLabel": "Légende",
+    "beforeLabel": "Image «avant»",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "empty": "Aucune image encore. Ajoutez votre première photo !",
+    "hint": "Jusqu'à 10 images. Les photos avant/après montrent la qualité de votre travail.",
+    "delete": "Supprimer",
+    "before": "Avant"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Notre équipe est à votre écoute"
+  },
+  "privacy": {
+    "title": "Politique de confidentialité"
+  },
+  "terms": {
+    "title": "Conditions d'utilisation"
   }
 }

@@ -124,7 +124,7 @@ export default function EditProviderProfilePage() {
                 <Button type="button" variant="outline" className="flex-1" onClick={() => router.back()}>
                   Annuler
                 </Button>
-                <Button type="submit" className="flex-1 bg-red-700 hover:bg-red-600" disabled={updateMutation.isPending}>
+                <Button type="submit" className="flex-1 bg-green-700 hover:bg-green-600" disabled={updateMutation.isPending}>
                   {updateMutation.isPending ? "Sauvegarde..." : "Sauvegarder"}
                 </Button>
               </div>

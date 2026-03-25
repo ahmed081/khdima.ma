@@ -2,12 +2,13 @@
 
 import {Provider, useDispatch} from "react-redux";
 import { store } from "./index";
+import { checkAuth } from "./slices/authSlice";
 import {useEffect} from "react";
 function InitAuth() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch({ type: "auth/loadUser" });
+        dispatch(checkAuth());
     }, []);
 
     return null;

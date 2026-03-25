@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
       include: {
         user: { select: { name: true, email: true } },
         city: { select: { name: true } },
-        category: { select: { name: true } }
+        category: { select: { code: true, slug: true } }
       }
     })
 
@@ -36,15 +36,22 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { id, status } = await req.json()
+    const { id, status, isVerified } = await req.json()
 
-    if (!id || !['ACTIVE', 'SUSPENDED', 'PENDING'].includes(status)) {
-      return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+    if (!id) return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+
+    const updateData: any = {}
+    if (status !== undefined) {
+      if (!['ACTIVE', 'SUSPENDED', 'PENDING'].includes(status)) {
+        return NextResponse.json({ error: "Invalid status" }, { status: 400 })
+      }
+      updateData.status = status
     }
+    if (isVerified !== undefined) updateData.isVerified = Boolean(isVerified)
 
     const updated = await prisma.provider.update({
       where: { id: Number(id) },
-      data: { status }
+      data: updateData,
     })
 
     return NextResponse.json(updated)

@@ -38,8 +38,8 @@ export default async function LocaleLayout({
     const dir = locale === 'ar' ? 'rtl' : 'ltr'
 
     return (
-        <html lang={locale} dir={dir}>
-            <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <html lang={locale} dir={dir} suppressHydrationWarning>
+            <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`} suppressHydrationWarning>
                 <NextIntlClientProvider messages={messages}>
                     <Providers>
                         <ReactQueryProvider>

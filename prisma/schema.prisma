@@ -37,12 +37,53 @@ enum ContactType {
   PROFILE_VIEW
 }
 
+enum TranslationLocale {
+  en
+  fr
+  ar
+}
+
+// =====================================
+//   I18N — TRANSLATIONS & PARAMS
+// =====================================
+
+// Stores all translatable text by code + locale.
+// code format: "<NAMESPACE>_<KEY>"  e.g. "CAT_PLUMBING", "SUBCAT_PLUMBING_REPAIR"
+model Translation {
+  id        Int               @id @default(autoincrement())
+  code      String            // e.g. "CAT_PLUMBING"
+  locale    TranslationLocale // en | fr | ar
+  text      String            // e.g. "Plomberie"
+  namespace String            @default("general") // "category" | "subcategory" | "city" | "ui" | etc.
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([code, locale])
+  @@index([namespace])
+  @@index([code])
+}
+
+// System-wide configuration & transcodification params.
+// Used for admin-managed settings, feature flags, and any
+// key-value pair that needs to be translated or configured
+// without a code deploy.
+model Param {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique // e.g. "SITE_NAME", "MAX_PROVIDERS_PER_CITY"
+  value       String   // default / fallback value
+  description String?  // for admin UI
+  isPublic    Boolean  @default(false) // exposed to frontend
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 // =====================================
 //   GEOGRAPHY
 // =====================================
 model Country {
   id     Int    @id @default(autoincrement())
-  name   String @unique
+  code   String @unique // "MA", "FR" — used as translation key prefix
+  name   String @unique // canonical name for internal use
   nameAr String
   nameFr String
   cities City[]
@@ -50,7 +91,8 @@ model Country {
 
 model City {
   id        Int        @id @default(autoincrement())
-  name      String
+  code      String     @unique // "CASA", "RABAT" — translation key
+  name      String     // canonical (usually French spelling)
   nameAr    String
   nameFr    String
   countryId Int
@@ -63,34 +105,37 @@ model City {
 
 // =====================================
 //   SERVICE CATEGORIES
+//   NO hardcoded translated text here.
+//   Use the Translation table with code "CAT_<CODE>"
 // =====================================
 model ServiceCategory {
   id            Int                  @id @default(autoincrement())
-  slug          String               @unique
-  name          String
-  nameAr        String
-  nameFr        String
+  code          String               @unique // "PLUMBING", "ELECTRICITY" — translation key prefix
+  slug          String               @unique // url-friendly
   icon          String?
-  description   String?
-  descriptionAr String?
-  descriptionFr String?
   order         Int                  @default(0)
   isActive      Boolean              @default(true)
   subcategories ServiceSubcategory[]
   providers     Provider[]
   createdAt     DateTime             @default(now())
+
+  // To get the name: SELECT text FROM Translation WHERE code = 'CAT_' || upper(code) AND locale = 'fr'
 }
 
+// =====================================
+//   SERVICE SUBCATEGORIES
+//   Translation key: "SUBCAT_<CODE>"
+// =====================================
 model ServiceSubcategory {
   id         Int                   @id @default(autoincrement())
+  code       String                @unique // "PLUMBING_REPAIR", "ELEC_SOLAR"
   slug       String                @unique
-  name       String
-  nameAr     String
-  nameFr     String
   categoryId Int
   category   ServiceCategory       @relation(fields: [categoryId], references: [id])
   providers  ProviderSubcategory[]
   createdAt  DateTime              @default(now())
+
+  // To get the name: SELECT text FROM Translation WHERE code = 'SUBCAT_' || upper(code) AND locale = 'fr'
 }
 
 // =====================================
@@ -109,6 +154,7 @@ model User {
   provider    Provider?
   reviews     Review[]
   contactLogs ContactLog[]
+  reports     Report[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -121,6 +167,7 @@ model Provider {
   userId          Int                   @unique
   user            User                  @relation(fields: [userId], references: [id])
   businessName    String
+  // bio is free-text entered by the provider; stored in all 3 locales
   bio             String?
   bioAr           String?
   bioFr           String?
@@ -144,6 +191,7 @@ model Provider {
   portfolioImages PortfolioImage[]
   reviews         Review[]
   contactLogs     ContactLog[]
+  reports         Report[]
   createdAt       DateTime              @default(now())
   updatedAt       DateTime              @updatedAt
 }
@@ -166,10 +214,8 @@ model PortfolioImage {
   provider   Provider @relation(fields: [providerId], references: [id])
   url        String
   caption    String?
-  captionAr  String?
-  captionFr  String?
   isBefore   Boolean  @default(false)
-  pairId     String?
+  pairId     String?  // links before/after images together
   order      Int      @default(0)
   createdAt  DateTime @default(now())
 }
@@ -183,12 +229,35 @@ model Review {
   provider   Provider @relation(fields: [providerId], references: [id])
   userId     Int
   user       User     @relation(fields: [userId], references: [id])
-  rating     Int
+  rating     Int      // 1–5
   comment    String?
   isVisible  Boolean  @default(true)
   createdAt  DateTime @default(now())
 
   @@unique([providerId, userId])
+}
+
+// =====================================
+//   REPORTS / DISPUTES
+// =====================================
+enum ReportStatus {
+  OPEN
+  REVIEWED
+  DISMISSED
+}
+
+model Report {
+  id         Int          @id @default(autoincrement())
+  providerId Int
+  provider   Provider     @relation(fields: [providerId], references: [id])
+  reporterId Int?
+  reporter   User?        @relation(fields: [reporterId], references: [id])
+  reason     String
+  details    String?
+  status     ReportStatus @default(OPEN)
+  adminNote  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
 // =====================================

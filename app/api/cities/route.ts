@@ -1,13 +1,18 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const cities = await prisma.city.findMany({
-      orderBy: { name: 'asc' },
-      include: { country: { select: { id: true, name: true } } }
-    })
-    return NextResponse.json(cities)
+    const locale = req.nextUrl.searchParams.get('locale') ?? 'fr'
+    const cities = await prisma.city.findMany({ orderBy: { name: 'asc' } })
+
+    const result = cities.map(c => ({
+      id: c.id,
+      code: c.code,
+      name: locale === 'ar' ? c.nameAr : locale === 'fr' ? c.nameFr : c.name,
+    }))
+
+    return NextResponse.json(result)
   } catch (error) {
     console.error("Cities error:", error)
     return NextResponse.json({ error: "Server error" }, { status: 500 })
