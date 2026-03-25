@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import {Link} from "@/i18n/navigation";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 import { useSelector } from "react-redux";
 
 import { selectUser } from "@/store/slices/authSlice";
@@ -13,25 +13,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Briefcase } from "lucide-react";
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
     const router = useRouter();
     const user = useSelector(selectUser);
     const t = useTranslations('login');
-    const locale = useLocale();
 
     // Redirect to dashboard if already logged in
     useEffect(() => {
-        if (user) router.push(user.role === 'EMPLOYER' ? `/${locale}/employers/dashboard` : `/${locale}/profile`);
-    }, [user, router, locale]);
+        if (user) router.push(user.role === 'EMPLOYER' ? '/employers/dashboard' : '/profile');
+    }, [user, router]);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const loginMutation = useLogin((role: string) => {
-        if (role === "EMPLOYER") router.push(`/${locale}/employers/dashboard`);
-        else router.push(`/${locale}/dashboard`);
+        if (role === "EMPLOYER") router.push('/employers/dashboard');
+        else router.push('/dashboard');
     });
 
     function submit(e: React.FormEvent) {

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import {Link} from "@/i18n/navigation";
 import { prisma } from "@/lib/prisma";
 import { getUserFromAuth } from "@/lib/auth";
 import { Card, CardContent } from "@/components/ui/card";

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import {Link} from "@/i18n/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import {logout, selectUser} from "@/store/slices/authSlice";
 import { Button } from "@/components/ui/button";

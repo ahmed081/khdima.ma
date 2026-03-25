@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import {Link} from "@/i18n/navigation"
 import { useFeaturedJobs } from "@/hooks/useFeaturedJobs"
 import {JobCard} from "@/components/jobs/job-card"
 import { useTranslations } from 'next-intl'

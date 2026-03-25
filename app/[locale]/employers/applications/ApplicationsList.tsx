@@ -1,7 +1,7 @@
 "use client";
 
 import UserCard from "@/components/users/user-card";
-import {useRouter} from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 
 export default function ApplicationsList({
                                              applications,

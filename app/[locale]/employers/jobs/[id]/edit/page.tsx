@@ -1,6 +1,7 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { JobForm } from "@/components/jobs/job-form";
 

@@ -1,7 +1,7 @@
 "use client"
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import {Link} from "@/i18n/navigation"
+import {useRouter} from "@/i18n/navigation"
 import { useState } from "react"
 import { useMutation } from "@tanstack/react-query"
 
@@ -17,12 +17,11 @@ import { useCities } from "@/hooks/useCities"
 import { useContractTypes } from "@/hooks/useContractTypes"
 import { useSkills } from "@/hooks/useSkills"
 import { Badge } from "@/components/ui/badge"
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 
 export default function RegisterPage() {
   const router = useRouter()
   const t = useTranslations('register')
-  const locale = useLocale()
 
   const [form, setForm] = useState({
     name: "",
@@ -61,7 +60,7 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(data.error || t('serverError'))
       return data
     },
-    onSuccess: () => router.push(`/${locale}/dashboard`),
+    onSuccess: () => router.push('/dashboard'),
     onError: (err: any) => setLocalError(err.message),
   })
 

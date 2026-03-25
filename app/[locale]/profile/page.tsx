@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRouter } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 import { useMutation } from "@tanstack/react-query";
 
-import { selectUser, setUser } from "@/store/slices/authSlice";
+import { selectUser, setUser, selectAuthInitialized } from "@/store/slices/authSlice";
 import { API_REQUEST_FAILED } from "@/store/sagas/requestWatcherSaga";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -16,18 +16,19 @@ import { User, Mail } from "lucide-react";
 
 export default function ProfilePage() {
     const user = useSelector(selectUser);
+    const initialized = useSelector(selectAuthInitialized);
     const router = useRouter();
     const dispatch = useDispatch();
 
     const [name, setName] = useState(user?.name || "");
     const [password, setPassword] = useState("");
 
-    // If no user → redirect to login
+    // Only redirect after auth check completes — prevents race condition on initial render
     useEffect(() => {
-        if (user === null) {
+        if (initialized && user === null) {
             router.push("/login");
         }
-    }, [user, router]);
+    }, [initialized, user, router]);
 
     // Update profile mutation
     const updateMutation = useMutation({
@@ -64,7 +65,7 @@ export default function ProfilePage() {
         },
     });
 
-    if (!user) return null; // Prevent flicker while redirecting
+    if (!initialized || !user) return null;
 
     return (
         <div className="min-h-screen py-10 bg-muted/20">

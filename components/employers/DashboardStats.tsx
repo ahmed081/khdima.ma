@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 import { Card } from "@/components/ui/card";
 import { Briefcase, Users, TrendingUp } from "lucide-react";
 

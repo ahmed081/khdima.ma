@@ -1,7 +1,7 @@
 "use client";
 
 import UserCard from "@/components/users/user-card";
-import { useRouter } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 import { Applicant } from "@/types/dashboard";
 
 export function ApplicantList({ applicants }: { applicants: Applicant[] }) {

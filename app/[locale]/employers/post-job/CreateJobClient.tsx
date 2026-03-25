@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { JobForm } from "@/components/jobs/job-form";
-import { useRouter } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 import { useCreateJob } from "@/hooks/useCreateJob";
 
 export function CreateJobClient() {

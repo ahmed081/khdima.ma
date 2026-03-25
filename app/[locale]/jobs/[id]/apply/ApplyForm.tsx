@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import {useRouter} from "@/i18n/navigation";
 
 import { selectUser } from "@/store/slices/authSlice";
 import { useApplyToJob } from "@/hooks/useApplyToJob";
