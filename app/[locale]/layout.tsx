@@ -9,7 +9,6 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider"
 import Providers from "@/store/Providers"
 import {Header} from "@/components/header"
 import {Footer} from "@/components/footer"
-import {HowItWorks} from "@/components/how-it-works"
 import GlobalToast from "@/components/global-toast"
 import {NextIntlClientProvider} from 'next-intl'
 import {getMessages} from 'next-intl/server'
@@ -17,8 +16,8 @@ import {routing} from '@/i18n/routing'
 import {notFound} from 'next/navigation'
 
 export const metadata: Metadata = {
-    title: "khdimti.com - Trouvez votre emploi au Maroc",
-    description: "La plateforme simple et transparente qui connecte les chercheurs d'emploi et les employeurs marocains",
+    title: "khdimti.com - Trouvez des professionnels au Maroc",
+    description: "La plateforme marocaine qui connecte clients et artisans de confiance",
 }
 
 export default async function LocaleLayout({
@@ -50,7 +49,6 @@ export default async function LocaleLayout({
                                 {children}
                             </Suspense>
                             <Analytics/>
-                            <HowItWorks/>
                             <Footer/>
                         </ReactQueryProvider>
                     </Providers>

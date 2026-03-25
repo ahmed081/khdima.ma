@@ -14,237 +14,193 @@ datasource db {
 //   ENUMS
 // =====================================
 enum UserRole {
-  JOB_SEEKER
-  EMPLOYER
+  CUSTOMER
+  PROVIDER
   ADMIN
 }
 
-enum JobType {
-  FULL_TIME
-  PART_TIME
-  FREELANCE
-  INTERNSHIP
-  CONTRACT
-}
-
-enum JobMode {
-  ONSITE
-  REMOTE
-  HYBRID
-}
-
-enum AppStatus {
+enum ProviderStatus {
   PENDING
-  ACCEPTED
-  REJECTED
+  ACTIVE
+  SUSPENDED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  BUSY
+  INACTIVE
+}
+
+enum ContactType {
+  WHATSAPP
+  CALL
+  PROFILE_VIEW
 }
 
 // =====================================
-//   COUNTRY & CITY
+//   GEOGRAPHY
 // =====================================
 model Country {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  nameAr String
+  nameFr String
   cities City[]
-  users  User[]
-  jobs   Job[]
 }
 
 model City {
-  id        Int     @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
+  nameAr    String
+  nameFr    String
   countryId Int
-  country   Country @relation(fields: [countryId], references: [id])
+  country   Country    @relation(fields: [countryId], references: [id])
+  users     User[]
+  providers Provider[]
 
-  users User[]
-  jobs  Job[]
-
-  @@unique([name, countryId]) // City name is unique per country
+  @@unique([name, countryId])
 }
 
 // =====================================
-//   USER
+//   SERVICE CATEGORIES
+// =====================================
+model ServiceCategory {
+  id            Int                  @id @default(autoincrement())
+  slug          String               @unique
+  name          String
+  nameAr        String
+  nameFr        String
+  icon          String?
+  description   String?
+  descriptionAr String?
+  descriptionFr String?
+  order         Int                  @default(0)
+  isActive      Boolean              @default(true)
+  subcategories ServiceSubcategory[]
+  providers     Provider[]
+  createdAt     DateTime             @default(now())
+}
+
+model ServiceSubcategory {
+  id         Int                   @id @default(autoincrement())
+  slug       String                @unique
+  name       String
+  nameAr     String
+  nameFr     String
+  categoryId Int
+  category   ServiceCategory       @relation(fields: [categoryId], references: [id])
+  providers  ProviderSubcategory[]
+  createdAt  DateTime              @default(now())
+}
+
+// =====================================
+//   USERS
 // =====================================
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
-
-  role UserRole @default(JOB_SEEKER)
-
-  phone   String?
-  address String?
-  age     Int?
-  gender  String?
-  bio     String?
-
-  // Employer-specific details
-  companyName    String?
-  companyWebsite String?
-  companyLogoUrl String?
-  // Location (optional)
-  cityId         Int?
-  city           City?   @relation(fields: [cityId], references: [id])
-
-  countryId Int?
-  country   Country? @relation(fields: [countryId], references: [id])
-
-  // Relations
-  skills       UserSkill[]
-  jobs         Job[] // If employer
-  applications Application[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Message   Message[]
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  phone       String?
+  password    String
+  role        UserRole     @default(CUSTOMER)
+  avatarUrl   String?
+  cityId      Int?
+  city        City?        @relation(fields: [cityId], references: [id])
+  provider    Provider?
+  reviews     Review[]
+  contactLogs ContactLog[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 // =====================================
-//   SKILLS & CONTEXTS
+//   PROVIDERS
 // =====================================
-model SkillContext {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  skills Skill[]
+model Provider {
+  id              Int                   @id @default(autoincrement())
+  userId          Int                   @unique
+  user            User                  @relation(fields: [userId], references: [id])
+  businessName    String
+  bio             String?
+  bioAr           String?
+  bioFr           String?
+  phone           String
+  whatsapp        String?
+  website         String?
+  avatarUrl       String?
+  cityId          Int
+  city            City                  @relation(fields: [cityId], references: [id])
+  categoryId      Int
+  category        ServiceCategory       @relation(fields: [categoryId], references: [id])
+  subcategories   ProviderSubcategory[]
+  yearsExperience Int?
+  status          ProviderStatus        @default(PENDING)
+  availability    AvailabilityStatus    @default(AVAILABLE)
+  isVerified      Boolean               @default(false)
+  profileViews    Int                   @default(0)
+  rating          Float                 @default(0)
+  reviewCount     Int                   @default(0)
+  adminNotes      String?
+  portfolioImages PortfolioImage[]
+  reviews         Review[]
+  contactLogs     ContactLog[]
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
 }
 
-model Skill {
-  id        Int           @id @default(autoincrement())
-  name      String        @unique
-  contextId Int?
-  context   SkillContext? @relation(fields: [contextId], references: [id])
+model ProviderSubcategory {
+  providerId    Int
+  subcategoryId Int
+  provider      Provider           @relation(fields: [providerId], references: [id])
+  subcategory   ServiceSubcategory @relation(fields: [subcategoryId], references: [id])
 
-  users UserSkill[]
-  jobs  JobSkill[]
-}
-
-// USER ↔ SKILL
-model UserSkill {
-  userId  Int
-  skillId Int
-
-  user  User  @relation(fields: [userId], references: [id])
-  skill Skill @relation(fields: [skillId], references: [id])
-
-  @@id([userId, skillId])
-}
-
-// JOB ↔ SKILL
-model JobSkill {
-  jobId   Int
-  skillId Int
-
-  job   Job   @relation(fields: [jobId], references: [id])
-  skill Skill @relation(fields: [skillId], references: [id])
-
-  @@id([jobId, skillId])
-}
-
-// =====================================
-//   JOB ATTRIBUTE TABLES
-// =====================================
-model JobCategory {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  jobs Job[]
-}
-
-model ExperienceLevel {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  jobs Job[]
-}
-
-model ContractType {
-  id   Int     @id @default(autoincrement())
-  name String
-  type JobType @unique @default(FULL_TIME)
-
-  jobs Job[]
+  @@id([providerId, subcategoryId])
 }
 
 // =====================================
-//   JOB MODEL
+//   PORTFOLIO
 // =====================================
-enum JobStatus {
-  PENDING_REVIEW
-  ACTIVE
-  DELETED
-}
-
-model Job {
-  id          Int    @id @default(autoincrement())
-  title       String
-  description String
-
-  competencies String[] @default([])
-  requirements String[] @default([])
-  benefits     String[] @default([])
-
-  salary String?
-  type   JobType @default(FULL_TIME)
-  mode   JobMode @default(ONSITE)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Location
-  cityId    Int?
-  city      City?    @relation(fields: [cityId], references: [id])
-  countryId Int?
-  country   Country? @relation(fields: [countryId], references: [id])
-
-  // Employer
-  employerId Int
-  employer   User @relation(fields: [employerId], references: [id])
-
-  // Skills
-  skills JobSkill[]
-
-  // References
-  categoryId        Int?
-  category          JobCategory?     @relation(fields: [categoryId], references: [id])
-  experienceLevelId Int?
-  experienceLevel   ExperienceLevel? @relation(fields: [experienceLevelId], references: [id])
-  contractTypeId    Int?
-  contractType      ContractType?    @relation(fields: [contractTypeId], references: [id])
-
-  applications Application[]
-
-  status JobStatus @default(PENDING_REVIEW)
-  views  Int?      @default(0)
+model PortfolioImage {
+  id         Int      @id @default(autoincrement())
+  providerId Int
+  provider   Provider @relation(fields: [providerId], references: [id])
+  url        String
+  caption    String?
+  captionAr  String?
+  captionFr  String?
+  isBefore   Boolean  @default(false)
+  pairId     String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
 }
 
 // =====================================
-//   APPLICATIONS
+//   REVIEWS
 // =====================================
-model Application {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  status    AppStatus @default(PENDING)
+model Review {
+  id         Int      @id @default(autoincrement())
+  providerId Int
+  provider   Provider @relation(fields: [providerId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  rating     Int
+  comment    String?
+  isVisible  Boolean  @default(true)
+  createdAt  DateTime @default(now())
 
-  coverLetter String?
-  cvUrl       String?
-
-  jobId Int
-  job   Job @relation(fields: [jobId], references: [id])
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  @@unique([providerId, userId])
 }
 
-model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
-  createdAt DateTime @default(now())
-
-  senderId   Int
-  receiverId Int
-
-  User   User? @relation(fields: [userId], references: [id])
-  userId Int?
+// =====================================
+//   CONTACT LOGS (analytics)
+// =====================================
+model ContactLog {
+  id         Int         @id @default(autoincrement())
+  providerId Int
+  provider   Provider    @relation(fields: [providerId], references: [id])
+  userId     Int?
+  user       User?       @relation(fields: [userId], references: [id])
+  type       ContactType
+  ipAddress  String?
+  createdAt  DateTime    @default(now())
 }

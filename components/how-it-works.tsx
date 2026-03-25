@@ -1,4 +1,4 @@
-import { Search, FileText, Send, CheckCircle } from "lucide-react"
+import { Search, Users, MessageCircle } from "lucide-react"
 import { useTranslations } from 'next-intl'
 
 export function HowItWorks() {
@@ -11,19 +11,14 @@ export function HowItWorks() {
       description: t('step1Desc'),
     },
     {
-      icon: FileText,
+      icon: Users,
       title: t('step2Title'),
       description: t('step2Desc'),
     },
     {
-      icon: Send,
+      icon: MessageCircle,
       title: t('step3Title'),
       description: t('step3Desc'),
-    },
-    {
-      icon: CheckCircle,
-      title: t('step4Title'),
-      description: t('step4Desc'),
     },
   ]
 
@@ -35,17 +30,17 @@ export function HowItWorks() {
           <p className="text-pretty text-lg text-muted-foreground">{t('subtitle')}</p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-3">
           {steps.map((step, index) => {
             const Icon = step.icon
             return (
               <div key={index} className="relative text-center">
                 <div className="mb-6 flex justify-center">
                   <div className="relative">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-                      <Icon className="h-10 w-10 text-primary" />
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
+                      <Icon className="h-10 w-10 text-red-700" />
                     </div>
-                    <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+                    <div className="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-red-700 text-sm font-bold text-white">
                       {index + 1}
                     </div>
                   </div>

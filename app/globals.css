@@ -4,6 +4,12 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --moroccan-red: #C1272D;
+  --moroccan-green: #006B3C;
+  --moroccan-gold: #D4AF37;
+  --moroccan-terracotta: #C1440E;
+  --moroccan-sand: #F5E6C8;
+
   /* Moroccan-inspired warm palette */
   --background: oklch(0.97 0.015 75); /* Soft sand beige */
   --foreground: oklch(0.25 0.02 60); /* Deep warm brown */

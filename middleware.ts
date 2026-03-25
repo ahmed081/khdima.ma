@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 const handleI18n = createMiddleware(routing);
 
-const PROTECTED_PATHS = ['/dashboard', '/employers', '/profile'];
+const PROTECTED_PATHS = ['/profile', '/provider/dashboard', '/admin'];
 
 function getLocale(pathname: string): string {
   const match = pathname.match(/^\/(fr|en|ar)(\/|$)/);
@@ -36,14 +36,11 @@ export function middleware(req: NextRequest) {
     try {
       const user: any = jwt.verify(token, process.env.JWT_SECRET!);
 
-      if (actualPath.startsWith('/employers') && user.role !== 'EMPLOYER') {
-        return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
+      if (actualPath.startsWith('/admin') && user.role !== 'ADMIN') {
+        return NextResponse.redirect(new URL(`/`, req.url));
       }
-      if (actualPath.startsWith('/dashboard') && user.role === 'EMPLOYER') {
-        return NextResponse.redirect(new URL(`/${locale}/employers/dashboard`, req.url));
-      }
-      if (actualPath.startsWith('/jobs') && user.role === 'EMPLOYER') {
-        return NextResponse.redirect(new URL(`/${locale}/employers/jobs`, req.url));
+      if (actualPath.startsWith('/provider/dashboard') && user.role !== 'PROVIDER') {
+        return NextResponse.redirect(new URL(`/`, req.url));
       }
     } catch {
       return NextResponse.redirect(new URL(`/${locale}/login`, req.url));

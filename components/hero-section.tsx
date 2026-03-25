@@ -1,47 +1,34 @@
-import { Button } from "@/components/ui/button"
-import {Link} from "@/i18n/navigation"
+'use client'
+import { useState } from 'react'
+import { useRouter } from '@/i18n/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Search } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export function HeroSection() {
-  const t = useTranslations('hero')
+  const t = useTranslations('home')
+  const router = useRouter()
+  const [query, setQuery] = useState('')
 
   return (
-    <section className="relative h-[600px] overflow-hidden border-b border-border/40 md:h-[700px]">
-      {/* Full-width background image */}
-      <div className="absolute inset-0 -z-10">
-        <img src="/casablanca-skyline-at-sunset-with-modern-office-bu.jpg" alt="Casablanca skyline" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
-      </div>
-
-      <div className="container relative mx-auto flex h-full items-center px-4">
-        <div className="mx-auto max-w-4xl text-center">
-          <h1 className="mb-6 text-balance text-4xl font-bold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
-            {t('title')}
-          </h1>
-          <p className="mb-12 text-pretty text-lg text-white/90 md:text-xl">
-            {t('subtitle')}
-          </p>
-
-          {/* Dual CTAs */}
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/search">
-              <Button
-                size="lg"
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto sm:px-12"
-              >
-                {t('findJob')}
-              </Button>
-            </Link>
-            <Link href="/employers/post-job">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full border-2 border-white bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 sm:w-auto sm:px-12"
-              >
-                {t('hire')}
-              </Button>
-            </Link>
-          </div>
+    <section className="relative min-h-[500px] flex items-center justify-center overflow-hidden bg-gradient-to-br from-red-900 via-red-800 to-red-700">
+      {/* Moroccan pattern overlay */}
+      <div className="absolute inset-0 opacity-10" style={{backgroundImage: "url('/moroccan-pattern.svg')"}} />
+      <div className="relative container mx-auto px-4 text-center text-white">
+        <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">{t('heroTitle')}</h1>
+        <p className="text-xl md:text-2xl mb-10 text-white/80">{t('heroSubtitle')}</p>
+        <div className="flex max-w-xl mx-auto gap-2">
+          <Input
+            className="bg-white text-gray-900 h-14 text-lg"
+            placeholder={t('searchPlaceholder')}
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && router.push(`/services?q=${query}`)}
+          />
+          <Button size="lg" className="h-14 px-6 bg-amber-500 hover:bg-amber-400 text-white" onClick={() => router.push(`/services?q=${query}`)}>
+            <Search className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </section>
