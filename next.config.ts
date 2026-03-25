@@ -1,18 +1,17 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/uploads/:path*",
+        destination: "/public/uploads/:path*",
+      },
+    ];
+  },
 };
 
-export default nextConfig;
-
-module.exports = {
-    async rewrites() {
-        return [
-            {
-                source: "/uploads/:path*",
-                destination: "/public/uploads/:path*",
-            },
-        ];
-    },
-};
+export default withNextIntl(nextConfig);

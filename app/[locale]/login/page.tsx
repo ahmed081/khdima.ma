@@ -13,22 +13,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Briefcase } from "lucide-react";
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function LoginPage() {
     const router = useRouter();
     const user = useSelector(selectUser);
+    const t = useTranslations('login');
+    const locale = useLocale();
 
     // Redirect to dashboard if already logged in
     useEffect(() => {
-        if (user) router.push(user.role === 'EMPLOYER' ?'/employers/dashboard' : '/profile');
-    }, [user, router]);
+        if (user) router.push(user.role === 'EMPLOYER' ? `/${locale}/employers/dashboard` : `/${locale}/profile`);
+    }, [user, router, locale]);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const loginMutation = useLogin((role: string) => {
-        if (role === "EMPLOYER") router.push("/employers/dashboard");
-        else router.push("/dashboard");
+        if (role === "EMPLOYER") router.push(`/${locale}/employers/dashboard`);
+        else router.push(`/${locale}/dashboard`);
     });
 
     function submit(e: React.FormEvent) {
@@ -49,18 +52,18 @@ export default function LoginPage() {
 
                 <Card className="w-full max-w-md">
                     <CardHeader>
-                        <CardTitle className="text-2xl">Se connecter</CardTitle>
-                        <CardDescription>Accédez à votre espace</CardDescription>
+                        <CardTitle className="text-2xl">{t('title')}</CardTitle>
+                        <CardDescription>{t('description')}</CardDescription>
                     </CardHeader>
 
                     <CardContent>
                         <form onSubmit={submit} className="space-y-4">
 
                             <div className="space-y-2">
-                                <Label>Email</Label>
+                                <Label>{t('email')}</Label>
                                 <Input
                                     type="email"
-                                    placeholder="email@exemple.com"
+                                    placeholder={t('emailPlaceholder')}
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
@@ -68,10 +71,10 @@ export default function LoginPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Mot de passe</Label>
+                                <Label>{t('password')}</Label>
                                 <Input
                                     type="password"
-                                    placeholder="••••••••"
+                                    placeholder={t('passwordPlaceholder')}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
@@ -79,15 +82,15 @@ export default function LoginPage() {
                             </div>
 
                             <Button className="w-full" type="submit" disabled={loginMutation.isPending}>
-                                {loginMutation.isPending ? "Connexion..." : "Se connecter"}
+                                {loginMutation.isPending ? t('loading') : t('submit')}
                             </Button>
 
                         </form>
 
                         <div className="mt-6 text-center text-sm">
-                            <span className="text-muted-foreground">Pas de compte ? </span>
+                            <span className="text-muted-foreground">{t('noAccount')} </span>
                             <Link href="/register" className="text-primary hover:underline">
-                                S'enregistrer
+                                {t('register')}
                             </Link>
                         </div>
 

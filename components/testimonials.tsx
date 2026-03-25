@@ -1,7 +1,10 @@
 import { Card } from "@/components/ui/card"
 import { Star } from "lucide-react"
+import { useTranslations } from 'next-intl'
 
 export function Testimonials() {
+  const t = useTranslations('testimonials')
+
   const testimonials = [
     {
       name: "Youssef Bennani",
@@ -32,8 +35,8 @@ export function Testimonials() {
     <section className="border-t border-border/40 bg-muted/30 py-16 md:py-24">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">Ce que disent nos utilisateurs</h2>
-          <p className="text-lg text-muted-foreground">Des milliers de Marocains nous font confiance</p>
+          <h2 className="mb-4 text-3xl font-bold text-foreground md:text-4xl">{t('title')}</h2>
+          <p className="text-lg text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

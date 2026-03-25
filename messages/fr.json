@@ -1,0 +1,118 @@
+{
+  "header": {
+    "jobs": "Offres",
+    "companies": "Entreprises",
+    "about": "À propos",
+    "login": "Connexion",
+    "postJob": "Publier une offre",
+    "logout": "Déconnexion",
+    "mobileLogin": "Se connecter",
+    "myProfile": "Mon Profil"
+  },
+  "footer": {
+    "tagline": "La plateforme marocaine qui connecte les talents aux opportunités",
+    "forCandidates": "Pour les candidats",
+    "searchJob": "Rechercher un emploi",
+    "exploreCompanies": "Explorer les entreprises",
+    "createProfile": "Créer un profil",
+    "cvTips": "Conseils CV",
+    "forEmployers": "Pour les employeurs",
+    "postJob": "Publier une offre",
+    "pricing": "Tarifs",
+    "searchCandidates": "Rechercher des candidats",
+    "dashboard": "Tableau de bord",
+    "about": "À propos",
+    "whoWeAre": "Qui sommes-nous",
+    "contact": "Contact",
+    "privacy": "Confidentialité",
+    "terms": "Conditions d'utilisation",
+    "rights": "© 2025 khdimti.com. Tous droits réservés."
+  },
+  "hero": {
+    "title": "Trouvez votre prochaine opportunité avec khdimti.com",
+    "subtitle": "La plateforme simple et transparente qui connecte les chercheurs d'emploi et les employeurs marocains",
+    "findJob": "Trouver un emploi",
+    "hire": "Recruter quelqu'un"
+  },
+  "stats": {
+    "activeJobs": "Offres d'emploi actives",
+    "candidates": "Candidats inscrits",
+    "companies": "Entreprises partenaires",
+    "satisfaction": "Taux de satisfaction"
+  },
+  "howItWorks": {
+    "title": "Comment ça marche ?",
+    "subtitle": "Trouvez votre emploi idéal en 4 étapes simples",
+    "step1Title": "Recherchez",
+    "step1Desc": "Parcourez des milliers d'offres d'emploi par ville, domaine ou salaire",
+    "step2Title": "Créez votre profil",
+    "step2Desc": "Téléchargez votre CV et complétez votre profil professionnel",
+    "step3Title": "Postulez",
+    "step3Desc": "Candidatez directement aux offres qui vous intéressent en un clic",
+    "step4Title": "Décrochez votre emploi",
+    "step4Desc": "Les entreprises vous contactent et vous commencez votre nouvelle carrière"
+  },
+  "testimonials": {
+    "title": "Ce que disent nos utilisateurs",
+    "subtitle": "Des milliers de Marocains nous font confiance"
+  },
+  "featuredJobs": {
+    "title": "Offres d'emploi récentes",
+    "subtitle": "Découvrez les dernières opportunités professionnelles au Maroc",
+    "loading": "Chargement...",
+    "viewAll": "Voir toutes les offres"
+  },
+  "jobCard": {
+    "company": "Entreprise",
+    "contract": "Contrat",
+    "applications": "candidatures",
+    "views": "vues",
+    "viewOffer": "Voir l'offre",
+    "view": "Voir",
+    "edit": "Modifier",
+    "deleteConfirm": "Supprimer cette offre ?",
+    "cancel": "Annuler",
+    "deleting": "Suppression...",
+    "delete": "Supprimer",
+    "successTitle": "Succès",
+    "successDesc": "Statut mis à jour !"
+  },
+  "login": {
+    "title": "Se connecter",
+    "description": "Accédez à votre espace",
+    "email": "Email",
+    "password": "Mot de passe",
+    "emailPlaceholder": "email@exemple.com",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Se connecter",
+    "loading": "Connexion...",
+    "noAccount": "Pas de compte ?",
+    "register": "S'enregistrer"
+  },
+  "register": {
+    "title": "S'enregistrer",
+    "description": "Créez votre compte pour commencer",
+    "fullName": "Nom complet",
+    "email": "Email",
+    "phone": "Téléphone",
+    "accountType": "Type de compte",
+    "jobSeeker": "Chercheur d'emploi",
+    "employer": "Employeur",
+    "country": "Pays",
+    "city": "Ville",
+    "selectCountry": "Sélectionnez un pays",
+    "selectCity": "Sélectionnez une ville",
+    "preferredContract": "Type de contrat préféré",
+    "selectContract": "Sélectionnez un type",
+    "selectType": "Sélectionnez un type",
+    "skills": "Compétences (optionnel)",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "submit": "S'enregistrer",
+    "loading": "Création du compte...",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "serverError": "Erreur lors de l'inscription."
+  }
+}

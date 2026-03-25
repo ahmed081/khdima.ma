@@ -17,9 +17,12 @@ import { useCities } from "@/hooks/useCities"
 import { useContractTypes } from "@/hooks/useContractTypes"
 import { useSkills } from "@/hooks/useSkills"
 import { Badge } from "@/components/ui/badge"
+import { useTranslations, useLocale } from 'next-intl'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const t = useTranslations('register')
+  const locale = useLocale()
 
   const [form, setForm] = useState({
     name: "",
@@ -55,10 +58,10 @@ export default function RegisterPage() {
         body: JSON.stringify(form),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Erreur lors de l'inscription.")
+      if (!res.ok) throw new Error(data.error || t('serverError'))
       return data
     },
-    onSuccess: () => router.push("/dashboard"),
+    onSuccess: () => router.push(`/${locale}/dashboard`),
     onError: (err: any) => setLocalError(err.message),
   })
 
@@ -67,7 +70,7 @@ export default function RegisterPage() {
     setLocalError("")
 
     if (form.password !== form.confirm) {
-      setLocalError("Les mots de passe ne correspondent pas.")
+      setLocalError(t('passwordMismatch'))
       return
     }
 
@@ -88,8 +91,8 @@ export default function RegisterPage() {
 
           <Card className="w-full max-w-md shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl">S'enregistrer</CardTitle>
-              <CardDescription>Créez votre compte pour commencer</CardDescription>
+              <CardTitle className="text-2xl">{t('title')}</CardTitle>
+              <CardDescription>{t('description')}</CardDescription>
             </CardHeader>
 
             <CardContent>
@@ -97,7 +100,7 @@ export default function RegisterPage() {
 
                 {/* Name */}
                 <div className="space-y-2">
-                  <Label>Nom complet</Label>
+                  <Label>{t('fullName')}</Label>
                   <Input
                       value={form.name}
                       onChange={e => updateField("name", e.target.value)}
@@ -107,7 +110,7 @@ export default function RegisterPage() {
 
                 {/* Email */}
                 <div className="space-y-2">
-                  <Label>Email</Label>
+                  <Label>{t('email')}</Label>
                   <Input
                       type="email"
                       value={form.email}
@@ -118,7 +121,7 @@ export default function RegisterPage() {
 
                 {/* Phone */}
                 <div className="space-y-2">
-                  <Label>Téléphone</Label>
+                  <Label>{t('phone')}</Label>
                   <Input
                       value={form.phone}
                       onChange={e => updateField("phone", e.target.value)}
@@ -128,21 +131,21 @@ export default function RegisterPage() {
 
                 {/* Role */}
                 <div className="space-y-2">
-                  <Label>Type de compte</Label>
+                  <Label>{t('accountType')}</Label>
                   <Select value={form.role} onValueChange={val => updateField("role", val)}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez un type" />
+                      <SelectValue placeholder={t('selectType')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="job-seeker">Chercheur d'emploi</SelectItem>
-                      <SelectItem value="employer">Employeur</SelectItem>
+                      <SelectItem value="job-seeker">{t('jobSeeker')}</SelectItem>
+                      <SelectItem value="employer">{t('employer')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Country */}
                 <div className="space-y-2">
-                  <Label>Pays</Label>
+                  <Label>{t('country')}</Label>
                   <Select
                       value={form.countryId}
                       onValueChange={val => {
@@ -151,7 +154,7 @@ export default function RegisterPage() {
                       }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez un pays" />
+                      <SelectValue placeholder={t('selectCountry')} />
                     </SelectTrigger>
                     <SelectContent>
                       {countries?.map((c: any) => (
@@ -163,14 +166,14 @@ export default function RegisterPage() {
 
                 {/* City */}
                 <div className="space-y-2">
-                  <Label>Ville</Label>
+                  <Label>{t('city')}</Label>
                   <Select
                       value={form.cityId}
                       onValueChange={val => updateField("cityId", val)}
                       disabled={!form.countryId}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez une ville" />
+                      <SelectValue placeholder={t('selectCity')} />
                     </SelectTrigger>
                     <SelectContent>
                       {cities?.map((city: any) => (
@@ -182,13 +185,13 @@ export default function RegisterPage() {
 
                 {/* Contract type */}
                 <div className="space-y-2">
-                  <Label>Type de contrat préféré</Label>
+                  <Label>{t('preferredContract')}</Label>
                   <Select
                       value={form.contractTypeId}
                       onValueChange={val => updateField("contractTypeId", val)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionnez un type" />
+                      <SelectValue placeholder={t('selectContract')} />
                     </SelectTrigger>
                     <SelectContent>
                       {contractTypes?.map((ct: any) => (
@@ -200,7 +203,7 @@ export default function RegisterPage() {
 
                 {/* Skills */}
                 <div className="space-y-2">
-                  <Label>Compétences (optionnel)</Label>
+                  <Label>{t('skills')}</Label>
                   {skillContexts?.map((ctx: any) => (
                       <div key={ctx.id}>
                         <p className="font-semibold mb-2">{ctx.name}</p>
@@ -231,7 +234,7 @@ export default function RegisterPage() {
 
                 {/* Password */}
                 <div className="space-y-2">
-                  <Label>Mot de passe</Label>
+                  <Label>{t('password')}</Label>
                   <Input
                       type="password"
                       value={form.password}
@@ -242,7 +245,7 @@ export default function RegisterPage() {
 
                 {/* Confirm */}
                 <div className="space-y-2">
-                  <Label>Confirmer le mot de passe</Label>
+                  <Label>{t('confirmPassword')}</Label>
                   <Input
                       type="password"
                       value={form.confirm}
@@ -255,14 +258,14 @@ export default function RegisterPage() {
                 {localError && <p className="text-sm text-red-600">{localError}</p>}
 
                 <Button className="w-full" disabled={registerMutation.isPending}>
-                  {registerMutation.isPending ? "Création du compte..." : "S'enregistrer"}
+                  {registerMutation.isPending ? t('loading') : t('submit')}
                 </Button>
               </form>
 
               <div className="mt-6 text-center text-sm">
-                <span className="text-muted-foreground">Vous avez déjà un compte ? </span>
+                <span className="text-muted-foreground">{t('hasAccount')} </span>
                 <Link href="/login" className="font-medium text-primary hover:underline">
-                  Se connecter
+                  {t('login')}
                 </Link>
               </div>
             </CardContent>

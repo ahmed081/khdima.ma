@@ -1,0 +1,118 @@
+{
+  "header": {
+    "jobs": "الوظائف",
+    "companies": "الشركات",
+    "about": "من نحن",
+    "login": "تسجيل الدخول",
+    "postJob": "نشر وظيفة",
+    "logout": "تسجيل الخروج",
+    "mobileLogin": "تسجيل الدخول",
+    "myProfile": "ملفي الشخصي"
+  },
+  "footer": {
+    "tagline": "المنصة المغربية التي تربط المواهب بالفرص",
+    "forCandidates": "للباحثين عن عمل",
+    "searchJob": "البحث عن وظيفة",
+    "exploreCompanies": "استكشاف الشركات",
+    "createProfile": "إنشاء ملف شخصي",
+    "cvTips": "نصائح السيرة الذاتية",
+    "forEmployers": "لأصحاب العمل",
+    "postJob": "نشر وظيفة",
+    "pricing": "الأسعار",
+    "searchCandidates": "البحث عن مرشحين",
+    "dashboard": "لوحة التحكم",
+    "about": "من نحن",
+    "whoWeAre": "من نحن",
+    "contact": "اتصل بنا",
+    "privacy": "الخصوصية",
+    "terms": "شروط الاستخدام",
+    "rights": "© 2025 khdimti.com. جميع الحقوق محفوظة."
+  },
+  "hero": {
+    "title": "ابحث عن فرصتك القادمة مع khdimti.com",
+    "subtitle": "المنصة البسيطة والشفافة التي تربط الباحثين عن عمل بأصحاب العمل المغاربة",
+    "findJob": "ابحث عن وظيفة",
+    "hire": "توظيف شخص"
+  },
+  "stats": {
+    "activeJobs": "وظيفة نشطة",
+    "candidates": "مرشح مسجل",
+    "companies": "شركة شريكة",
+    "satisfaction": "معدل الرضا"
+  },
+  "howItWorks": {
+    "title": "كيف يعمل الموقع؟",
+    "subtitle": "ابحث عن وظيفتك المثالية في 4 خطوات بسيطة",
+    "step1Title": "ابحث",
+    "step1Desc": "تصفح آلاف الوظائف حسب المدينة أو المجال أو الراتب",
+    "step2Title": "أنشئ ملفك الشخصي",
+    "step2Desc": "ارفع سيرتك الذاتية وأكمل ملفك المهني",
+    "step3Title": "تقدّم",
+    "step3Desc": "تقدّم مباشرة للوظائف التي تهمك بنقرة واحدة",
+    "step4Title": "احصل على وظيفتك",
+    "step4Desc": "تتواصل معك الشركات وتبدأ مسيرتك المهنية الجديدة"
+  },
+  "testimonials": {
+    "title": "ما يقوله مستخدمونا",
+    "subtitle": "آلاف المغاربة يثقون بنا"
+  },
+  "featuredJobs": {
+    "title": "أحدث الوظائف",
+    "subtitle": "اكتشف أحدث الفرص المهنية في المغرب",
+    "loading": "جارٍ التحميل...",
+    "viewAll": "عرض جميع الوظائف"
+  },
+  "jobCard": {
+    "company": "الشركة",
+    "contract": "العقد",
+    "applications": "طلب",
+    "views": "مشاهدة",
+    "viewOffer": "عرض الوظيفة",
+    "view": "عرض",
+    "edit": "تعديل",
+    "deleteConfirm": "حذف هذه الوظيفة؟",
+    "cancel": "إلغاء",
+    "deleting": "جارٍ الحذف...",
+    "delete": "حذف",
+    "successTitle": "تم",
+    "successDesc": "تم تحديث الحالة!"
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "description": "الوصول إلى حسابك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "emailPlaceholder": "email@example.com",
+    "passwordPlaceholder": "••••••••",
+    "submit": "تسجيل الدخول",
+    "loading": "جارٍ تسجيل الدخول...",
+    "noAccount": "ليس لديك حساب؟",
+    "register": "إنشاء حساب"
+  },
+  "register": {
+    "title": "إنشاء حساب",
+    "description": "أنشئ حسابك للبدء",
+    "fullName": "الاسم الكامل",
+    "email": "البريد الإلكتروني",
+    "phone": "الهاتف",
+    "accountType": "نوع الحساب",
+    "jobSeeker": "باحث عن عمل",
+    "employer": "صاحب عمل",
+    "country": "الدولة",
+    "city": "المدينة",
+    "selectCountry": "اختر الدولة",
+    "selectCity": "اختر المدينة",
+    "preferredContract": "نوع العقد المفضل",
+    "selectContract": "اختر نوعاً",
+    "selectType": "اختر نوعاً",
+    "skills": "المهارات (اختياري)",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "submit": "إنشاء حساب",
+    "loading": "جارٍ الإنشاء...",
+    "hasAccount": "لديك حساب بالفعل؟",
+    "login": "تسجيل الدخول",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين.",
+    "serverError": "خطأ في التسجيل."
+  }
+}

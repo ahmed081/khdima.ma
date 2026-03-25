@@ -6,10 +6,13 @@ import {logout, selectUser} from "@/store/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import { Briefcase, Menu, User, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { useTranslations } from 'next-intl';
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export function Header() {
     const user = useSelector(selectUser);
     const dispatch = useDispatch();
+    const t = useTranslations('header');
 
     const handleLogout = () => {
         dispatch(logout());
@@ -29,23 +32,24 @@ export function Header() {
 
                 {/* DESKTOP MENU */}
                 <nav className="hidden md:flex items-center gap-6">
-                    <Link href="/search" className="nav-link">Offres</Link>
-                    <Link href="/employers" className="nav-link">Entreprises</Link>
-                    <Link href="/about" className="nav-link">À propos</Link>
+                    <Link href="/search" className="nav-link">{t('jobs')}</Link>
+                    <Link href="/employers" className="nav-link">{t('companies')}</Link>
+                    <Link href="/about" className="nav-link">{t('about')}</Link>
                 </nav>
 
                 {/* DESKTOP ACTIONS */}
                 <div className="hidden md:flex items-center gap-3">
+                    <LanguageSwitcher />
                     {!user ? (
                         <>
-                            <Button variant="ghost" asChild><Link href="/login">Connexion</Link></Button>
-                            <Button asChild><Link href="/employers/post-job">Publier une offre</Link></Button>
+                            <Button variant="ghost" asChild><Link href="/login">{t('login')}</Link></Button>
+                            <Button asChild><Link href="/employers/post-job">{t('postJob')}</Link></Button>
                         </>
                     ) : (
                         <div className="flex items-center gap-3">
                             <Link href={user.role === 'EMPLOYER' ?'/employers/dashboard' : '/profile'} className="flex items-center gap-2">
                                 <User className="h-5 w-5" />
-                                {user.name ?? "Profil"}
+                                {user.name ?? t('myProfile')}
                             </Link>
                             <Button variant="destructive" size="sm" onClick={handleLogout}>
                                 <LogOut className="h-4 w-4" />
@@ -66,23 +70,24 @@ export function Header() {
 
                         {/* MENU LINKS */}
                         <nav className="flex flex-col gap-4 text-lg">
-                            <SheetClose asChild><Link href="/jobs">Offres</Link></SheetClose>
-                            <SheetClose asChild><Link href="/companies">Entreprises</Link></SheetClose>
-                            <SheetClose asChild><Link href="/about">À propos</Link></SheetClose>
+                            <SheetClose asChild><Link href="/jobs">{t('jobs')}</Link></SheetClose>
+                            <SheetClose asChild><Link href="/companies">{t('companies')}</Link></SheetClose>
+                            <SheetClose asChild><Link href="/about">{t('about')}</Link></SheetClose>
                         </nav>
 
                         <div className="mt-4 border-t pt-4 flex flex-col gap-4">
+                            <LanguageSwitcher />
                             {!user ? (
                                 <>
                                     <SheetClose asChild>
                                         <Button variant="outline" asChild>
-                                            <Link href="/login">Se connecter</Link>
+                                            <Link href="/login">{t('mobileLogin')}</Link>
                                         </Button>
                                     </SheetClose>
 
                                     <SheetClose asChild>
                                         <Button asChild>
-                                            <Link href="/employers/post-job">Publier une offre</Link>
+                                            <Link href="/employers/post-job">{t('postJob')}</Link>
                                         </Button>
                                     </SheetClose>
                                 </>
@@ -91,7 +96,7 @@ export function Header() {
                                     <SheetClose asChild>
                                         <Link href={user.role === 'EMPLOYER' ?'/employers/dashboard' : '/profile'} className="flex items-center gap-2 text-lg">
                                             <User className="h-5 w-5" />
-                                            {user.name ?? "Mon Profil"}
+                                            {user.name ?? t('myProfile')}
                                         </Link>
                                     </SheetClose>
 
@@ -101,7 +106,7 @@ export function Header() {
                                             handleLogout();
                                         }}
                                     >
-                                        <LogOut className="h-5 w-5 mr-2" /> Déconnexion
+                                        <LogOut className="h-5 w-5 mr-2" /> {t('logout')}
                                     </Button>
                                 </>
                             )}

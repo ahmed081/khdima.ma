@@ -1,62 +1,58 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import createMiddleware from 'next-intl/middleware';
+import {routing} from './i18n/routing';
+import {NextRequest, NextResponse} from 'next/server';
+import jwt from 'jsonwebtoken';
 
-const PUBLIC_PATHS = [
-    "/",
-    "/login",
-    "/register",
-    "/jobs",
-    "/api/auth/login",
-    "/api/auth/register",
-    "/api/jobs",
-];
+const handleI18n = createMiddleware(routing);
 
-export function middleware(req: NextRequest) {
-    const { pathname } = req.nextUrl;
+const PROTECTED_PATHS = ['/dashboard', '/employers', '/profile'];
 
-    // Allow access to all public pages
-    if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
-        return NextResponse.next();
-    }
-
-    // Check JWT
-    const token = req.cookies.get("token")?.value;
-
-    if (!token) {
-        return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    let user: any = null;
-    try {
-        user = jwt.verify(token, process.env.JWT_SECRET!);
-    } catch {
-        return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    // EMPLOYER AREA PROTECTION
-    if (pathname.startsWith("/employers") && user.role !== "EMPLOYER") {
-        return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-
-    // USER AREA PROTECTION
-    if (pathname.startsWith("/dashboard") && user.role === "EMPLOYER") {
-        return NextResponse.redirect(new URL("/employers/dashboard", req.url));
-    }
-
-    // PREVENT EMPLOYER FROM ACCESSING USER JOB PAGES
-    if (pathname.startsWith("/jobs") && user.role === "EMPLOYER") {
-        return NextResponse.redirect(new URL("/employers/jobs", req.url));
-    }
-
-    return NextResponse.next();
+function getLocale(pathname: string): string {
+  const match = pathname.match(/^\/(fr|en|ar)(\/|$)/);
+  return match?.[1] ?? routing.defaultLocale;
 }
 
-// Only match these routes
+function stripLocale(pathname: string): string {
+  return pathname.replace(/^\/(fr|en|ar)/, '') || '/';
+}
+
+export function middleware(req: NextRequest) {
+  const {pathname} = req.nextUrl;
+
+  if (pathname.startsWith('/api')) {
+    return NextResponse.next();
+  }
+
+  const locale = getLocale(pathname);
+  const actualPath = stripLocale(pathname);
+
+  const isProtected = PROTECTED_PATHS.some(p => actualPath === p || actualPath.startsWith(p + '/'));
+
+  if (isProtected) {
+    const token = req.cookies.get('token')?.value;
+    if (!token) {
+      return NextResponse.redirect(new URL(`/${locale}/login`, req.url));
+    }
+    try {
+      const user: any = jwt.verify(token, process.env.JWT_SECRET!);
+
+      if (actualPath.startsWith('/employers') && user.role !== 'EMPLOYER') {
+        return NextResponse.redirect(new URL(`/${locale}/dashboard`, req.url));
+      }
+      if (actualPath.startsWith('/dashboard') && user.role === 'EMPLOYER') {
+        return NextResponse.redirect(new URL(`/${locale}/employers/dashboard`, req.url));
+      }
+      if (actualPath.startsWith('/jobs') && user.role === 'EMPLOYER') {
+        return NextResponse.redirect(new URL(`/${locale}/employers/jobs`, req.url));
+      }
+    } catch {
+      return NextResponse.redirect(new URL(`/${locale}/login`, req.url));
+    }
+  }
+
+  return handleI18n(req);
+}
+
 export const config = {
-    matcher: [
-        "/dashboard/:path*",
-        "/employers/:path*",
-        "/jobs/:path*",
-    ],
+  matcher: ['/((?!_next|_vercel|[^/]+\\.[^/]+).*)']
 };

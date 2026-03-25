@@ -13,16 +13,18 @@ import {
 
 import { useUpdateJobStatus } from "@/hooks/useUpdateJobStatus";
 import { toast } from "@/hooks/use-toast";
+import { useTranslations } from 'next-intl';
 
 export function JobCard({ job, variant = "public" }: { job: any; variant?: "public" | "employer" }) {
     const isEmployer = variant === "employer";
+    const t = useTranslations('jobCard');
 
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     const updateStatus = useUpdateJobStatus(job.id, () => {
         toast({
-            title: "Succès",
-            description: "Statut mis à jour !",
+            title: t('successTitle'),
+            description: t('successDesc'),
         });
         setConfirmDelete(false);
     });
@@ -44,7 +46,7 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
 
                         {!isEmployer && (
                             <p className="mb-3 text-sm text-muted-foreground">
-                                {job.employer?.companyName ?? "Entreprise"}
+                                {job.employer?.companyName ?? t('company')}
                             </p>
                         )}
                     </div>
@@ -64,7 +66,7 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
                             <span>{job.city?.name ?? "—"}</span>
                             <span className="mx-1">•</span>
                             <Badge variant="secondary" className="text-xs">
-                                {job.contractType?.name ?? "Contrat"}
+                                {job.contractType?.name ?? t('contract')}
                             </Badge>
                         </div>
                     )}
@@ -84,16 +86,16 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
                         <div className="flex gap-4 text-sm text-muted-foreground mt-2">
                             <div className="flex items-center gap-1">
                                 <Users className="h-4 w-4" />
-                                {job._count?.applications ?? 0} candidatures
+                                {job._count?.applications ?? 0} {t('applications')}
                             </div>
 
                             <div className="flex items-center gap-1">
                                 <TrendingUp className="h-4 w-4" />
-                                {job.views ?? 0} vues
+                                {job.views ?? 0} {t('views')}
                             </div>
 
                             <Badge className={job.status === "ACTIVE" ? "bg-green-500/10 text-green-700" : "bg-gray-300"}>
-                                {job.statusLibele }
+                                {job.statusLibele}
                             </Badge>
                         </div>
                     )}
@@ -103,7 +105,7 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
                 <div className="flex gap-2">
                     {!isEmployer && (
                         <Link href={`/jobs/${job.id}`} className="w-full">
-                            <Button className="w-full">Voir l'offre</Button>
+                            <Button className="w-full">{t('viewOffer')}</Button>
                         </Link>
                     )}
 
@@ -111,13 +113,13 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
                         <>
                             <Link href={`/jobs/${job.id}`} className="flex-1">
                                 <Button variant="outline" className="w-full">
-                                    <Eye className="h-4 w-4 mr-2" /> Voir
+                                    <Eye className="h-4 w-4 mr-2" /> {t('view')}
                                 </Button>
                             </Link>
 
                             <Link href={`/employers/jobs/${job.id}/edit`} className="flex-1">
                                 <Button variant="outline" className="w-full">
-                                    <Edit className="h-4 w-4 mr-2" /> Modifier
+                                    <Edit className="h-4 w-4 mr-2" /> {t('edit')}
                                 </Button>
                             </Link>
 
@@ -137,11 +139,11 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
             {confirmDelete && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                     <Card className="p-6 bg-white space-y-4 w-72">
-                        <p className="text-center">Supprimer cette offre ?</p>
+                        <p className="text-center">{t('deleteConfirm')}</p>
 
                         <div className="flex gap-2 justify-center">
                             <Button variant="outline" onClick={() => setConfirmDelete(false)}>
-                                Annuler
+                                {t('cancel')}
                             </Button>
 
                             <Button
@@ -149,7 +151,7 @@ export function JobCard({ job, variant = "public" }: { job: any; variant?: "publ
                                 onClick={handleDelete}
                                 disabled={updateStatus.isPending}
                             >
-                                {updateStatus.isPending ? "Suppression..." : "Supprimer"}
+                                {updateStatus.isPending ? t('deleting') : t('delete')}
                             </Button>
                         </div>
                     </Card>

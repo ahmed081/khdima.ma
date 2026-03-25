@@ -1,30 +1,29 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { MapPin, Clock, Bookmark } from "lucide-react"
 import Link from "next/link"
 import { useFeaturedJobs } from "@/hooks/useFeaturedJobs"
-import {JobCard} from "@/components/jobs/job-card";
+import {JobCard} from "@/components/jobs/job-card"
+import { useTranslations } from 'next-intl'
 
 export function FeaturedJobs() {
   const { data: jobs = [], isLoading } = useFeaturedJobs()
+  const t = useTranslations('featuredJobs')
 
   return (
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-balance text-3xl font-bold md:text-4xl">
-              Offres d'emploi récentes
+              {t('title')}
             </h2>
             <p className="text-lg text-muted-foreground">
-              Découvrez les dernières opportunités professionnelles au Maroc
+              {t('subtitle')}
             </p>
           </div>
 
           {isLoading ? (
-              <p className="text-center text-muted-foreground">Chargement...</p>
+              <p className="text-center text-muted-foreground">{t('loading')}</p>
           ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                       {jobs.map(job => (
@@ -40,7 +39,7 @@ export function FeaturedJobs() {
                   size="lg"
                   className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
-                Voir toutes les offres
+                {t('viewAll')}
               </Button>
             </Link>
           </div>

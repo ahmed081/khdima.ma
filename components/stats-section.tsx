@@ -1,29 +1,32 @@
 import { Users, Briefcase, Building2, TrendingUp } from "lucide-react"
-
-const stats = [
-  {
-    icon: Briefcase,
-    value: "5,000+",
-    label: "Offres d'emploi actives",
-  },
-  {
-    icon: Users,
-    value: "50,000+",
-    label: "Candidats inscrits",
-  },
-  {
-    icon: Building2,
-    value: "1,200+",
-    label: "Entreprises partenaires",
-  },
-  {
-    icon: TrendingUp,
-    value: "85%",
-    label: "Taux de satisfaction",
-  },
-]
+import { useTranslations } from 'next-intl'
 
 export function StatsSection() {
+  const t = useTranslations('stats')
+
+  const stats = [
+    {
+      icon: Briefcase,
+      value: "5,000+",
+      label: t('activeJobs'),
+    },
+    {
+      icon: Users,
+      value: "50,000+",
+      label: t('candidates'),
+    },
+    {
+      icon: Building2,
+      value: "1,200+",
+      label: t('companies'),
+    },
+    {
+      icon: TrendingUp,
+      value: "85%",
+      label: t('satisfaction'),
+    },
+  ]
+
   return (
     <section className="border-b border-border/40 bg-muted/30 py-16">
       <div className="container mx-auto px-4">

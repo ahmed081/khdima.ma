@@ -1,8 +1,11 @@
 import Link from "next/link"
 import { Briefcase, Facebook, Twitter, Linkedin, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTranslations } from 'next-intl'
 
 export function Footer() {
+  const t = useTranslations('footer')
+
   return (
     <footer className="border-t border-border/40 bg-card">
       <div className="container mx-auto px-4 py-12">
@@ -15,7 +18,7 @@ export function Footer() {
               <span className="text-xl font-bold text-foreground">khdimti.com</span>
             </Link>
             <p className="mb-4 text-sm text-muted-foreground">
-              La plateforme marocaine qui connecte les talents aux opportunités
+              {t('tagline')}
             </p>
             <div className="flex gap-2">
               <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -34,78 +37,78 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">Pour les candidats</h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">{t('forCandidates')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/jobs" className="text-muted-foreground hover:text-foreground">
-                  Rechercher un emploi
+                  {t('searchJob')}
                 </Link>
               </li>
               <li>
                 <Link href="/companies" className="text-muted-foreground hover:text-foreground">
-                  Explorer les entreprises
+                  {t('exploreCompanies')}
                 </Link>
               </li>
               <li>
                 <Link href="/profile" className="text-muted-foreground hover:text-foreground">
-                  Créer un profil
+                  {t('createProfile')}
                 </Link>
               </li>
               <li>
                 <Link href="/cv-tips" className="text-muted-foreground hover:text-foreground">
-                  Conseils CV
+                  {t('cvTips')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">Pour les employeurs</h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">{t('forEmployers')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/employers/post-job" className="text-muted-foreground hover:text-foreground">
-                  Publier une offre
+                  {t('postJob')}
                 </Link>
               </li>
               <li>
                 <Link href="/pricing" className="text-muted-foreground hover:text-foreground">
-                  Tarifs
+                  {t('pricing')}
                 </Link>
               </li>
               <li>
                 <Link href="/candidates" className="text-muted-foreground hover:text-foreground">
-                  Rechercher des candidats
+                  {t('searchCandidates')}
                 </Link>
               </li>
               <li>
                 <Link href="/employer-dashboard" className="text-muted-foreground hover:text-foreground">
-                  Tableau de bord
+                  {t('dashboard')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="mb-4 text-sm font-semibold text-foreground">À propos</h3>
+            <h3 className="mb-4 text-sm font-semibold text-foreground">{t('about')}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/about" className="text-muted-foreground hover:text-foreground">
-                  Qui sommes-nous
+                  {t('whoWeAre')}
                 </Link>
               </li>
               <li>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground">
-                  Contact
+                  {t('contact')}
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
-                  Confidentialité
+                  {t('privacy')}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-muted-foreground hover:text-foreground">
-                  Conditions d'utilisation
+                  {t('terms')}
                 </Link>
               </li>
             </ul>
@@ -113,7 +116,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-border/40 pt-8 text-center text-sm text-muted-foreground">
-          <p>© 2025 khdimti.com. Tous droits réservés.</p>
+          <p>{t('rights')}</p>
         </div>
       </div>
     </footer>
