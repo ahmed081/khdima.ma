@@ -9,39 +9,78 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Globe } from 'lucide-react';
+import { Globe, Check } from 'lucide-react';
 
 const locales = [
-  { code: 'fr', label: 'Français' },
-  { code: 'en', label: 'English' },
-  { code: 'ar', label: 'العربية' },
+  { code: 'fr', label: 'Français', flag: '🇫🇷' },
+  { code: 'en', label: 'English',  flag: '🇬🇧' },
+  { code: 'ar', label: 'العربية',  flag: '🇲🇦' },
 ];
 
-export function LanguageSwitcher() {
-  const locale = useLocale();
-  const router = useRouter();
+interface Props {
+  showLabel?: boolean
+}
+
+export function LanguageSwitcher({ showLabel = false }: Props) {
+  const locale   = useLocale();
+  const router   = useRouter();
   const pathname = usePathname();
 
+  const current = locales.find(l => l.code === locale) ?? locales[0];
+
   const switchLocale = (newLocale: string) => {
-    const pathnameWithoutLocale = pathname.replace(/^\/(fr|en|ar)/, '') || '/';
-    router.push(pathnameWithoutLocale, {locale: newLocale});
+    router.push(pathname, { locale: newLocale });
   };
+
+  if (showLabel) {
+    // Inline display for mobile drawer — shows current language with flag
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-green-700 transition-colors">
+            <Globe className="h-4 w-4 text-gray-400" />
+            <span className="font-medium">{current.flag} {current.label}</span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40">
+          {locales.map((l) => (
+            <DropdownMenuItem
+              key={l.code}
+              onClick={() => switchLocale(l.code)}
+              className="flex items-center justify-between gap-2"
+            >
+              <span className="flex items-center gap-2">
+                <span>{l.flag}</span>
+                <span>{l.label}</span>
+              </span>
+              {locale === l.code && <Check className="h-3.5 w-3.5 text-green-600" />}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost" size="sm" className="gap-1.5 text-gray-600 hover:text-gray-900 px-2">
           <Globe className="h-4 w-4" />
+          <span className="text-xs font-semibold uppercase">{locale}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-40">
         {locales.map((l) => (
           <DropdownMenuItem
             key={l.code}
             onClick={() => switchLocale(l.code)}
-            className={locale === l.code ? 'font-semibold' : ''}
+            className="flex items-center justify-between gap-2"
           >
-            {l.label}
+            <span className="flex items-center gap-2">
+              <span>{l.flag}</span>
+              <span className={locale === l.code ? 'font-semibold text-green-700' : ''}>{l.label}</span>
+            </span>
+            {locale === l.code && <Check className="h-3.5 w-3.5 text-green-600" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

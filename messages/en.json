@@ -10,7 +10,10 @@
     "becomeProvider": "Are you a professional?",
     "becomeProviderCta": "List your business",
     "featuredProviders": "Recommended Professionals",
-    "featuredSubtitle": "Verified experts ready to help you"
+    "featuredSubtitle": "Verified experts ready to help you",
+    "badge1": "Verified pros",
+    "badge2": "No middleman",
+    "badge3": "Free for clients"
   },
   "categories": {
     "plumbing": "Plumbing",
@@ -81,14 +84,19 @@
     "subtitle": "Thousands of Moroccans trust khdimti.com"
   },
   "header": {
+    "home": "Home",
     "services": "Services",
     "forProviders": "For pros",
+    "contact": "Contact",
     "login": "Login",
     "register": "Sign up",
     "logout": "Logout",
     "dashboard": "Dashboard",
     "profile": "My profile",
-    "adminPanel": "Admin"
+    "settings": "Settings",
+    "adminPanel": "Admin",
+    "language": "Language",
+    "welcomeBack": "Find the best pros near you"
   },
   "footer": {
     "tagline": "The Moroccan platform connecting customers and tradespeople",
@@ -115,7 +123,18 @@
     "submit": "Sign in",
     "loading": "Signing in...",
     "noAccount": "No account?",
-    "register": "Sign up"
+    "register": "Sign up",
+    "forgotPassword": "Forgot password?",
+    "rememberMe": "Remember me",
+    "or": "or",
+    "backHome": "Back to home",
+    "orRegisterAsPro": "Are you a professional?",
+    "registerAsPro": "List your business",
+    "heroTitle": "Find the best professionals near you",
+    "heroSubtitle": "Thousands of verified tradespeople available in your city",
+    "statUsers": "Happy users",
+    "statRating": "Average rating",
+    "statSafe": "Secure"
   },
   "register": {
     "title": "Create an account",
@@ -266,6 +285,56 @@
   "contact": {
     "title": "Contact Us",
     "subtitle": "Our team is here to help"
+  },
+  "contactPage": {
+    "title": "Contact Us",
+    "subtitle": "Our team is here to help you",
+    "contactDetails": "Contact Details",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "hours": "Opening hours",
+    "followUs": "Follow us",
+    "forProviders": "Are you a professional?",
+    "forProvidersDesc": "Register for free and start receiving customer contacts in your city.",
+    "forProvidersCta": "Register as a provider",
+    "sendMessage": "Send a message",
+    "name": "Name",
+    "namePlaceholder": "Your full name",
+    "emailField": "Email",
+    "phoneField": "Phone",
+    "subject": "Subject",
+    "subjectPlaceholder": "What is this about?",
+    "message": "Message",
+    "messagePlaceholder": "Tell us how we can help you...",
+    "sendBtn": "Send message",
+    "sending": "Sending...",
+    "formRequired": "Name, email and message are required",
+    "formError": "Failed to send message. Please try again.",
+    "sentTitle": "Message sent!",
+    "sentDesc": "Thank you for your message. We will get back to you as soon as possible.",
+    "sendAnother": "Send another message"
+  },
+  "profile": {
+    "tabInfo": "Personal info",
+    "tabSecurity": "Security",
+    "personalInfo": "Personal Information",
+    "email": "Email address",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Your full name",
+    "phone": "Phone number",
+    "save": "Save changes",
+    "savedSuccess": "Profile updated successfully!",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "changePassword": "Change Password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "updatePassword": "Update password",
+    "becomeProvider": "Become a provider",
+    "becomeProviderDesc": "List your business and start receiving customers.",
+    "becomeProviderCta": "Register as a provider",
+    "providerDashboard": "Go to my provider dashboard"
   },
   "privacy": {
     "title": "Privacy Policy"

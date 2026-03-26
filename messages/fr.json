@@ -10,7 +10,10 @@
     "becomeProvider": "Vous êtes un professionnel ?",
     "becomeProviderCta": "Inscrivez votre activité",
     "featuredProviders": "Professionnels recommandés",
-    "featuredSubtitle": "Des experts vérifiés prêts à vous aider"
+    "featuredSubtitle": "Des experts vérifiés prêts à vous aider",
+    "badge1": "Pros vérifiés",
+    "badge2": "Sans intermédiaire",
+    "badge3": "Gratuit pour clients"
   },
   "categories": {
     "plumbing": "Plomberie",
@@ -81,14 +84,19 @@
     "subtitle": "Des milliers de Marocains font confiance à khdimti.com"
   },
   "header": {
+    "home": "Accueil",
     "services": "Services",
     "forProviders": "Pour les pros",
+    "contact": "Contact",
     "login": "Connexion",
     "register": "S'inscrire",
     "logout": "Déconnexion",
     "dashboard": "Mon espace",
     "profile": "Mon profil",
-    "adminPanel": "Admin"
+    "settings": "Paramètres",
+    "adminPanel": "Admin",
+    "language": "Langue",
+    "welcomeBack": "Trouvez les meilleurs pros près de vous"
   },
   "footer": {
     "tagline": "La plateforme marocaine qui connecte clients et artisans",
@@ -115,7 +123,18 @@
     "submit": "Se connecter",
     "loading": "Connexion...",
     "noAccount": "Pas de compte ?",
-    "register": "S'inscrire"
+    "register": "S'inscrire",
+    "forgotPassword": "Mot de passe oublié ?",
+    "rememberMe": "Se souvenir de moi",
+    "or": "ou",
+    "backHome": "Retour à l'accueil",
+    "orRegisterAsPro": "Vous êtes un professionnel ?",
+    "registerAsPro": "Inscrivez votre activité",
+    "heroTitle": "Trouvez les meilleurs professionnels près de chez vous",
+    "heroSubtitle": "Des milliers d'artisans vérifiés disponibles dans votre ville",
+    "statUsers": "Clients satisfaits",
+    "statRating": "Note moyenne",
+    "statSafe": "Sécurisé"
   },
   "register": {
     "title": "Créer un compte",
@@ -266,6 +285,56 @@
   "contact": {
     "title": "Contactez-nous",
     "subtitle": "Notre équipe est à votre écoute"
+  },
+  "contactPage": {
+    "title": "Contactez-nous",
+    "subtitle": "Notre équipe est à votre disposition",
+    "contactDetails": "Coordonnées",
+    "phone": "Téléphone",
+    "email": "Email",
+    "address": "Adresse",
+    "hours": "Horaires d'ouverture",
+    "followUs": "Suivez-nous",
+    "forProviders": "Vous êtes un professionnel ?",
+    "forProvidersDesc": "Inscrivez-vous gratuitement et commencez à recevoir des clients dans votre ville.",
+    "forProvidersCta": "S'inscrire comme prestataire",
+    "sendMessage": "Nous envoyer un message",
+    "name": "Nom",
+    "namePlaceholder": "Votre nom complet",
+    "emailField": "Email",
+    "phoneField": "Téléphone",
+    "subject": "Sujet",
+    "subjectPlaceholder": "Objet de votre message",
+    "message": "Message",
+    "messagePlaceholder": "Comment pouvons-nous vous aider ?",
+    "sendBtn": "Envoyer le message",
+    "sending": "Envoi en cours...",
+    "formRequired": "Le nom, l'email et le message sont requis",
+    "formError": "Échec de l'envoi. Veuillez réessayer.",
+    "sentTitle": "Message envoyé !",
+    "sentDesc": "Merci pour votre message. Nous vous répondrons dans les plus brefs délais.",
+    "sendAnother": "Envoyer un autre message"
+  },
+  "profile": {
+    "tabInfo": "Informations",
+    "tabSecurity": "Sécurité",
+    "personalInfo": "Informations personnelles",
+    "email": "Adresse email",
+    "fullName": "Nom complet",
+    "fullNamePlaceholder": "Votre nom complet",
+    "phone": "Numéro de téléphone",
+    "save": "Enregistrer",
+    "savedSuccess": "Profil mis à jour avec succès !",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+    "changePassword": "Changer de mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "updatePassword": "Mettre à jour",
+    "becomeProvider": "Devenir prestataire",
+    "becomeProviderDesc": "Inscrivez votre activité et commencez à recevoir des clients.",
+    "becomeProviderCta": "S'inscrire comme prestataire",
+    "providerDashboard": "Accéder à mon espace professionnel"
   },
   "privacy": {
     "title": "Politique de confidentialité"

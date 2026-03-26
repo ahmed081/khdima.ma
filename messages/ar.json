@@ -10,7 +10,10 @@
     "becomeProvider": "هل أنت محترف؟",
     "becomeProviderCta": "سجّل نشاطك التجاري",
     "featuredProviders": "محترفون مميزون",
-    "featuredSubtitle": "خبراء موثقون جاهزون لمساعدتك"
+    "featuredSubtitle": "خبراء موثقون جاهزون لمساعدتك",
+    "badge1": "محترفون موثوقون",
+    "badge2": "بدون وسيط",
+    "badge3": "مجاني للعملاء"
   },
   "categories": {
     "plumbing": "السباكة",
@@ -81,14 +84,19 @@
     "subtitle": "آلاف المغاربة يثقون بـ khdimti.com"
   },
   "header": {
+    "home": "الرئيسية",
     "services": "الخدمات",
     "forProviders": "للمحترفين",
+    "contact": "اتصل بنا",
     "login": "تسجيل الدخول",
     "register": "إنشاء حساب",
     "logout": "تسجيل الخروج",
     "dashboard": "لوحة التحكم",
     "profile": "ملفي الشخصي",
-    "adminPanel": "الإدارة"
+    "settings": "الإعدادات",
+    "adminPanel": "الإدارة",
+    "language": "اللغة",
+    "welcomeBack": "اعثر على أفضل المحترفين بالقرب منك"
   },
   "footer": {
     "tagline": "المنصة المغربية التي تربط العملاء بالحرفيين",
@@ -115,7 +123,18 @@
     "submit": "تسجيل الدخول",
     "loading": "جارٍ تسجيل الدخول...",
     "noAccount": "ليس لديك حساب؟",
-    "register": "إنشاء حساب"
+    "register": "إنشاء حساب",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "rememberMe": "تذكرني",
+    "or": "أو",
+    "backHome": "العودة إلى الرئيسية",
+    "orRegisterAsPro": "هل أنت محترف؟",
+    "registerAsPro": "سجّل نشاطك التجاري",
+    "heroTitle": "اعثر على أفضل المحترفين بالقرب منك",
+    "heroSubtitle": "آلاف الحرفيين الموثوقين متاحون في مدينتك",
+    "statUsers": "عميل سعيد",
+    "statRating": "متوسط التقييم",
+    "statSafe": "آمن"
   },
   "register": {
     "title": "إنشاء حساب",
@@ -266,6 +285,56 @@
   "contact": {
     "title": "تواصل معنا",
     "subtitle": "فريقنا في خدمتك"
+  },
+  "contactPage": {
+    "title": "تواصل معنا",
+    "subtitle": "فريقنا في خدمتك",
+    "contactDetails": "بيانات التواصل",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "hours": "أوقات العمل",
+    "followUs": "تابعنا",
+    "forProviders": "هل أنت محترف؟",
+    "forProvidersDesc": "سجّل مجاناً وابدأ في استقبال طلبات العملاء في مدينتك.",
+    "forProvidersCta": "التسجيل كمزود خدمة",
+    "sendMessage": "أرسل لنا رسالة",
+    "name": "الاسم",
+    "namePlaceholder": "اسمك الكامل",
+    "emailField": "البريد الإلكتروني",
+    "phoneField": "الهاتف",
+    "subject": "الموضوع",
+    "subjectPlaceholder": "موضوع رسالتك",
+    "message": "الرسالة",
+    "messagePlaceholder": "كيف يمكننا مساعدتك؟",
+    "sendBtn": "إرسال الرسالة",
+    "sending": "جارٍ الإرسال...",
+    "formRequired": "الاسم والبريد الإلكتروني والرسالة مطلوبة",
+    "formError": "فشل إرسال الرسالة. يرجى المحاولة مجدداً.",
+    "sentTitle": "تم إرسال رسالتك!",
+    "sentDesc": "شكراً لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.",
+    "sendAnother": "إرسال رسالة أخرى"
+  },
+  "profile": {
+    "tabInfo": "المعلومات الشخصية",
+    "tabSecurity": "الأمان",
+    "personalInfo": "المعلومات الشخصية",
+    "email": "البريد الإلكتروني",
+    "fullName": "الاسم الكامل",
+    "fullNamePlaceholder": "اسمك الكامل",
+    "phone": "رقم الهاتف",
+    "save": "حفظ",
+    "savedSuccess": "تم تحديث الملف الشخصي بنجاح!",
+    "passwordMismatch": "كلمتا المرور غير متطابقتين",
+    "passwordTooShort": "يجب أن تحتوي كلمة المرور على 6 أحرف على الأقل",
+    "changePassword": "تغيير كلمة المرور",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "updatePassword": "تحديث كلمة المرور",
+    "becomeProvider": "أصبح مزود خدمة",
+    "becomeProviderDesc": "سجّل نشاطك وابدأ في استقبال العملاء.",
+    "becomeProviderCta": "التسجيل كمزود خدمة",
+    "providerDashboard": "الذهاب إلى لوحة تحكمي"
   },
   "privacy": {
     "title": "سياسة الخصوصية"

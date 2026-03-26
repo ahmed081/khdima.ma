@@ -5,7 +5,7 @@ import { jwtVerify } from 'jose';
 
 const handleI18n = createMiddleware(routing);
 
-const PROTECTED_PATHS = ['/profile', '/provider/dashboard', '/admin'];
+const PROTECTED_PATHS = ['/profile', '/provider/dashboard', '/admin', '/client'];
 const AUTH_PAGES     = ['/login', '/register'];
 
 function getLocale(pathname: string): string {

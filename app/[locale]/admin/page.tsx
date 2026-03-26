@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation"
 import {
   Users, Briefcase, BarChart3, Languages, Tag,
   Clock, Flag, CheckCircle, AlertCircle, TrendingUp,
-  Eye, Shield, ChevronRight, Activity,
+  Eye, Shield, ChevronRight, Activity, Phone,
 } from "lucide-react"
 import { AdminCharts } from "@/components/admin/AdminCharts"
 
@@ -100,6 +100,15 @@ export default async function AdminDashboardPage() {
       badge: openReports > 0 ? openReports : null,
       color: "text-red-600",
       bg: "bg-red-50",
+    },
+    {
+      href: "/admin/contact",
+      icon: Phone,
+      label: "Contact",
+      desc: "Contact info & form submissions",
+      badge: null,
+      color: "text-cyan-600",
+      bg: "bg-cyan-50",
     },
   ]
 
@@ -237,7 +246,7 @@ export default async function AdminDashboardPage() {
         {/* ── NAV CARDS ─────────────────────────────────────────────────── */}
         <div className="mb-8">
           <h2 className="font-bold text-gray-900 mb-4">Management Tools</h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {navItems.map(item => (
               <Link key={item.href} href={item.href} className="group">
                 <div className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center hover:shadow-md hover:border-gray-200 transition-all group-hover:-translate-y-0.5">
