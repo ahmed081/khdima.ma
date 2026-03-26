@@ -48,3 +48,5 @@ next-env.d.ts
 
 # lock files (using pnpm)
 package-lock.json
+public/uploads
+
