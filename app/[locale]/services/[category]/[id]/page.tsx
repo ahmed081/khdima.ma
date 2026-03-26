@@ -6,7 +6,7 @@ import { getLocale } from "next-intl/server"
 import {
   Star, MapPin, Briefcase, Shield, CheckCircle,
   MessageCircle, Phone, Eye, ChevronRight, Calendar,
-  Clock, Award, Camera, ThumbsUp,
+  Clock, Award, Camera, ThumbsUp, Pencil, ShieldAlert,
 } from "lucide-react"
 import { ReviewForm }    from "@/components/review-form"
 import { ContactButtons } from "@/components/contact-buttons"
@@ -15,6 +15,7 @@ import { tMany }        from "@/lib/translations"
 import type { Locale }  from "@/lib/translations"
 import { Link }         from "@/i18n/navigation"
 import { PublicLayout } from "@/components/public-layout"
+import { getUserFromAuth } from "@/lib/auth"
 
 interface Props {
   params: Promise<{ category: string; id: string }>
@@ -67,6 +68,8 @@ export default async function ProviderProfilePage({ params }: Props) {
   const locale  = await getLocale() as Locale
   const isRTL   = locale === "ar"
 
+  const currentUser = await getUserFromAuth()
+
   const [provider, ratingGroups] = await Promise.all([
     prisma.provider.findUnique({
       where: { id: parseInt(id) },
@@ -91,7 +94,10 @@ export default async function ProviderProfilePage({ params }: Props) {
     }),
   ])
 
-  if (!provider || provider.status !== "ACTIVE") notFound()
+  if (!provider || (provider.status !== "ACTIVE" && currentUser?.role !== "ADMIN")) notFound()
+
+  const isOwner = currentUser?.role === "PROVIDER" && currentUser.id === provider.userId
+  const isAdmin = currentUser?.role === "ADMIN"
 
   // Fire-and-forget view increment
   prisma.provider.update({ where: { id: provider.id }, data: { profileViews: { increment: 1 } } }).catch(() => {})
@@ -122,6 +128,13 @@ export default async function ProviderProfilePage({ params }: Props) {
     : null
 
   const t = {
+    editProfile: locale === "ar" ? "تعديل الملف الشخصي" : locale === "fr" ? "Modifier le profil"  : "Edit Profile",
+    ownerBadge:  locale === "ar" ? "ملفي الشخصي"        : locale === "fr" ? "Mon profil"          : "My Profile",
+    adminView:   locale === "ar" ? "عرض الإدارة"        : locale === "fr" ? "Vue admin"           : "Admin View",
+    adminNote:   locale === "ar" ? "ملاحظات الإدارة"    : locale === "fr" ? "Notes admin"         : "Admin Notes",
+    goToAdmin:   locale === "ar" ? "لوحة الإدارة"       : locale === "fr" ? "Panneau admin"       : "Admin Panel",
+    pendingStatus: locale === "ar" ? "قيد المراجعة"     : locale === "fr" ? "En attente"          : "Pending",
+    suspendedStatus: locale === "ar" ? "موقوف"          : locale === "fr" ? "Suspendu"            : "Suspended",
     services:    locale === "ar" ? "الخدمات"           : locale === "fr" ? "Services"           : "Services",
     about:       locale === "ar" ? "نبذة عني"           : locale === "fr" ? "À propos"           : "About",
     portfolio:   locale === "ar" ? "معرض الأعمال"       : locale === "fr" ? "Portfolio"          : "Portfolio",
@@ -235,9 +248,32 @@ export default async function ProviderProfilePage({ params }: Props) {
               </div>
             </div>
 
+            {/* Owner / Admin badges */}
+            {(isOwner || isAdmin) && (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {isOwner && (
+                  <span className="flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1 text-xs font-semibold text-white">
+                    <Shield className="h-3.5 w-3.5" />
+                    {t.ownerBadge}
+                  </span>
+                )}
+                {isAdmin && (
+                  <span className="flex items-center gap-1.5 rounded-full bg-amber-500/30 backdrop-blur-sm border border-amber-400/40 px-3 py-1 text-xs font-semibold text-amber-200">
+                    <ShieldAlert className="h-3.5 w-3.5" />
+                    {t.adminView}
+                    {provider.status !== "ACTIVE" && (
+                      <span className="ms-1 rounded-full bg-amber-500 px-2 py-0.5 text-white text-[10px]">
+                        {provider.status === "PENDING" ? t.pendingStatus : t.suspendedStatus}
+                      </span>
+                    )}
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* CTA buttons (desktop) */}
             <div className="hidden sm:flex gap-3 mt-6 flex-wrap">
-              {provider.whatsapp && (
+              {provider.whatsapp && !isOwner && (
                 <a
                   href={`https://wa.me/${provider.whatsapp.replace(/\D/g, "")}`}
                   target="_blank" rel="noopener noreferrer"
@@ -247,7 +283,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   WhatsApp
                 </a>
               )}
-              {provider.phone && (
+              {provider.phone && !isOwner && (
                 <a
                   href={`tel:${provider.phone}`}
                   className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white font-semibold px-6 py-3 rounded-xl transition-all hover:-translate-y-0.5"
@@ -255,6 +291,24 @@ export default async function ProviderProfilePage({ params }: Props) {
                   <Phone className="h-5 w-5" />
                   {locale === "ar" ? "اتصال" : locale === "fr" ? "Appeler" : "Call"}
                 </a>
+              )}
+              {isOwner && (
+                <Link
+                  href="/provider/dashboard/edit"
+                  className="flex items-center gap-2 bg-white text-green-700 hover:bg-green-50 font-semibold px-6 py-3 rounded-xl shadow-lg transition-all hover:-translate-y-0.5"
+                >
+                  <Pencil className="h-5 w-5" />
+                  {t.editProfile}
+                </Link>
+              )}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 backdrop-blur-sm border border-amber-400/40 text-amber-200 font-semibold px-5 py-3 rounded-xl transition-all"
+                >
+                  <ShieldAlert className="h-5 w-5" />
+                  {t.goToAdmin}
+                </Link>
               )}
             </div>
           </div>
@@ -462,6 +516,45 @@ export default async function ProviderProfilePage({ params }: Props) {
             </div>
           </section>
 
+          {/* Admin notes section */}
+          {isAdmin && (
+            <section className="rounded-2xl border border-amber-200 bg-amber-50 shadow-sm overflow-hidden">
+              <div className="px-6 py-4 border-b border-amber-200 bg-amber-100/60 flex items-center justify-between">
+                <h2 className="font-bold text-amber-800 flex items-center gap-2">
+                  <ShieldAlert className="h-4 w-4" />
+                  {t.adminNote}
+                </h2>
+                <Link
+                  href="/admin"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 hover:text-amber-900 bg-amber-200 hover:bg-amber-300 px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  {t.goToAdmin}
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+              <div className="px-6 py-4 space-y-2 text-sm">
+                <div className="flex items-center gap-2 text-amber-700">
+                  <span className="font-medium">Status:</span>
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                    provider.status === "ACTIVE"    ? "bg-green-100 text-green-700" :
+                    provider.status === "PENDING"   ? "bg-amber-100 text-amber-700" :
+                                                      "bg-red-100 text-red-700"
+                  }`}>
+                    {provider.status}
+                  </span>
+                </div>
+                {provider.adminNotes && (
+                  <p className="text-amber-800 bg-amber-100 rounded-xl px-4 py-3 leading-relaxed">
+                    {provider.adminNotes}
+                  </p>
+                )}
+                {!provider.adminNotes && (
+                  <p className="text-amber-500 italic text-xs">No admin notes for this provider.</p>
+                )}
+              </div>
+            </section>
+          )}
+
           {/* Report + Back link row */}
           <div className="flex items-center justify-between text-sm text-gray-400 pt-2">
             <Link
@@ -478,24 +571,36 @@ export default async function ProviderProfilePage({ params }: Props) {
         {/* ── STICKY MOBILE CTA ─────────────────────────────────────── */}
         <div className="fixed bottom-0 inset-x-0 sm:hidden bg-white border-t shadow-2xl px-4 py-3 z-50">
           <div className="flex gap-2">
-            {provider.whatsapp && (
-              <a
-                href={`https://wa.me/${provider.whatsapp.replace(/\D/g, "")}`}
-                target="_blank" rel="noopener noreferrer"
+            {isOwner ? (
+              <Link
+                href="/provider/dashboard/edit"
                 className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors"
               >
-                <MessageCircle className="h-4 w-4" />
-                WhatsApp
-              </a>
-            )}
-            {provider.phone && (
-              <a
-                href={`tel:${provider.phone}`}
-                className="flex-1 flex items-center justify-center gap-2 border-2 border-gray-200 hover:border-green-300 text-gray-700 hover:text-green-700 font-semibold py-3 rounded-xl text-sm transition-colors"
-              >
-                <Phone className="h-4 w-4" />
-                {locale === "ar" ? "اتصال" : locale === "fr" ? "Appeler" : "Call"}
-              </a>
+                <Pencil className="h-4 w-4" />
+                {t.editProfile}
+              </Link>
+            ) : (
+              <>
+                {provider.whatsapp && (
+                  <a
+                    href={`https://wa.me/${provider.whatsapp.replace(/\D/g, "")}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp
+                  </a>
+                )}
+                {provider.phone && (
+                  <a
+                    href={`tel:${provider.phone}`}
+                    className="flex-1 flex items-center justify-center gap-2 border-2 border-gray-200 hover:border-green-300 text-gray-700 hover:text-green-700 font-semibold py-3 rounded-xl text-sm transition-colors"
+                  >
+                    <Phone className="h-4 w-4" />
+                    {locale === "ar" ? "اتصال" : locale === "fr" ? "Appeler" : "Call"}
+                  </a>
+                )}
+              </>
             )}
           </div>
         </div>

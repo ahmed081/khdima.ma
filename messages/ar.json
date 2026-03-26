@@ -164,6 +164,88 @@
     "delete": "حذف",
     "before": "قبل"
   },
+  "editProfile": {
+    "title": "تعديل الملف الشخصي",
+    "subtitle": "حدّث معلومات نشاطك التجاري",
+    "backToDashboard": "العودة إلى لوحة التحكم",
+    "unsavedChanges": "تغييرات غير محفوظة",
+    "tabs": {
+      "business": "النشاط",
+      "about": "نبذة",
+      "specialties": "التخصصات",
+      "hours": "أوقات العمل"
+    },
+    "business": {
+      "title": "النشاط والتواصل",
+      "subtitle": "هويتك المهنية وبيانات التواصل",
+      "businessName": "اسم النشاط التجاري",
+      "businessNamePlaceholder": "اسمك أو اسم شركتك",
+      "category": "فئة الخدمة",
+      "city": "المدينة",
+      "yearsExperience": "سنوات الخبرة",
+      "yearsExperiencePlaceholder": "مثال: 5",
+      "avatarUrl": "رابط صورة الملف الشخصي",
+      "avatarUrlPlaceholder": "https://...",
+      "availability": "حالة التوفر",
+      "phone": "الهاتف",
+      "phonePlaceholder": "+212 6XX XXX XXX",
+      "whatsapp": "واتساب",
+      "whatsappPlaceholder": "+212 6XX XXX XXX",
+      "website": "الموقع الإلكتروني",
+      "websitePlaceholder": "https://موقعك.com",
+      "selectCategory": "اختر فئة",
+      "selectCity": "اختر مدينة"
+    },
+    "about": {
+      "title": "نبذة عن نشاطك",
+      "subtitle": "صف خدماتك بعدة لغات للوصول إلى المزيد من العملاء",
+      "langEn": "الإنجليزية",
+      "langFr": "الفرنسية",
+      "langAr": "العربية",
+      "bioPlaceholder": "صف نشاطك وخدماتك وخبرتك وما يميزك عن غيرك...",
+      "chars": "حرف",
+      "tip": "الوصف التفصيلي يحسّن ظهورك. اكتب بكل لغة للوصول إلى المزيد من العملاء."
+    },
+    "specialties": {
+      "title": "التخصصات والمهارات",
+      "subtitle": "اختر الخدمات المحددة التي تقدمها ضمن فئتك",
+      "noSubcategories": "لا توجد تخصصات متاحة لفئتك",
+      "selected": "محدد"
+    },
+    "hours": {
+      "title": "ساعات العمل",
+      "subtitle": "أخبر العملاء بأوقات توفرك",
+      "open": "مفتوح",
+      "closed": "مغلق",
+      "from": "من",
+      "to": "إلى",
+      "copyToAll": "تطبيق على جميع الأيام المفتوحة",
+      "allDay": "طوال اليوم",
+      "days": {
+        "MON": "الاثنين",
+        "TUE": "الثلاثاء",
+        "WED": "الأربعاء",
+        "THU": "الخميس",
+        "FRI": "الجمعة",
+        "SAT": "السبت",
+        "SUN": "الأحد"
+      },
+      "daysShort": {
+        "MON": "الاثنين",
+        "TUE": "الثلاثاء",
+        "WED": "الأربعاء",
+        "THU": "الخميس",
+        "FRI": "الجمعة",
+        "SAT": "السبت",
+        "SUN": "الأحد"
+      }
+    },
+    "save": "حفظ التغييرات",
+    "saving": "جارٍ الحفظ...",
+    "saved": "تم الحفظ!",
+    "saveError": "فشل الحفظ. يرجى المحاولة مجدداً.",
+    "cancel": "إلغاء"
+  },
   "contact": {
     "title": "تواصل معنا",
     "subtitle": "فريقنا في خدمتك"

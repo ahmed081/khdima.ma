@@ -164,6 +164,88 @@
     "delete": "Supprimer",
     "before": "Avant"
   },
+  "editProfile": {
+    "title": "Modifier le profil",
+    "subtitle": "Mettez à jour vos informations professionnelles",
+    "backToDashboard": "Retour au tableau de bord",
+    "unsavedChanges": "Modifications non sauvegardées",
+    "tabs": {
+      "business": "Activité",
+      "about": "À propos",
+      "specialties": "Spécialités",
+      "hours": "Horaires"
+    },
+    "business": {
+      "title": "Activité & Contact",
+      "subtitle": "Votre identité professionnelle et vos coordonnées",
+      "businessName": "Nom de l'activité",
+      "businessNamePlaceholder": "Votre nom ou celui de votre entreprise",
+      "category": "Catégorie de service",
+      "city": "Ville",
+      "yearsExperience": "Années d'expérience",
+      "yearsExperiencePlaceholder": "ex: 5",
+      "avatarUrl": "URL de la photo de profil",
+      "avatarUrlPlaceholder": "https://...",
+      "availability": "Statut de disponibilité",
+      "phone": "Téléphone",
+      "phonePlaceholder": "+212 6XX XXX XXX",
+      "whatsapp": "WhatsApp",
+      "whatsappPlaceholder": "+212 6XX XXX XXX",
+      "website": "Site web",
+      "websitePlaceholder": "https://votresite.com",
+      "selectCategory": "Choisir une catégorie",
+      "selectCity": "Choisir une ville"
+    },
+    "about": {
+      "title": "À propos de votre activité",
+      "subtitle": "Décrivez vos services en plusieurs langues pour toucher plus de clients",
+      "langEn": "Anglais",
+      "langFr": "Français",
+      "langAr": "Arabe",
+      "bioPlaceholder": "Décrivez votre activité, vos services, votre expérience et ce qui vous différencie...",
+      "chars": "caractères",
+      "tip": "Une description détaillée améliore votre visibilité. Rédigez dans chaque langue pour toucher plus de clients."
+    },
+    "specialties": {
+      "title": "Spécialités & Compétences",
+      "subtitle": "Sélectionnez les services spécifiques que vous proposez dans votre catégorie",
+      "noSubcategories": "Aucune spécialité disponible pour votre catégorie",
+      "selected": "sélectionné(s)"
+    },
+    "hours": {
+      "title": "Horaires de travail",
+      "subtitle": "Indiquez à vos clients quand vous êtes disponible",
+      "open": "Ouvert",
+      "closed": "Fermé",
+      "from": "De",
+      "to": "À",
+      "copyToAll": "Appliquer à tous les jours ouverts",
+      "allDay": "Toute la journée",
+      "days": {
+        "MON": "Lundi",
+        "TUE": "Mardi",
+        "WED": "Mercredi",
+        "THU": "Jeudi",
+        "FRI": "Vendredi",
+        "SAT": "Samedi",
+        "SUN": "Dimanche"
+      },
+      "daysShort": {
+        "MON": "Lun",
+        "TUE": "Mar",
+        "WED": "Mer",
+        "THU": "Jeu",
+        "FRI": "Ven",
+        "SAT": "Sam",
+        "SUN": "Dim"
+      }
+    },
+    "save": "Enregistrer",
+    "saving": "Enregistrement...",
+    "saved": "Enregistré !",
+    "saveError": "Échec de l'enregistrement. Veuillez réessayer.",
+    "cancel": "Annuler"
+  },
   "contact": {
     "title": "Contactez-nous",
     "subtitle": "Notre équipe est à votre écoute"

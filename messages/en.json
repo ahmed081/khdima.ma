@@ -164,6 +164,88 @@
     "delete": "Delete",
     "before": "Before"
   },
+  "editProfile": {
+    "title": "Edit Profile",
+    "subtitle": "Update your business information",
+    "backToDashboard": "Back to dashboard",
+    "unsavedChanges": "You have unsaved changes",
+    "tabs": {
+      "business": "Business",
+      "about": "About",
+      "specialties": "Specialties",
+      "hours": "Hours"
+    },
+    "business": {
+      "title": "Business & Contact",
+      "subtitle": "Your professional identity and contact details",
+      "businessName": "Business Name",
+      "businessNamePlaceholder": "Your company or professional name",
+      "category": "Service Category",
+      "city": "City",
+      "yearsExperience": "Years of Experience",
+      "yearsExperiencePlaceholder": "e.g. 5",
+      "avatarUrl": "Profile Photo URL",
+      "avatarUrlPlaceholder": "https://...",
+      "availability": "Availability Status",
+      "phone": "Phone",
+      "phonePlaceholder": "+212 6XX XXX XXX",
+      "whatsapp": "WhatsApp",
+      "whatsappPlaceholder": "+212 6XX XXX XXX",
+      "website": "Website",
+      "websitePlaceholder": "https://yourwebsite.com",
+      "selectCategory": "Select a category",
+      "selectCity": "Select a city"
+    },
+    "about": {
+      "title": "About Your Business",
+      "subtitle": "Describe your services in multiple languages to reach more clients",
+      "langEn": "English",
+      "langFr": "French",
+      "langAr": "Arabic",
+      "bioPlaceholder": "Describe your business, services, experience, and what makes you unique...",
+      "chars": "characters",
+      "tip": "A detailed description improves your visibility. Write in each language to reach more clients."
+    },
+    "specialties": {
+      "title": "Specialties & Skills",
+      "subtitle": "Select the specific services you offer within your category",
+      "noSubcategories": "No specialties available for your category",
+      "selected": "selected"
+    },
+    "hours": {
+      "title": "Working Hours",
+      "subtitle": "Let clients know when you're available",
+      "open": "Open",
+      "closed": "Closed",
+      "from": "From",
+      "to": "To",
+      "copyToAll": "Apply to all open days",
+      "allDay": "All day",
+      "days": {
+        "MON": "Monday",
+        "TUE": "Tuesday",
+        "WED": "Wednesday",
+        "THU": "Thursday",
+        "FRI": "Friday",
+        "SAT": "Saturday",
+        "SUN": "Sunday"
+      },
+      "daysShort": {
+        "MON": "Mon",
+        "TUE": "Tue",
+        "WED": "Wed",
+        "THU": "Thu",
+        "FRI": "Fri",
+        "SAT": "Sat",
+        "SUN": "Sun"
+      }
+    },
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "saved": "Saved!",
+    "saveError": "Failed to save. Please try again.",
+    "cancel": "Cancel"
+  },
   "contact": {
     "title": "Contact Us",
     "subtitle": "Our team is here to help"

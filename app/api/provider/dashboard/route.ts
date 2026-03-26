@@ -5,7 +5,7 @@ import { getUserFromAuth } from "@/lib/auth"
 export async function GET() {
   try {
     const user = await getUserFromAuth()
-    if (!user || user.role !== 'PROVIDER') {
+    if (!user || user.role !== "PROVIDER") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -14,7 +14,10 @@ export async function GET() {
       include: {
         city: true,
         category: true,
-      }
+        subcategories: {
+          include: { subcategory: true },
+        },
+      },
     })
 
     if (!provider) {
@@ -26,17 +29,25 @@ export async function GET() {
 
     const [whatsappCount, callCount, recentReviews] = await Promise.all([
       prisma.contactLog.count({
-        where: { providerId: provider.id, type: 'WHATSAPP', createdAt: { gte: thirtyDaysAgo } }
+        where: {
+          providerId: provider.id,
+          type: "WHATSAPP",
+          createdAt: { gte: thirtyDaysAgo },
+        },
       }),
       prisma.contactLog.count({
-        where: { providerId: provider.id, type: 'CALL', createdAt: { gte: thirtyDaysAgo } }
+        where: {
+          providerId: provider.id,
+          type: "CALL",
+          createdAt: { gte: thirtyDaysAgo },
+        },
       }),
       prisma.review.findMany({
         where: { providerId: provider.id, isVisible: true },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         take: 5,
-        include: { user: { select: { name: true } } }
-      })
+        include: { user: { select: { name: true } } },
+      }),
     ])
 
     return NextResponse.json({

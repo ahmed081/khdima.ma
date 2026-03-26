@@ -188,6 +188,7 @@ model Provider {
   rating          Float                 @default(0)
   reviewCount     Int                   @default(0)
   adminNotes      String?
+  workingHours    Json?                 // {"MON":{"open":true,"from":"09:00","to":"18:00"}, ...}
   portfolioImages PortfolioImage[]
   reviews         Review[]
   contactLogs     ContactLog[]
