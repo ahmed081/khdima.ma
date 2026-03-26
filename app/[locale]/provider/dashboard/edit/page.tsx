@@ -9,7 +9,7 @@ import {
   CheckCircle, AlertCircle, Loader2, Globe, Phone,
   MessageCircle, Link as LinkIcon, MapPin, Briefcase,
   Image as ImageIcon, Zap, ChevronRight, Save,
-  Camera, Plus, Trash2,
+  Camera, Plus, Trash2, Upload, X,
 } from "lucide-react"
 import { WorkingHoursEditor, type WorkingHoursData } from "@/components/provider/working-hours-editor"
 import { Link } from "@/i18n/navigation"
@@ -110,6 +110,19 @@ export default function EditProviderProfilePage() {
   const [photoForm, setPhotoForm] = useState({ url: "", caption: "", isBefore: false })
   const [photoErr,  setPhotoErr]  = useState("")
   const [showPhotoForm, setShowPhotoForm] = useState(false)
+  const [photoUploading, setPhotoUploading] = useState(false)
+
+  // ── Avatar upload state ──────────────────────────────────────────────────
+  const [avatarUploading, setAvatarUploading] = useState(false)
+
+  const uploadFile = async (file: File): Promise<string> => {
+    const fd = new FormData()
+    fd.append("file", file)
+    const res = await fetch("/api/upload", { method: "POST", body: fd })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error ?? "Upload failed")
+    return data.url as string
+  }
 
   // ── Fetch provider data ─────────────────────────────────────────────────
   const { data: provider, isLoading: loadingProvider } = useQuery<ProviderData>({
@@ -477,30 +490,65 @@ export default function EditProviderProfilePage() {
                   </div>
                 </div>
 
-                {/* Avatar URL */}
+                {/* Avatar Upload */}
                 <div className="sm:col-span-2 space-y-1.5">
                   <label className="block text-sm font-semibold text-gray-700">
-                    <ImageIcon className="inline h-3.5 w-3.5 text-gray-400 me-1" />
+                    <Camera className="inline h-3.5 w-3.5 text-gray-400 me-1" />
                     {t("business.avatarUrl")}
                   </label>
-                  <input
-                    type="url"
-                    value={form.avatarUrl}
-                    onChange={set("avatarUrl")}
-                    placeholder={t("business.avatarUrlPlaceholder")}
-                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
-                  />
-                  {form.avatarUrl && (
-                    <div className="mt-2 flex items-center gap-3">
-                      <img
-                        src={form.avatarUrl}
-                        alt="Preview"
-                        className="h-12 w-12 rounded-xl border object-cover shadow-sm"
-                        onError={e => { (e.target as HTMLImageElement).style.display = "none" }}
-                      />
-                      <span className="text-xs text-gray-500">Photo preview</span>
+                  <div className="flex items-center gap-4">
+                    {/* Preview */}
+                    <div className="relative flex-shrink-0">
+                      <div className="h-20 w-20 rounded-2xl border-2 border-gray-200 overflow-hidden bg-gray-50">
+                        {form.avatarUrl ? (
+                          <img src={form.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-2xl font-extrabold text-gray-300">
+                            {avatarLetter}
+                          </div>
+                        )}
+                      </div>
+                      {form.avatarUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setForm(p => ({ ...p, avatarUrl: "" }))}
+                          className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow hover:bg-red-600 transition"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
                     </div>
-                  )}
+                    {/* Upload button */}
+                    <div className="flex-1">
+                      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-center hover:border-green-400 hover:bg-green-50 transition-colors">
+                        <input
+                          type="file"
+                          accept="image/jpeg,image/png,image/webp"
+                          className="sr-only"
+                          disabled={avatarUploading}
+                          onChange={async e => {
+                            const file = e.target.files?.[0]
+                            if (!file) return
+                            try {
+                              setAvatarUploading(true)
+                              const url = await uploadFile(file)
+                              setForm(p => ({ ...p, avatarUrl: url }))
+                            } catch (err: any) {
+                              alert(err.message)
+                            } finally {
+                              setAvatarUploading(false)
+                              e.target.value = ""
+                            }
+                          }}
+                        />
+                        {avatarUploading ? (
+                          <><Loader2 className="h-5 w-5 text-green-600 animate-spin" /><span className="text-xs text-gray-500">{locale === "ar" ? "جارٍ الرفع..." : locale === "fr" ? "Envoi en cours..." : "Uploading..."}</span></>
+                        ) : (
+                          <><Upload className="h-5 w-5 text-gray-400" /><span className="text-xs font-medium text-gray-500">{locale === "ar" ? "اضغط لرفع صورة" : locale === "fr" ? "Cliquez pour télécharger" : "Click to upload"}</span><span className="text-[10px] text-gray-400">JPG, PNG, WebP — max 5 MB</span></>
+                        )}
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -789,28 +837,68 @@ export default function EditProviderProfilePage() {
               {showPhotoForm && (
                 <div className="border-b border-slate-100 bg-green-50/30 px-6 py-5">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    {/* URL */}
+                    {/* File upload area */}
                     <div className="sm:col-span-2 space-y-1.5">
                       <label className="block text-sm font-semibold text-gray-700">
                         {t("photos.urlLabel")} <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="url"
-                        value={photoForm.url}
-                        onChange={e => setPhotoForm(p => ({ ...p, url: e.target.value }))}
-                        placeholder={t("photos.urlPlaceholder")}
-                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
-                      />
-                      {/* URL preview */}
-                      {photoForm.url.startsWith("http") && (
-                        <div className="mt-2">
+                      {photoForm.url ? (
+                        <div className="relative inline-block">
                           <img
                             src={photoForm.url}
                             alt="Preview"
-                            className="h-24 w-24 rounded-xl object-cover border border-gray-200 shadow-sm"
-                            onError={e => { (e.target as HTMLImageElement).style.display = "none" }}
+                            className="h-32 w-32 rounded-xl object-cover border border-gray-200 shadow-sm"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setPhotoForm(p => ({ ...p, url: "" }))}
+                            className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow hover:bg-red-600 transition"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
                         </div>
+                      ) : (
+                        <label className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors ${photoUploading ? "border-green-300 bg-green-50" : "border-gray-300 bg-white hover:border-green-400 hover:bg-green-50"}`}>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            className="sr-only"
+                            disabled={photoUploading}
+                            onChange={async e => {
+                              const file = e.target.files?.[0]
+                              if (!file) return
+                              try {
+                                setPhotoUploading(true)
+                                setPhotoErr("")
+                                const url = await uploadFile(file)
+                                setPhotoForm(p => ({ ...p, url }))
+                              } catch (err: any) {
+                                setPhotoErr(err.message)
+                              } finally {
+                                setPhotoUploading(false)
+                                e.target.value = ""
+                              }
+                            }}
+                          />
+                          {photoUploading ? (
+                            <>
+                              <Loader2 className="h-8 w-8 text-green-600 animate-spin" />
+                              <span className="text-sm text-gray-500">{locale === "ar" ? "جارٍ الرفع..." : locale === "fr" ? "Envoi en cours..." : "Uploading..."}</span>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
+                                <Upload className="h-6 w-6 text-gray-400" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-600">
+                                  {locale === "ar" ? "اضغط لرفع صورة" : locale === "fr" ? "Cliquez pour télécharger une photo" : "Click to upload a photo"}
+                                </p>
+                                <p className="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP — max 5 MB</p>
+                              </div>
+                            </>
+                          )}
+                        </label>
                       )}
                     </div>
 
@@ -853,13 +941,13 @@ export default function EditProviderProfilePage() {
                       type="button"
                       onClick={() => {
                         setPhotoErr("")
-                        if (!photoForm.url.startsWith("http")) {
-                          setPhotoErr("Please enter a valid URL starting with http")
+                        if (!photoForm.url) {
+                          setPhotoErr(locale === "ar" ? "يرجى رفع صورة أولاً" : locale === "fr" ? "Veuillez d'abord télécharger une photo" : "Please upload a photo first")
                           return
                         }
                         addPhotoMutation.mutate()
                       }}
-                      disabled={addPhotoMutation.isPending}
+                      disabled={addPhotoMutation.isPending || !photoForm.url}
                       className="flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 text-sm font-semibold shadow-md transition active:scale-95 disabled:opacity-60"
                     >
                       {addPhotoMutation.isPending
@@ -869,7 +957,7 @@ export default function EditProviderProfilePage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setShowPhotoForm(false); setPhotoErr("") }}
+                      onClick={() => { setShowPhotoForm(false); setPhotoErr(""); setPhotoForm({ url: "", caption: "", isBefore: false }) }}
                       className="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
                     >
                       {t("photos.cancel")}

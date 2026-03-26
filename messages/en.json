@@ -151,7 +151,16 @@
     "passwordMismatch": "Passwords do not match.",
     "serverError": "Registration error.",
     "orRegisterAsPro": "Are you a professional?",
-    "registerAsPro": "List your business"
+    "registerAsPro": "List your business",
+    "heroTitle": "Join thousands of satisfied clients",
+    "heroSubtitle": "Create your free account and find the ideal pro",
+    "feature1": "Instant access to top professionals",
+    "feature2": "Thousands of verified craftsmen",
+    "feature3": "Transparent reviews and ratings",
+    "feature4": "Completely free for clients",
+    "statUsers": "Clients",
+    "statRating": "Rating",
+    "statSafe": "Free"
   },
   "admin": {
     "title": "Admin Dashboard",
