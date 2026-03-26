@@ -9,6 +9,7 @@ import {
   CheckCircle, AlertCircle, Loader2, Globe, Phone,
   MessageCircle, Link as LinkIcon, MapPin, Briefcase,
   Image as ImageIcon, Zap, ChevronRight, Save,
+  Camera, Plus, Trash2,
 } from "lucide-react"
 import { WorkingHoursEditor, type WorkingHoursData } from "@/components/provider/working-hours-editor"
 import { Link } from "@/i18n/navigation"
@@ -39,7 +40,7 @@ interface ProviderData {
   city: { id: number; name: string }
 }
 
-type TabId = "business" | "about" | "specialties" | "hours"
+type TabId = "business" | "about" | "specialties" | "hours" | "photos"
 
 // ─── Tab config ────────────────────────────────────────────────────────────
 
@@ -48,6 +49,7 @@ const TABS: { id: TabId; icon: React.ReactNode }[] = [
   { id: "about",       icon: <FileText className="h-4 w-4" /> },
   { id: "specialties", icon: <Sparkles className="h-4 w-4" /> },
   { id: "hours",       icon: <Clock className="h-4 w-4" /> },
+  { id: "photos",      icon: <Camera className="h-4 w-4" /> },
 ]
 
 const AVAILABILITY_OPTIONS = ["AVAILABLE", "BUSY", "INACTIVE"]
@@ -104,6 +106,11 @@ export default function EditProviderProfilePage() {
   const [subcategoryIds, setSubcategoryIds] = useState<number[]>([])
   const [workingHours, setWorkingHours] = useState<WorkingHoursData>({})
 
+  // ── Photos tab state ──────────────────────────────────────────────────────
+  const [photoForm, setPhotoForm] = useState({ url: "", caption: "", isBefore: false })
+  const [photoErr,  setPhotoErr]  = useState("")
+  const [showPhotoForm, setShowPhotoForm] = useState(false)
+
   // ── Fetch provider data ─────────────────────────────────────────────────
   const { data: provider, isLoading: loadingProvider } = useQuery<ProviderData>({
     queryKey: ["provider-profile-edit"],
@@ -149,6 +156,45 @@ export default function EditProviderProfilePage() {
     enabled: form.categoryId > 0,
   })
 
+  // ── Portfolio queries ────────────────────────────────────────────────────
+  const { data: portfolioImages = [], isLoading: loadingPhotos } = useQuery<{
+    id: number; url: string; caption: string | null; isBefore: boolean; order: number
+  }[]>({
+    queryKey: ["portfolio"],
+    queryFn: () => fetch("/api/provider/portfolio").then(r => r.json()),
+    enabled: activeTab === "photos",
+  })
+
+  const addPhotoMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/provider/portfolio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(photoForm),
+      })
+      const d = await res.json()
+      if (!res.ok) throw new Error(d.error ?? "Error")
+      return d
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["portfolio"] })
+      setPhotoForm({ url: "", caption: "", isBefore: false })
+      setShowPhotoForm(false)
+      setPhotoErr("")
+    },
+    onError: (e: any) => setPhotoErr(e.message),
+  })
+
+  const deletePhotoMutation = useMutation({
+    mutationFn: (id: number) =>
+      fetch("/api/provider/portfolio", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      }).then(r => r.json()),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["portfolio"] }),
+  })
+
   // ── Save mutation ────────────────────────────────────────────────────────
   const saveMutation = useMutation({
     mutationFn: async (payload: Record<string, unknown>) => {
@@ -176,7 +222,8 @@ export default function EditProviderProfilePage() {
 
   // ── Per-tab save payloads ────────────────────────────────────────────────
   const saveTab = useCallback(() => {
-    const payloads: Record<TabId, Record<string, unknown>> = {
+    if (activeTab === "photos") return // photos are saved immediately per action
+    const payloads: Record<Exclude<TabId, "photos">, Record<string, unknown>> = {
       business: {
         businessName:    form.businessName || undefined,
         categoryId:      form.categoryId   || undefined,
@@ -196,7 +243,7 @@ export default function EditProviderProfilePage() {
       specialties: { subcategoryIds },
       hours: { workingHours },
     }
-    saveMutation.mutate(payloads[activeTab])
+    saveMutation.mutate(payloads[activeTab as Exclude<TabId, "photos">])
   }, [activeTab, form, subcategoryIds, workingHours, saveMutation])
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -707,6 +754,192 @@ export default function EditProviderProfilePage() {
           </div>
         )}
 
+        {/* ═══ TAB 5: Photos ════════════════════════════════════════ */}
+        {activeTab === "photos" && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-b border-slate-100 bg-slate-50/60 px-6 py-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div>
+                    <h2 className="flex items-center gap-2 font-bold text-gray-800">
+                      <Camera className="h-4 w-4 text-green-600" />
+                      {t("photos.title")}
+                    </h2>
+                    <p className="mt-0.5 text-xs text-gray-500">{t("photos.subtitle")}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-500">
+                      {portfolioImages.length}/10
+                    </span>
+                    {portfolioImages.length < 10 && (
+                      <button
+                        type="button"
+                        onClick={() => { setShowPhotoForm(v => !v); setPhotoErr("") }}
+                        className="flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-500 text-white px-4 py-2 text-sm font-semibold shadow-md shadow-green-600/20 transition active:scale-95"
+                      >
+                        <Plus className="h-4 w-4" />
+                        {t("photos.add")}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Add photo form */}
+              {showPhotoForm && (
+                <div className="border-b border-slate-100 bg-green-50/30 px-6 py-5">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {/* URL */}
+                    <div className="sm:col-span-2 space-y-1.5">
+                      <label className="block text-sm font-semibold text-gray-700">
+                        {t("photos.urlLabel")} <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="url"
+                        value={photoForm.url}
+                        onChange={e => setPhotoForm(p => ({ ...p, url: e.target.value }))}
+                        placeholder={t("photos.urlPlaceholder")}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
+                      />
+                      {/* URL preview */}
+                      {photoForm.url.startsWith("http") && (
+                        <div className="mt-2">
+                          <img
+                            src={photoForm.url}
+                            alt="Preview"
+                            className="h-24 w-24 rounded-xl object-cover border border-gray-200 shadow-sm"
+                            onError={e => { (e.target as HTMLImageElement).style.display = "none" }}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Caption */}
+                    <div className="space-y-1.5">
+                      <label className="block text-sm font-semibold text-gray-700">
+                        {t("photos.captionLabel")}
+                      </label>
+                      <input
+                        type="text"
+                        value={photoForm.caption}
+                        onChange={e => setPhotoForm(p => ({ ...p, caption: e.target.value }))}
+                        placeholder={locale === "ar" ? "وصف اختياري" : locale === "fr" ? "Description optionnelle" : "Optional description"}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
+                      />
+                    </div>
+
+                    {/* Before toggle */}
+                    <div className="flex items-center">
+                      <label className="flex items-center gap-3 cursor-pointer select-none group">
+                        <div
+                          className={`relative w-10 h-6 rounded-full transition-colors ${photoForm.isBefore ? "bg-green-600" : "bg-gray-200"}`}
+                          onClick={() => setPhotoForm(p => ({ ...p, isBefore: !p.isBefore }))}
+                        >
+                          <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${photoForm.isBefore ? "left-5" : "left-1"}`} />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">{t("photos.beforeLabel")}</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {photoErr && (
+                    <p className="mt-3 flex items-center gap-1.5 text-sm text-red-600">
+                      <AlertCircle className="h-3.5 w-3.5" />{photoErr}
+                    </p>
+                  )}
+
+                  <div className="flex gap-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPhotoErr("")
+                        if (!photoForm.url.startsWith("http")) {
+                          setPhotoErr("Please enter a valid URL starting with http")
+                          return
+                        }
+                        addPhotoMutation.mutate()
+                      }}
+                      disabled={addPhotoMutation.isPending}
+                      className="flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 text-sm font-semibold shadow-md transition active:scale-95 disabled:opacity-60"
+                    >
+                      {addPhotoMutation.isPending
+                        ? <><Loader2 className="h-4 w-4 animate-spin" />{locale === "ar" ? "جارٍ الحفظ..." : locale === "fr" ? "Enregistrement..." : "Saving..."}</>
+                        : <><CheckCircle className="h-4 w-4" />{t("photos.save")}</>
+                      }
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowPhotoForm(false); setPhotoErr("") }}
+                      className="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+                    >
+                      {t("photos.cancel")}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Photos grid */}
+              <div className="p-6">
+                {loadingPhotos ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div key={i} className="aspect-square rounded-xl bg-gray-100 animate-pulse" />
+                    ))}
+                  </div>
+                ) : portfolioImages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+                      <Camera className="h-8 w-8 text-gray-300" />
+                    </div>
+                    <p className="text-gray-400 text-sm mb-4">{t("photos.empty")}</p>
+                    <p className="text-xs text-gray-300 max-w-xs">{t("photos.hint")}</p>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-xs text-gray-400 mb-4">{t("photos.hint")}</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {portfolioImages.map((img) => (
+                        <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden bg-gray-100 shadow-sm">
+                          <img
+                            src={img.url}
+                            alt={img.caption ?? ""}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {img.isBefore && (
+                            <span className="absolute top-2 start-2 bg-gray-900/80 backdrop-blur text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                              {t("photos.before")}
+                            </span>
+                          )}
+                          {img.caption && (
+                            <div className="absolute inset-x-0 bottom-0 p-2.5 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                              <p className="text-white text-xs truncate font-medium">{img.caption}</p>
+                            </div>
+                          )}
+                          {/* Delete overlay */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={() => deletePhotoMutation.mutate(img.id)}
+                              disabled={deletePhotoMutation.isPending}
+                              className="w-10 h-10 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition active:scale-90"
+                              title={t("photos.delete")}
+                            >
+                              {deletePhotoMutation.isPending
+                                ? <Loader2 className="h-4 w-4 animate-spin" />
+                                : <Trash2 className="h-4 w-4" />
+                              }
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ── Save bar ──────────────────────────────────────────────── */}
         <div className="mt-8 flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sticky bottom-4">
           <button
@@ -718,18 +951,20 @@ export default function EditProviderProfilePage() {
             {t("cancel")}
           </button>
 
-          <button
-            type="button"
-            onClick={saveTab}
-            disabled={saveMutation.isPending}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-green-600/30 transition hover:from-green-500 hover:to-emerald-500 disabled:opacity-60 active:scale-95"
-          >
-            {saveMutation.isPending ? (
-              <><Loader2 className="h-4 w-4 animate-spin" />{t("saving")}</>
-            ) : (
-              <><Save className="h-4 w-4" />{t("save")}</>
-            )}
-          </button>
+          {activeTab !== "photos" && (
+            <button
+              type="button"
+              onClick={saveTab}
+              disabled={saveMutation.isPending}
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-green-600/30 transition hover:from-green-500 hover:to-emerald-500 disabled:opacity-60 active:scale-95"
+            >
+              {saveMutation.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin" />{t("saving")}</>
+              ) : (
+                <><Save className="h-4 w-4" />{t("save")}</>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

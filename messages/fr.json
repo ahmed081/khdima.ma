@@ -173,7 +173,8 @@
       "business": "Activité",
       "about": "À propos",
       "specialties": "Spécialités",
-      "hours": "Horaires"
+      "hours": "Horaires",
+      "photos": "Photos"
     },
     "business": {
       "title": "Activité & Contact",
@@ -211,6 +212,22 @@
       "subtitle": "Sélectionnez les services spécifiques que vous proposez dans votre catégorie",
       "noSubcategories": "Aucune spécialité disponible pour votre catégorie",
       "selected": "sélectionné(s)"
+    },
+    "photos": {
+      "title": "Photos du portfolio",
+      "subtitle": "Montrez votre travail — jusqu'à 10 photos",
+      "add": "Ajouter une photo",
+      "urlLabel": "URL de l'image",
+      "urlPlaceholder": "https://exemple.com/photo.jpg",
+      "captionLabel": "Légende (optionnel)",
+      "beforeLabel": "Photo «avant»",
+      "save": "Ajouter la photo",
+      "cancel": "Annuler",
+      "empty": "Aucune photo encore. Ajoutez votre première réalisation !",
+      "hint": "Les photos avant/après montrent la qualité de votre travail.",
+      "delete": "Supprimer",
+      "before": "Avant",
+      "count": "{n} / 10 photos"
     },
     "hours": {
       "title": "Horaires de travail",

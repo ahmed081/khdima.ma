@@ -173,7 +173,8 @@
       "business": "النشاط",
       "about": "نبذة",
       "specialties": "التخصصات",
-      "hours": "أوقات العمل"
+      "hours": "أوقات العمل",
+      "photos": "الصور"
     },
     "business": {
       "title": "النشاط والتواصل",
@@ -211,6 +212,22 @@
       "subtitle": "اختر الخدمات المحددة التي تقدمها ضمن فئتك",
       "noSubcategories": "لا توجد تخصصات متاحة لفئتك",
       "selected": "محدد"
+    },
+    "photos": {
+      "title": "صور معرض الأعمال",
+      "subtitle": "اعرض أعمالك — حتى 10 صور",
+      "add": "إضافة صورة",
+      "urlLabel": "رابط الصورة",
+      "urlPlaceholder": "https://example.com/photo.jpg",
+      "captionLabel": "تعليق (اختياري)",
+      "beforeLabel": "صورة قبل",
+      "save": "إضافة الصورة",
+      "cancel": "إلغاء",
+      "empty": "لا توجد صور بعد. أضف أولى أعمالك!",
+      "hint": "الصور قبل/بعد تُظهر جودة عملك.",
+      "delete": "حذف",
+      "before": "قبل",
+      "count": "{n} / 10 صور"
     },
     "hours": {
       "title": "ساعات العمل",

@@ -173,7 +173,8 @@
       "business": "Business",
       "about": "About",
       "specialties": "Specialties",
-      "hours": "Hours"
+      "hours": "Hours",
+      "photos": "Photos"
     },
     "business": {
       "title": "Business & Contact",
@@ -239,6 +240,22 @@
         "SAT": "Sat",
         "SUN": "Sun"
       }
+    },
+    "photos": {
+      "title": "Portfolio Photos",
+      "subtitle": "Showcase your work — up to 10 photos",
+      "add": "Add Photo",
+      "urlLabel": "Image URL",
+      "urlPlaceholder": "https://example.com/photo.jpg",
+      "captionLabel": "Caption (optional)",
+      "beforeLabel": "\"Before\" photo",
+      "save": "Add Photo",
+      "cancel": "Cancel",
+      "empty": "No photos yet. Add your first work photo!",
+      "hint": "Use before/after photos to showcase the quality of your work.",
+      "delete": "Delete",
+      "before": "Before",
+      "count": "{n} / 10 photos"
     },
     "save": "Save Changes",
     "saving": "Saving...",
