@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
+import { redirect } from "@/i18n/navigation"
 import { getLocale } from "next-intl/server"
 import { tMany } from "@/lib/translations"
 import type { Locale } from "@/lib/translations"
@@ -73,6 +74,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const sp     = await searchParams
   const locale = await getLocale() as Locale
   const isRTL  = locale === "ar"
+
+  // If slug is a pure number it's a provider-id shortcut (e.g. /ar/services/6).
+  // Resolve the provider's category and redirect to the canonical URL.
+  if (/^\d+$/.test(slug)) {
+    const prov = await prisma.provider.findUnique({
+      where: { id: parseInt(slug) },
+      select: { id: true, category: { select: { slug: true } } },
+    })
+    if (prov) redirect(`/services/${prov.category.slug}/${prov.id}` as never)
+    notFound()
+  }
 
   const cat = await prisma.serviceCategory.findUnique({ where: { slug, isActive: true } })
   if (!cat) notFound()
