@@ -1,9 +1,9 @@
 "use client"
 
-import { Link } from "@/i18n/navigation"
-import { useState } from "react"
+import { Link, useRouter } from "@/i18n/navigation"
+import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { registerRequest, selectAuthLoading } from "@/store/slices/authSlice"
+import { registerRequest, selectAuthLoading, selectUser, selectAuthInitialized } from "@/store/slices/authSlice"
 import { Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,9 +12,19 @@ import { Label } from "@/components/ui/label"
 import { useTranslations } from 'next-intl'
 
 export default function RegisterPage() {
-  const dispatch = useDispatch()
-  const loading  = useSelector(selectAuthLoading)
-  const t = useTranslations('register')
+  const dispatch     = useDispatch()
+  const router       = useRouter()
+  const loading      = useSelector(selectAuthLoading)
+  const user         = useSelector(selectUser)
+  const initialized  = useSelector(selectAuthInitialized)
+  const t            = useTranslations('register')
+
+  useEffect(() => {
+    if (!initialized || !user) return
+    router.replace('/')
+  }, [user, initialized, router])
+
+  if (initialized && user) return null
 
   const [form, setForm] = useState({
     name: "",

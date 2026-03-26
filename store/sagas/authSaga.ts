@@ -64,12 +64,7 @@ function* loginWorker(action: ReturnType<typeof loginRequest>): any {
       user.role === "PROVIDER" ? "Bienvenue sur votre tableau de bord !" :
                                  "Bienvenue !";
     yield put(showToast({ message: roleMsg, type: "success" }));
-
-    const path =
-      user.role === "ADMIN"    ? "/admin" :
-      user.role === "PROVIDER" ? "/provider/dashboard" :
-                                 "/";
-    redirectTo(path);
+    // Navigation is handled by the login page's useEffect which watches Redux user state
   } catch (err: any) {
     yield put(authError(err.message));
     yield put(showToast({ message: err.message, type: "error" }));
@@ -89,7 +84,7 @@ function* registerWorker(action: ReturnType<typeof registerRequest>): any {
     const user = yield call(apiFetch, "/api/auth/me");
     yield put(setUser(user));
     yield put(showToast({ message: "Compte créé avec succès !", type: "success" }));
-    redirectTo("/");
+    // Navigation is handled by the register page's useEffect which watches Redux user state
   } catch (err: any) {
     yield put(authError(err.message));
     yield put(showToast({ message: err.message, type: "error" }));

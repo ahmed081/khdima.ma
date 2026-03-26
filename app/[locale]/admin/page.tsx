@@ -1,15 +1,11 @@
-import { getUserFromAuth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { redirect } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Users, Briefcase, BarChart3, Languages, Tag, Clock, Flag } from "lucide-react"
 
+// Middleware at middleware.ts already enforces ADMIN-only access to /admin/*
 export default async function AdminDashboardPage() {
-  const user = await getUserFromAuth()
-  if (!user || user.role !== 'ADMIN') redirect('/')
-
   const [pendingCount, totalProviders, totalUsers, totalContacts, openReports, recentContacts] = await Promise.all([
     prisma.provider.count({ where: { status: 'PENDING' } }),
     prisma.provider.count({ where: { status: 'ACTIVE' } }),
