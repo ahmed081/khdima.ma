@@ -1,9 +1,9 @@
 "use client"
 
-import { Link } from "@/i18n/navigation"
-import { useState } from "react"
+import { Link, useRouter } from "@/i18n/navigation"
+import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { loginRequest, selectAuthLoading } from "@/store/slices/authSlice"
+import { loginRequest, selectAuthLoading, selectUser, selectAuthInitialized } from "@/store/slices/authSlice"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,17 +12,31 @@ import { Wrench } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 export default function LoginPage() {
-  const dispatch  = useDispatch()
-  const loading   = useSelector(selectAuthLoading)
-  const t         = useTranslations("login")
+  const dispatch      = useDispatch()
+  const router        = useRouter()
+  const loading       = useSelector(selectAuthLoading)
+  const user          = useSelector(selectUser)
+  const initialized   = useSelector(selectAuthInitialized)
+  const t             = useTranslations("login")
 
   const [email,    setEmail]    = useState("")
   const [password, setPassword] = useState("")
+
+  // Redirect away if already authenticated
+  useEffect(() => {
+    if (!initialized || !user) return
+    if (user.role === 'ADMIN')    { router.replace('/admin');              return }
+    if (user.role === 'PROVIDER') { router.replace('/provider/dashboard'); return }
+    router.replace('/')
+  }, [user, initialized, router])
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
     dispatch(loginRequest({ email, password }))
   }
+
+  // Don't flash the form while redirecting
+  if (initialized && user) return null
 
   return (
     <div className="min-h-screen bg-background">

@@ -1,43 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)",
-      "Bash(npx prisma:*)",
-      "Bash(cat app/api/jobs/[id]/route.ts)",
-      "Bash(rm \"app/api/auth/[...nextauth]/route.ts\")",
-      "Bash(rmdir \"app/api/auth/[...nextauth]\")",
-      "Bash(rm next-auth.d.ts)",
+      "Bash(grep -E '\\\\.\\(ts|tsx|js|json|sql|prisma|env|yaml|yml\\)$')",
       "Bash(pnpm add:*)",
-      "Bash(BASE=\"/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma\")",
-      "Bash(mkdir -p \"$BASE/app/[locale]/login\")",
-      "Bash(mkdir -p \"$BASE/app/[locale]/register\")",
-      "Bash(mkdir -p \"$BASE/app/[locale]/profile\")",
-      "Bash(mkdir -p \"$BASE/app/[locale]/search\")",
-      "Bash(rm -rf \"$BASE/app/login\")",
-      "Bash(rm -rf \"$BASE/app/register\")",
-      "Bash(rm -rf \"$BASE/app/profile\")",
-      "Bash(rm -rf \"$BASE/app/search\")",
-      "Bash(rm -rf \"$BASE/app/employers\")",
-      "Bash(ls app/[locale]/)",
-      "Bash(cat app/[locale]/layout.tsx)",
-      "Bash(cat app/[locale]/profile/page.tsx)",
-      "Bash(grep -rn \"user === null\\\\|!user\" app/[locale]/ --include=\"*.tsx\")",
-      "Bash(grep -rn \"user === null\\\\|selectUser\" app/[locale]/ --include=\"*.tsx\")",
-      "Bash(cd:*)",
-      "Bash(rm -f \"components/featured-jobs.tsx\" \"components/stats-section.tsx\" \"components/users/user-card.tsx\")",
-      "Bash(rm -rf \"components/employers\" \"components/jobs\")",
-      "Bash(rm -rf \"queries\")",
-      "Bash(rm -f \"types/job.ts\" \"types/dashboard.ts\" \"types/constants.ts\")",
-      "Bash(grep -v \"^ui$\")",
-      "Bash(grep -v \"^employers$\")",
-      "Bash(grep -rn \"red-\\\\|bg-red\\\\|text-red\\\\|border-red\\\\|from-red\\\\|via-red\\\\|to-red\" app/[locale]/ --include=\"*.tsx\")",
-      "Bash(find '/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma' -name *.sql -o -name *.prisma -o -name *.ts -path */migrations* -o -name *seed*)",
-      "Bash(pnpm prisma:*)",
-      "Bash(npx tsx:*)",
-      "Bash(node -e \":*)",
-      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"seed data, user offer user everything to make app working\" npx prisma db push --force-reset)",
-      "Bash(pnpm build:*)",
-      "Bash(npm install:*)"
+      "Bash(pnpm run:*)"
     ]
   }
 }
