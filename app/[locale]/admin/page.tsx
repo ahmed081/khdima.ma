@@ -337,7 +337,7 @@ export default async function AdminDashboardPage() {
           {recentContacts.length > 0 && (
             <div className="px-6 py-3 border-t border-gray-50">
               <Link
-                href="/admin/ analytics"
+                href="/admin/analytics"
                 className="text-xs font-semibold text-green-700 hover:text-green-600 flex items-center gap-1"
               >
                 {t("viewFullAnalytics")} <ChevronRight className="h-3 w-3" />
