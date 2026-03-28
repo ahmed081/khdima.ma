@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
-import { getLocale } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import {
   Star, MapPin, Briefcase, Shield, CheckCircle,
   MessageCircle, Phone, Eye, ChevronRight, Calendar,
@@ -112,10 +112,12 @@ export default async function ProviderProfilePage({ params }: Props) {
 
   const style = CATEGORY_STYLES[provider.category.slug] ?? DEFAULT_STYLE
 
+  const tp = await getTranslations("providerProfile")
+
   const availLabel =
-    provider.availability === "AVAILABLE" ? (locale === "ar" ? "متاح الآن" : locale === "fr" ? "Disponible" : "Available now") :
-    provider.availability === "BUSY"      ? (locale === "ar" ? "مشغول"     : locale === "fr" ? "Occupé"     : "Busy") :
-                                            (locale === "ar" ? "غير نشط"   : locale === "fr" ? "Inactif"    : "Inactive")
+    provider.availability === "AVAILABLE" ? tp("availableNow") :
+    provider.availability === "BUSY"      ? tp("busy") :
+                                            tp("inactive")
 
   const ratingMap = Object.fromEntries(ratingGroups.map(g => [g.rating, g._count.rating]))
   const totalReviews = provider.reviewCount
@@ -127,30 +129,6 @@ export default async function ProviderProfilePage({ params }: Props) {
       )
     : null
 
-  const t = {
-    editProfile: locale === "ar" ? "تعديل الملف الشخصي" : locale === "fr" ? "Modifier le profil"  : "Edit Profile",
-    ownerBadge:  locale === "ar" ? "ملفي الشخصي"        : locale === "fr" ? "Mon profil"          : "My Profile",
-    adminView:   locale === "ar" ? "عرض الإدارة"        : locale === "fr" ? "Vue admin"           : "Admin View",
-    adminNote:   locale === "ar" ? "ملاحظات الإدارة"    : locale === "fr" ? "Notes admin"         : "Admin Notes",
-    goToAdmin:   locale === "ar" ? "لوحة الإدارة"       : locale === "fr" ? "Panneau admin"       : "Admin Panel",
-    pendingStatus: locale === "ar" ? "قيد المراجعة"     : locale === "fr" ? "En attente"          : "Pending",
-    suspendedStatus: locale === "ar" ? "موقوف"          : locale === "fr" ? "Suspendu"            : "Suspended",
-    services:    locale === "ar" ? "الخدمات"           : locale === "fr" ? "Services"           : "Services",
-    about:       locale === "ar" ? "نبذة عني"           : locale === "fr" ? "À propos"           : "About",
-    portfolio:   locale === "ar" ? "معرض الأعمال"       : locale === "fr" ? "Portfolio"          : "Portfolio",
-    reviews:     locale === "ar" ? "تقييمات العملاء"    : locale === "fr" ? "Avis clients"       : "Customer Reviews",
-    noReviews:   locale === "ar" ? "لا توجد تقييمات بعد": locale === "fr" ? "Aucun avis encore"  : "No reviews yet",
-    leaveReview: locale === "ar" ? "أضف تقييمك"         : locale === "fr" ? "Laisser un avis"    : "Leave a review",
-    verified:    locale === "ar" ? "موثوق"              : locale === "fr" ? "Vérifié"            : "Verified",
-    experience:  locale === "ar" ? "سنوات خبرة"        : locale === "fr" ? "ans d'expérience"   : "yrs experience",
-    before:      locale === "ar" ? "قبل"               : locale === "fr" ? "Avant"              : "Before",
-    views:       locale === "ar" ? "مشاهدة"             : locale === "fr" ? "vues"               : "views",
-    member:      locale === "ar" ? "عضو منذ"            : locale === "fr" ? "Membre depuis"      : "Member since",
-    specialties: locale === "ar" ? "التخصصات"           : locale === "fr" ? "Spécialités"        : "Specialties",
-    statsRating: locale === "ar" ? "التقييم"            : locale === "fr" ? "Note"               : "Rating",
-    ratingOf:    locale === "ar" ? "من 5"               : locale === "fr" ? "/ 5"                : "/ 5",
-    backToList:  locale === "ar" ? `عودة إلى ${catName}` : locale === "fr" ? `Retour à ${catName}` : `Back to ${catName}`,
-  }
 
   return (
     <PublicLayout>
@@ -167,10 +145,10 @@ export default async function ProviderProfilePage({ params }: Props) {
           <div className="relative px-6 pt-5">
             <nav className="flex items-center gap-1.5 text-white/60 text-xs flex-wrap">
               <Link href="/" className="hover:text-white transition-colors">
-                {locale === "ar" ? "الرئيسية" : locale === "fr" ? "Accueil" : "Home"}
+                {tp("home")}
               </Link>
               <ChevronRight className="h-3 w-3" />
-              <Link href="/services" className="hover:text-white transition-colors">{t.services}</Link>
+              <Link href="/services" className="hover:text-white transition-colors">{tp("services")}</Link>
               <ChevronRight className="h-3 w-3" />
               <Link href={`/services/${provider.category.slug}`} className="hover:text-white transition-colors">{catName}</Link>
               <ChevronRight className="h-3 w-3" />
@@ -207,7 +185,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   {provider.isVerified && (
                     <span className="flex items-center gap-1 text-xs font-semibold bg-white/20 backdrop-blur-sm border border-white/30 px-2.5 py-1 rounded-full">
                       <Shield className="h-3.5 w-3.5" />
-                      {t.verified}
+                      {tp("verified")}
                     </span>
                   )}
                 </div>
@@ -223,7 +201,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   <Stars rating={provider.rating} size="md" />
                   <span className="font-bold">{provider.rating > 0 ? provider.rating.toFixed(1) : "—"}</span>
                   <span className="text-white/70 text-sm">
-                    ({totalReviews} {locale === "ar" ? "تقييم" : locale === "fr" ? "avis" : "reviews"})
+                    ({totalReviews} {tp("reviewsLabel")})
                   </span>
                 </div>
 
@@ -235,13 +213,13 @@ export default async function ProviderProfilePage({ params }: Props) {
                   {provider.yearsExperience && (
                     <span className="flex items-center gap-1.5">
                       <Briefcase className="h-4 w-4 text-white/60" />
-                      {provider.yearsExperience} {t.experience}
+                      {provider.yearsExperience} {tp("experience")}
                     </span>
                   )}
                   {memberSince && (
                     <span className="flex items-center gap-1.5">
                       <Calendar className="h-4 w-4 text-white/60" />
-                      {t.member} {memberSince}
+                      {tp("memberSince")} {memberSince}
                     </span>
                   )}
                 </div>
@@ -254,16 +232,16 @@ export default async function ProviderProfilePage({ params }: Props) {
                 {isOwner && (
                   <span className="flex items-center gap-1.5 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1 text-xs font-semibold text-white">
                     <Shield className="h-3.5 w-3.5" />
-                    {t.ownerBadge}
+                    {tp("myProfile")}
                   </span>
                 )}
                 {isAdmin && (
                   <span className="flex items-center gap-1.5 rounded-full bg-amber-500/30 backdrop-blur-sm border border-amber-400/40 px-3 py-1 text-xs font-semibold text-amber-200">
                     <ShieldAlert className="h-3.5 w-3.5" />
-                    {t.adminView}
+                    {tp("adminView")}
                     {provider.status !== "ACTIVE" && (
                       <span className="ms-1 rounded-full bg-amber-500 px-2 py-0.5 text-white text-[10px]">
-                        {provider.status === "PENDING" ? t.pendingStatus : t.suspendedStatus}
+                        {provider.status === "PENDING" ? tp("pendingStatus") : tp("suspendedStatus")}
                       </span>
                     )}
                   </span>
@@ -289,7 +267,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   className="flex items-center gap-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white font-semibold px-6 py-3 rounded-xl transition-all hover:-translate-y-0.5"
                 >
                   <Phone className="h-5 w-5" />
-                  {locale === "ar" ? "اتصال" : locale === "fr" ? "Appeler" : "Call"}
+                  {tp("call")}
                 </a>
               )}
               {isOwner && (
@@ -298,7 +276,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   className="flex items-center gap-2 bg-white text-green-700 hover:bg-green-50 font-semibold px-6 py-3 rounded-xl shadow-lg transition-all hover:-translate-y-0.5"
                 >
                   <Pencil className="h-5 w-5" />
-                  {t.editProfile}
+                  {tp("editProfile")}
                 </Link>
               )}
               {isAdmin && (
@@ -307,7 +285,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   className="flex items-center gap-2 bg-amber-500/20 hover:bg-amber-500/30 backdrop-blur-sm border border-amber-400/40 text-amber-200 font-semibold px-5 py-3 rounded-xl transition-all"
                 >
                   <ShieldAlert className="h-5 w-5" />
-                  {t.goToAdmin}
+                  {tp("goToAdmin")}
                 </Link>
               )}
             </div>
@@ -320,23 +298,23 @@ export default async function ProviderProfilePage({ params }: Props) {
             {[
               {
                 icon: <Star className="h-5 w-5 text-amber-400 fill-amber-400" />,
-                value: provider.rating > 0 ? `${provider.rating.toFixed(1)} ${t.ratingOf}` : "—",
-                label: t.statsRating,
+                value: provider.rating > 0 ? `${provider.rating.toFixed(1)} ${tp("ratingOf")}` : "—",
+                label: tp("statsRating"),
               },
               {
                 icon: <ThumbsUp className="h-5 w-5 text-green-600" />,
                 value: String(totalReviews),
-                label: locale === "ar" ? "تقييم" : locale === "fr" ? "Avis" : "Reviews",
+                label: tp("reviewsLabel"),
               },
               {
                 icon: <Eye className="h-5 w-5 text-blue-500" />,
                 value: String(provider.profileViews ?? 0),
-                label: t.views,
+                label: tp("views"),
               },
               {
                 icon: <Award className="h-5 w-5 text-purple-500" />,
                 value: provider.yearsExperience ? `${provider.yearsExperience}` : "—",
-                label: locale === "ar" ? "سنوات خبرة" : locale === "fr" ? "Ans d'exp." : "Yrs exp.",
+                label: tp("yrsExp"),
               },
             ].map((stat, i) => (
               <div key={i} className="flex items-center gap-3">
@@ -361,7 +339,7 @@ export default async function ProviderProfilePage({ params }: Props) {
               <div className="px-6 py-4 border-b bg-gray-50/80">
                 <h2 className="font-bold text-gray-800 flex items-center gap-2">
                   <span className="w-1 h-5 rounded-full bg-green-600 inline-block" />
-                  {t.about}
+                  {tp("about")}
                 </h2>
               </div>
               <div className="px-6 py-5">
@@ -376,7 +354,7 @@ export default async function ProviderProfilePage({ params }: Props) {
               <div className="px-6 py-4 border-b bg-gray-50/80">
                 <h2 className="font-bold text-gray-800 flex items-center gap-2">
                   <span className="w-1 h-5 rounded-full bg-green-600 inline-block" />
-                  {t.specialties}
+                  {tp("specialties")}
                 </h2>
               </div>
               <div className="px-6 py-5">
@@ -401,7 +379,7 @@ export default async function ProviderProfilePage({ params }: Props) {
               <div className="px-6 py-4 border-b bg-gray-50/80 flex items-center justify-between">
                 <h2 className="font-bold text-gray-800 flex items-center gap-2">
                   <span className="w-1 h-5 rounded-full bg-green-600 inline-block" />
-                  {t.portfolio}
+                  {tp("portfolio")}
                 </h2>
                 <span className="flex items-center gap-1.5 text-xs text-gray-400">
                   <Camera className="h-3.5 w-3.5" />
@@ -426,7 +404,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                       )}
                       {img.isBefore && (
                         <span className="absolute top-2 start-2 bg-gray-900/80 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                          {t.before}
+                          {tp("before")}
                         </span>
                       )}
                     </div>
@@ -441,7 +419,7 @@ export default async function ProviderProfilePage({ params }: Props) {
             <div className="px-6 py-4 border-b bg-gray-50/80">
               <h2 className="font-bold text-gray-800 flex items-center gap-2">
                 <span className="w-1 h-5 rounded-full bg-green-600 inline-block" />
-                {t.reviews}
+                {tp("customerReviews")}
                 {totalReviews > 0 && (
                   <span className="text-xs font-normal text-gray-400 ms-1">({totalReviews})</span>
                 )}
@@ -458,7 +436,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                     </div>
                     <Stars rating={provider.rating} size="md" />
                     <div className="text-xs text-gray-400 mt-1">
-                      {totalReviews} {locale === "ar" ? "تقييم" : locale === "fr" ? "avis" : "reviews"}
+                      {totalReviews} {tp("reviewsLabel")}
                     </div>
                   </div>
                   {/* Distribution bars */}
@@ -477,7 +455,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
                     <Star className="h-7 w-7 text-gray-300" />
                   </div>
-                  <p className="text-gray-500 text-sm">{t.noReviews}</p>
+                  <p className="text-gray-500 text-sm">{tp("noReviews")}</p>
                 </div>
               ) : (
                 <div className="space-y-5 mb-8">
@@ -510,7 +488,7 @@ export default async function ProviderProfilePage({ params }: Props) {
 
               {/* Leave review form */}
               <div className="border-t pt-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">{t.leaveReview}</h3>
+                <h3 className="text-sm font-semibold text-gray-700 mb-4">{tp("leaveReview")}</h3>
                 <ReviewForm providerId={provider.id} />
               </div>
             </div>
@@ -522,19 +500,19 @@ export default async function ProviderProfilePage({ params }: Props) {
               <div className="px-6 py-4 border-b border-amber-200 bg-amber-100/60 flex items-center justify-between">
                 <h2 className="font-bold text-amber-800 flex items-center gap-2">
                   <ShieldAlert className="h-4 w-4" />
-                  {t.adminNote}
+                  {tp("adminNote")}
                 </h2>
                 <Link
                   href="/admin"
                   className="flex items-center gap-1.5 text-xs font-semibold text-amber-700 hover:text-amber-900 bg-amber-200 hover:bg-amber-300 px-3 py-1.5 rounded-lg transition-colors"
                 >
-                  {t.goToAdmin}
+                  {tp("goToAdmin")}
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
               <div className="px-6 py-4 space-y-2 text-sm">
                 <div className="flex items-center gap-2 text-amber-700">
-                  <span className="font-medium">Status:</span>
+                  <span className="font-medium">{tp("status")}:</span>
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                     provider.status === "ACTIVE"    ? "bg-green-100 text-green-700" :
                     provider.status === "PENDING"   ? "bg-amber-100 text-amber-700" :
@@ -549,7 +527,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   </p>
                 )}
                 {!provider.adminNotes && (
-                  <p className="text-amber-500 italic text-xs">No admin notes for this provider.</p>
+                  <p className="text-amber-500 italic text-xs">{tp("noAdminNotes")}</p>
                 )}
               </div>
             </section>
@@ -562,7 +540,7 @@ export default async function ProviderProfilePage({ params }: Props) {
               className="flex items-center gap-1.5 hover:text-green-700 transition-colors"
             >
               <ChevronRight className="h-4 w-4 rotate-180" />
-              {t.backToList}
+              {tp("backTo", { catName })}
             </Link>
             <ReportButton providerId={provider.id} />
           </div>
@@ -597,7 +575,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                     className="flex-1 flex items-center justify-center gap-2 border-2 border-gray-200 hover:border-green-300 text-gray-700 hover:text-green-700 font-semibold py-3 rounded-xl text-sm transition-colors"
                   >
                     <Phone className="h-4 w-4" />
-                    {locale === "ar" ? "اتصال" : locale === "fr" ? "Appeler" : "Call"}
+                    {tp("call")}
                   </a>
                 )}
               </>

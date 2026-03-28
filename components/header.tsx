@@ -10,8 +10,9 @@ import { useTranslations, useLocale } from "next-intl"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import {
   Wrench, Menu, User, LogOut, LayoutDashboard,
-  Settings, ChevronDown, Shield, Home,
+  Settings, ChevronDown, Shield, Home, Sparkles,
 } from "lucide-react"
+import { BecomeProviderModal } from "@/components/become-provider-modal"
 
 function UserDropdown({ user, t }: { user: any; t: any }) {
   const dispatch = useDispatch()
@@ -127,6 +128,8 @@ export function Header() {
   const t = useTranslations("header")
   const locale = useLocale()
   const [scrolled, setScrolled] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [showProviderModal, setShowProviderModal] = useState(false)
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 10)
@@ -195,14 +198,14 @@ export function Header() {
         </div>
 
         {/* MOBILE HAMBURGER */}
-        <Sheet>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden rounded-xl">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
 
-          <SheetContent className="w-80 p-0 flex flex-col" side="right">
+          <SheetContent className="w-80 p-0 flex flex-col" side={locale === "ar" ? "left" : "right"} dir={locale === "ar" ? "rtl" : "ltr"}>
             <SheetTitle className="sr-only">Navigation menu</SheetTitle>
             {/* Header */}
             <div className="p-5 border-b bg-gradient-to-br from-green-50 to-emerald-50">
@@ -278,6 +281,16 @@ export function Header() {
                       </Link>
                     </SheetClose>
                   )}
+                  {user?.role === "CUSTOMER" && (
+                    <button
+                      type="button"
+                      onClick={() => { setSheetOpen(false); setShowProviderModal(true) }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors"
+                    >
+                      <Sparkles className="h-4 w-4 text-amber-500" />
+                      {t("becomeProvider")}
+                    </button>
+                  )}
                 </>
               )}
             </nav>
@@ -318,6 +331,13 @@ export function Header() {
           </SheetContent>
         </Sheet>
       </div>
+
+      {showProviderModal && (
+        <BecomeProviderModal
+          onClose={() => setShowProviderModal(false)}
+          onSuccess={() => {}}
+        />
+      )}
     </header>
   )
 }

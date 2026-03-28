@@ -75,14 +75,14 @@ function* registerWorker(action: ReturnType<typeof registerRequest>): any {
   try {
     yield put(showToast({ message: "Création du compte…", type: "success" }));
 
-    yield call(apiFetch, "/api/auth/register", {
+    const data = yield call(apiFetch, "/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(action.payload),
     });
 
-    const user = yield call(apiFetch, "/api/auth/me");
-    yield put(setUser(user));
+    // Use the user returned directly from the register endpoint — no extra /me call needed
+    yield put(setUser(data.user));
     yield put(showToast({ message: "Compte créé avec succès !", type: "success" }));
     // Navigation is handled by the register page's useEffect which watches Redux user state
   } catch (err: any) {

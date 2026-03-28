@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { notFound } from "next/navigation"
 import { redirect } from "@/i18n/navigation"
-import { getLocale } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import { tMany } from "@/lib/translations"
 import type { Locale } from "@/lib/translations"
 import { Link } from "@/i18n/navigation"
@@ -133,33 +133,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const style      = CATEGORY_STYLES[slug] ?? DEFAULT_STYLE
   const totalPages = Math.ceil(total / limit)
 
-  // Localised UI strings (inline to avoid extra DB round-trips for simple labels)
-  const ui = {
-    services:    locale === "ar" ? "الخدمات"          : locale === "fr" ? "Services"          : "Services",
-    allCities:   locale === "ar" ? "كل المدن"         : locale === "fr" ? "Toutes les villes" : "All cities",
-    allStatus:   locale === "ar" ? "كل الحالات"        : locale === "fr" ? "Toutes"            : "All",
-    available:   locale === "ar" ? "متاح"             : locale === "fr" ? "Disponible"        : "Available",
-    busy:        locale === "ar" ? "مشغول"            : locale === "fr" ? "Occupé"            : "Busy",
-    anyRating:   locale === "ar" ? "أي تقييم"         : locale === "fr" ? "Toute note"        : "Any rating",
-    filter:      locale === "ar" ? "تصفية"            : locale === "fr" ? "Filtrer"           : "Filter",
-    noResults:   locale === "ar" ? "لم يتم إيجاد محترفين" : locale === "fr" ? "Aucun professionnel trouvé" : "No providers found",
-    noResultsSub:locale === "ar" ? "جرب تعديل المرشحات أو ابحث بكلمة مختلفة" : locale === "fr" ? "Essayez d'ajuster les filtres ou cherchez un autre mot" : "Try adjusting filters or search with different keywords",
-    viewProfile: locale === "ar" ? "عرض الملف الشخصي": locale === "fr" ? "Voir le profil"     : "View profile",
-    whatsapp:    locale === "ar" ? "واتساب"           : locale === "fr" ? "WhatsApp"          : "WhatsApp",
-    call:        locale === "ar" ? "اتصال"            : locale === "fr" ? "Appeler"           : "Call",
-    verified:    locale === "ar" ? "موثوق"            : locale === "fr" ? "Vérifié"           : "Verified",
-    experience:  locale === "ar" ? "سنوات خبرة"      : locale === "fr" ? "ans d'expérience"  : "years experience",
-    reviews:     locale === "ar" ? "تقييم"            : locale === "fr" ? "avis"              : "reviews",
-    providers:   locale === "ar" ? "محترف"            : locale === "fr" ? "professionnel(s)"  : "provider(s)",
-    sortBy:      locale === "ar" ? "ترتيب حسب"        : locale === "fr" ? "Trier par"         : "Sort by",
-    sortRating:  locale === "ar" ? "الأعلى تقييمًا"   : locale === "fr" ? "Mieux notés"       : "Highest rated",
-    sortReviews: locale === "ar" ? "الأكثر تقييمًا"   : locale === "fr" ? "Plus d'avis"       : "Most reviews",
-    sortNewest:  locale === "ar" ? "الأحدث"           : locale === "fr" ? "Plus récents"      : "Newest",
-    joinCta:     locale === "ar" ? `هل أنت محترف في ${catName}؟` : locale === "fr" ? `Vous êtes un professionnel en ${catName} ?` : `Are you a ${catName} professional?`,
-    joinSub:     locale === "ar" ? "انضم إلى آلاف المحترفين على خديمتي.كوم" : locale === "fr" ? "Rejoignez des milliers de professionnels sur khdimti.com" : "Join thousands of professionals on khdimti.com",
-    joinBtn:     locale === "ar" ? "سجّل نشاطك"       : locale === "fr" ? "Inscrivez votre activité" : "List your business",
-    searchPlaceholder: locale === "ar" ? "ابحث عن محترف..." : locale === "fr" ? "Rechercher un professionnel..." : "Search for a professional...",
-  }
+  const ui = await getTranslations("categoryPage")
 
   // Build filter query string helper
   function filterHref(overrides: Record<string, string | undefined>) {
@@ -190,10 +164,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-white/70 text-sm mb-6">
               <Link href="/" className="hover:text-white transition-colors">
-                {locale === "ar" ? "الرئيسية" : locale === "fr" ? "Accueil" : "Home"}
+                {ui("home")}
               </Link>
               <ChevronRight className="h-3 w-3" />
-              <Link href="/services" className="hover:text-white transition-colors">{ui.services}</Link>
+              <Link href="/services" className="hover:text-white transition-colors">{ui("services")}</Link>
               <ChevronRight className="h-3 w-3" />
               <span className="text-white font-medium">{catName}</span>
             </nav>
@@ -203,7 +177,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               <div>
                 <h1 className="text-4xl font-bold mb-2">{catName}</h1>
                 <p className="text-white/80 text-lg">
-                  {total} {ui.providers}
+                  {total} {ui("providers")}
                   {q && ` — "${q}"`}
                 </p>
               </div>
@@ -224,13 +198,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               <input
                 name="q"
                 defaultValue={q}
-                placeholder={ui.searchPlaceholder}
+                placeholder={ui("searchPlaceholder")}
                 className="w-full pl-10 pr-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
             </div>
             <button type="submit" className="px-5 py-2.5 bg-green-700 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
               <Filter className="h-4 w-4" />
-              {ui.filter}
+              {ui("filter")}
             </button>
           </form>
         </div>
@@ -244,7 +218,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                 <div className="bg-gray-50 border-b px-4 py-3 flex items-center gap-2">
                   <SlidersHorizontal className="h-4 w-4 text-gray-500" />
                   <span className="font-semibold text-sm text-gray-700">
-                    {locale === "ar" ? "المرشحات" : locale === "fr" ? "Filtres" : "Filters"}
+                    {ui("filters")}
                   </span>
                 </div>
                 <form method="GET" className="p-4 space-y-5">
@@ -254,10 +228,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   {/* City */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                      {locale === "ar" ? "المدينة" : locale === "fr" ? "Ville" : "City"}
+                      {ui("city")}
                     </label>
                     <select name="cityId" defaultValue={sp.cityId ?? ""} className="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-green-500 focus:outline-none">
-                      <option value="">{ui.allCities}</option>
+                      <option value="">{ui("allCities")}</option>
                       {cities.map(c => (
                         <option key={c.id} value={c.id}>
                           {locale === "ar" ? c.nameAr : locale === "fr" ? c.nameFr : c.name}
@@ -269,19 +243,19 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   {/* Availability */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                      {locale === "ar" ? "الحالة" : locale === "fr" ? "Disponibilité" : "Availability"}
+                      {ui("availability")}
                     </label>
                     <select name="availability" defaultValue={sp.availability ?? ""} className="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-green-500 focus:outline-none">
-                      <option value="">{ui.allStatus}</option>
-                      <option value="AVAILABLE">{ui.available}</option>
-                      <option value="BUSY">{ui.busy}</option>
+                      <option value="">{ui("allStatus")}</option>
+                      <option value="AVAILABLE">{ui("available")}</option>
+                      <option value="BUSY">{ui("busy")}</option>
                     </select>
                   </div>
 
                   {/* Rating */}
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                      {locale === "ar" ? "الحد الأدنى للتقييم" : locale === "fr" ? "Note minimale" : "Min. rating"}
+                      {ui("minRating")}
                     </label>
                     <div className="space-y-1.5">
                       {["", "4", "3"].map(val => (
@@ -294,9 +268,9 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                             className="accent-green-700"
                           />
                           <span className="text-sm text-gray-700">
-                            {val === "" ? ui.anyRating : (
+                            {val === "" ? ui("anyRating") : (
                               <span className="flex items-center gap-1">
-                                {val}★ {locale === "ar" ? "وأكثر" : locale === "fr" ? "et plus" : "+ above"}
+                                {val}★ {ui("andAbove")}
                               </span>
                             )}
                           </span>
@@ -306,13 +280,13 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   </div>
 
                   <button type="submit" className="w-full bg-green-700 hover:bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium transition-colors">
-                    {ui.filter}
+                    {ui("filter")}
                   </button>
 
                   {/* Reset */}
                   {(sp.cityId || sp.availability || sp.minRating || q) && (
                     <Link href="?" className="block text-center text-xs text-gray-400 hover:text-gray-600 transition-colors">
-                      {locale === "ar" ? "إعادة تعيين المرشحات" : locale === "fr" ? "Réinitialiser les filtres" : "Reset filters"}
+                      {ui("resetFilters")}
                     </Link>
                   )}
                 </form>
@@ -325,16 +299,16 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
                 <p className="text-sm text-gray-500">
                   {total > 0 ? (
-                    <><span className="font-semibold text-gray-800">{total}</span> {ui.providers}</>
+                    <><span className="font-semibold text-gray-800">{total}</span> {ui("providers")}</>
                   ) : null}
                 </p>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">{ui.sortBy}:</span>
+                  <span className="text-xs text-gray-500">{ui("sortBy")}:</span>
                   <div className="flex gap-1">
                     {[
-                      { key: "rating",  label: ui.sortRating },
-                      { key: "reviews", label: ui.sortReviews },
-                      { key: "newest",  label: ui.sortNewest },
+                      { key: "rating",  label: ui("sortRating") },
+                      { key: "reviews", label: ui("sortReviews") },
+                      { key: "newest",  label: ui("sortNewest") },
                     ].map(opt => (
                       <Link
                         key={opt.key}
@@ -358,11 +332,11 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                   <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-4xl mb-4">
                     <Users className="h-10 w-10 text-gray-300" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">{ui.noResults}</h3>
-                  <p className="text-sm text-gray-400 max-w-xs">{ui.noResultsSub}</p>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">{ui("noResults")}</h3>
+                  <p className="text-sm text-gray-400 max-w-xs">{ui("noResultsSub")}</p>
                   {(sp.cityId || sp.availability || sp.minRating || q) && (
                     <Link href="?" className="mt-4 text-sm text-green-700 hover:underline">
-                      {locale === "ar" ? "إزالة المرشحات" : locale === "fr" ? "Enlever les filtres" : "Remove filters"}
+                      {ui("removeFilters")}
                     </Link>
                   )}
                 </div>
@@ -400,7 +374,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                               <div className="flex items-center gap-1.5 flex-wrap">
                                 <h3 className="font-semibold text-gray-900 text-sm truncate">{provider.businessName}</h3>
                                 {provider.isVerified && (
-                                  <Shield className="h-3.5 w-3.5 text-green-600 flex-shrink-0" title={ui.verified} />
+                                  <Shield className="h-3.5 w-3.5 text-green-600 flex-shrink-0" title={ui("verified")} />
                                 )}
                               </div>
                               <p className="text-xs text-gray-400 truncate">{catLabel}</p>
@@ -412,7 +386,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                             <StarRating rating={provider.rating} />
                             <span className="text-xs text-gray-500">
                               {provider.rating > 0 ? provider.rating.toFixed(1) : "—"}
-                              {" "}({provider.reviewCount} {ui.reviews})
+                              {" "}({provider.reviewCount} {ui("reviews")})
                             </span>
                           </div>
 
@@ -422,7 +396,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                               <MapPin className="h-3 w-3" />{cityName}
                             </span>
                             {provider.yearsExperience && (
-                              <span>{provider.yearsExperience} {ui.experience}</span>
+                              <span>{provider.yearsExperience} {ui("experience")}</span>
                             )}
                           </div>
 
@@ -440,14 +414,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
                                 className="flex-1 flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-500 text-white text-xs font-medium py-2 rounded-lg transition-colors"
                               >
                                 <MessageCircle className="h-3.5 w-3.5" />
-                                {ui.whatsapp}
+                                {ui("whatsapp")}
                               </a>
                             )}
                             <Link
                               href={`/services/${provider.category.slug}/${provider.id}`}
                               className="flex-1 flex items-center justify-center gap-1.5 border border-gray-200 hover:border-green-300 hover:bg-green-50 text-gray-700 hover:text-green-700 text-xs font-medium py-2 rounded-lg transition-colors"
                             >
-                              {ui.viewProfile}
+                              {ui("viewProfile")}
                             </Link>
                           </div>
                         </div>
@@ -482,14 +456,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               {/* ── CTA for providers ─────────────────────────────────────── */}
               <div className={`mt-12 rounded-2xl bg-gradient-to-br ${style.gradient} text-white p-8 text-center`}>
                 <div className="text-4xl mb-3">{style.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{ui.joinCta}</h3>
-                <p className="text-white/80 mb-5 text-sm">{ui.joinSub}</p>
+                <h3 className="text-xl font-bold mb-2">{ui("joinCta", { catName })}</h3>
+                <p className="text-white/80 mb-5 text-sm">{ui("joinSub")}</p>
                 <Link
                   href="/provider/register"
                   className="inline-flex items-center gap-2 bg-white text-green-800 hover:bg-green-50 font-semibold px-6 py-3 rounded-full transition-colors text-sm"
                 >
                   <CheckCircle className="h-4 w-4" />
-                  {ui.joinBtn}
+                  {ui("joinBtn")}
                 </Link>
               </div>
             </div>

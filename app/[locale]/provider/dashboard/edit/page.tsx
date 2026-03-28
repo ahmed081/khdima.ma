@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { WorkingHoursEditor, type WorkingHoursData } from "@/components/provider/working-hours-editor"
 import { Link } from "@/i18n/navigation"
+import { CategoryCombobox } from "@/components/category-combobox"
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -418,19 +419,11 @@ export default function EditProviderProfilePage() {
                   <label className="block text-sm font-semibold text-gray-700">
                     {t("business.category")}
                   </label>
-                  <div className="relative">
-                    <select
-                      value={form.categoryId}
-                      onChange={set("categoryId")}
-                      className="w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
-                    >
-                      <option value={0}>{t("business.selectCategory")}</option>
-                      {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </select>
-                    <ChevronRight className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rotate-90 text-gray-400" />
-                  </div>
+                  <CategoryCombobox
+                    value={form.categoryId ? String(form.categoryId) : ""}
+                    onChange={v => setForm(p => ({ ...p, categoryId: v ? Number(v) : 0 }))}
+                    placeholder={t("business.selectCategory")}
+                  />
                 </div>
 
                 {/* City */}

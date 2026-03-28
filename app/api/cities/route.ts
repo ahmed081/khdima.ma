@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET(req: NextRequest) {
   try {
     const locale = req.nextUrl.searchParams.get('locale') ?? 'fr'
-    const cities = await prisma.city.findMany({ orderBy: { name: 'asc' } })
+    const cities = await prisma.city.findMany({ where: { isActive: true }, orderBy: [{ order: 'asc' }, { name: 'asc' }] })
 
     const result = cities.map(c => ({
       id: c.id,

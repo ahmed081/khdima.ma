@@ -1,19 +1,36 @@
 "use client"
 
 import { Link, useRouter } from "@/i18n/navigation"
-import { useState } from "react"
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { Wrench, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle, TrendingUp, Clock, BadgeCheck } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { selectUser, selectAuthInitialized, setUser } from "@/store/slices/authSlice"
+import { useMutation } from "@tanstack/react-query"
+import { Wrench, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle, TrendingUp, Clock, BadgeCheck, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { CityCombobox } from "@/components/city-combobox"
+import { CategoryCombobox } from "@/components/category-combobox"
 
 export default function ProviderRegisterPage() {
-  const router = useRouter()
-  const locale = useLocale()
-  const isRtl  = locale === 'ar'
+  const router      = useRouter()
+  const locale      = useLocale()
+  const isRtl       = locale === 'ar'
+  const tpr         = useTranslations("providerRegister")
+  const dispatch    = useDispatch()
+  const user        = useSelector(selectUser)
+  const initialized = useSelector(selectAuthInitialized)
+
+  // PROVIDER → redirect to dashboard
+  useEffect(() => {
+    if (!initialized) return
+    if (user?.role === "PROVIDER") router.replace("/provider/dashboard")
+  }, [user, initialized, router])
+
+  // For CLIENT users: start directly at business info step
+  const isClient = user?.role === "CUSTOMER"
 
   const [step, setStep]             = useState(1)
   const [localError, setLocalError] = useState("")
@@ -27,85 +44,71 @@ export default function ProviderRegisterPage() {
 
   const set = (key: string, value: string) => setForm(p => ({ ...p, [key]: value }))
 
-  const { data: cities = [] } = useQuery({
-    queryKey: ['cities', locale],
-    queryFn: () => fetch(`/api/cities?locale=${locale}`).then(r => r.json()),
-  })
-
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories', locale],
-    queryFn: () => fetch(`/api/categories?locale=${locale}`).then(r => r.json()),
-  })
-
+  // Client users call become-provider; guests call provider-register
   const registerMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("/api/auth/provider-register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name:            form.name,
-          email:           form.email,
-          password:        form.password,
-          businessName:    form.businessName,
-          phone:           form.phone,
-          whatsapp:        form.whatsapp || undefined,
-          cityId:          parseInt(form.cityId),
-          categoryId:      parseInt(form.categoryId),
-          yearsExperience: form.yearsExperience ? parseInt(form.yearsExperience) : undefined,
-          bio:             form.bio || undefined,
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Registration failed")
-      return data
+      if (isClient) {
+        const res = await fetch("/api/auth/become-provider", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            businessName:    form.businessName,
+            phone:           form.phone,
+            whatsapp:        form.whatsapp || undefined,
+            cityId:          parseInt(form.cityId),
+            categoryId:      parseInt(form.categoryId),
+            yearsExperience: form.yearsExperience ? parseInt(form.yearsExperience) : undefined,
+            bio:             form.bio || undefined,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || "Error")
+        return data
+      } else {
+        const res = await fetch("/api/auth/provider-register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name:            form.name,
+            email:           form.email,
+            password:        form.password,
+            businessName:    form.businessName,
+            phone:           form.phone,
+            whatsapp:        form.whatsapp || undefined,
+            cityId:          parseInt(form.cityId),
+            categoryId:      parseInt(form.categoryId),
+            yearsExperience: form.yearsExperience ? parseInt(form.yearsExperience) : undefined,
+            bio:             form.bio || undefined,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || "Registration failed")
+        return data
+      }
     },
-    onSuccess: () => router.push('/provider/dashboard'),
+    onSuccess: (data: any) => {
+      if (data?.user) dispatch(setUser(data.user))
+      router.push('/provider/dashboard')
+    },
     onError:   (err: any) => setLocalError(err.message),
   })
 
   const handleStep1 = (e: React.FormEvent) => {
     e.preventDefault()
     setLocalError("")
-    const mismatch = isRtl ? 'كلمات المرور غير متطابقة' : locale === 'fr' ? 'Les mots de passe ne correspondent pas' : 'Passwords do not match'
-    if (form.password !== form.confirm) { setLocalError(mismatch); return }
+    if (form.password !== form.confirm) { setLocalError(tpr("passwordsNoMatch")); return }
     setStep(2)
   }
 
-  const L = {
-    title:        isRtl ? 'أضف نشاطك التجاري'      : locale === 'fr' ? 'Référencer mon activité'           : 'List your business',
-    subtitle:     isRtl ? 'انضم إلى آلاف المحترفين'  : locale === 'fr' ? 'Rejoignez des milliers de pros'   : 'Join thousands of professionals',
-    step1:        isRtl ? 'الحساب'                   : locale === 'fr' ? 'Compte'                            : 'Account',
-    step2:        isRtl ? 'النشاط'                   : locale === 'fr' ? 'Activité'                          : 'Business',
-    fullName:     isRtl ? 'الاسم الكامل'             : locale === 'fr' ? 'Nom complet'                       : 'Full name',
-    email:        isRtl ? 'البريد الإلكتروني'        : locale === 'fr' ? 'Email'                             : 'Email',
-    password:     isRtl ? 'كلمة المرور'              : locale === 'fr' ? 'Mot de passe'                      : 'Password',
-    confirm:      isRtl ? 'تأكيد كلمة المرور'        : locale === 'fr' ? 'Confirmer le mot de passe'         : 'Confirm password',
-    next:         isRtl ? 'التالي'                   : locale === 'fr' ? 'Suivant'                           : 'Next',
-    businessName: isRtl ? 'اسم النشاط'              : locale === 'fr' ? "Nom de l'activité"                 : 'Business name',
-    phone:        isRtl ? 'الهاتف'                   : locale === 'fr' ? 'Téléphone'                         : 'Phone',
-    whatsapp:     isRtl ? 'واتساب (اختياري)'         : locale === 'fr' ? 'WhatsApp (optionnel)'              : 'WhatsApp (optional)',
-    city:         isRtl ? 'المدينة'                  : locale === 'fr' ? 'Ville'                             : 'City',
-    selectCity:   isRtl ? 'اختر مدينة'              : locale === 'fr' ? 'Sélectionnez une ville'             : 'Select a city',
-    category:     isRtl ? 'فئة الخدمة'              : locale === 'fr' ? 'Catégorie de service'               : 'Service category',
-    selectCat:    isRtl ? 'اختر فئة'                : locale === 'fr' ? 'Sélectionnez une catégorie'         : 'Select a category',
-    experience:   isRtl ? 'سنوات الخبرة'            : locale === 'fr' ? "Années d'expérience"                : 'Years of experience',
-    bio:          isRtl ? 'وصف نشاطك'               : locale === 'fr' ? 'Décrivez votre activité'            : 'Describe your business',
-    bioPlaceholder: isRtl ? 'اكتب نبذة عن خدماتك...' : locale === 'fr' ? 'Décrivez vos services, votre expérience...' : 'Describe your services, experience...',
-    back:         isRtl ? 'رجوع'                    : locale === 'fr' ? 'Retour'                             : 'Back',
-    register:     isRtl ? 'إنشاء الحساب'            : locale === 'fr' ? "S'inscrire"                        : 'Register',
-    registering:  isRtl ? '...'                      : locale === 'fr' ? 'Inscription...'                     : 'Registering...',
-    hasAccount:   isRtl ? 'لديك حساب؟'              : locale === 'fr' ? 'Déjà un compte ?'                   : 'Already have an account?',
-    loginLink:    isRtl ? 'تسجيل الدخول'            : locale === 'fr' ? 'Se connecter'                       : 'Sign in',
-    clientRegister: isRtl ? 'تسجيل كعميل'           : locale === 'fr' ? 'Créer un compte client'             : 'Register as client',
-    pending:      isRtl ? 'سيتم مراجعة ملفك من قِبَل فريقنا قبل النشر' : locale === 'fr' ? 'Votre profil sera examiné par notre équipe avant publication' : 'Your profile will be reviewed before going live',
-  }
-
   const benefits = [
-    { icon: TrendingUp,  text: isRtl ? 'احصل على عملاء جدد كل يوم' : locale === 'fr' ? 'Recevez de nouveaux clients chaque jour' : 'Get new clients every day' },
-    { icon: BadgeCheck,  text: isRtl ? 'شارة "محترف موثوق"'         : locale === 'fr' ? 'Badge "Pro Vérifié"'                     : '"Verified Pro" badge' },
-    { icon: Clock,       text: isRtl ? 'ظهور فوري في البحث'         : locale === 'fr' ? 'Visibilité immédiate sur les recherches' : 'Instant visibility in searches' },
-    { icon: CheckCircle, text: isRtl ? 'مجاني للبدء'                : locale === 'fr' ? 'Inscription 100% gratuite'               : '100% free to start' },
+    { icon: TrendingUp,  text: tpr("benefit1") },
+    { icon: BadgeCheck,  text: tpr("benefit2") },
+    { icon: Clock,       text: tpr("benefit3") },
+    { icon: CheckCircle, text: tpr("benefit4") },
   ]
+
+  // Wait for auth to initialize before rendering
+  if (!initialized) return null
 
   return (
     <div className="min-h-screen flex" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -130,12 +133,12 @@ export default function ProviderRegisterPage() {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold mb-4">
               <Wrench className="h-3.5 w-3.5" />
-              {isRtl ? 'للمحترفين' : locale === 'fr' ? 'Espace Professionnel' : 'For Professionals'}
+              {tpr("forProfessionals")}
             </div>
             <h1 className="text-4xl font-extrabold text-white leading-tight">
-              {L.title}
+              {tpr("title")}
             </h1>
-            <p className="mt-3 text-green-100 text-lg">{L.subtitle}</p>
+            <p className="mt-3 text-green-100 text-lg">{tpr("subtitle")}</p>
           </div>
 
           <ul className="space-y-4">
@@ -151,7 +154,7 @@ export default function ProviderRegisterPage() {
 
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
             <p className="text-white/80 text-sm leading-relaxed">
-              ⚡ {L.pending}
+              ⚡ {tpr("pendingNotice")}
             </p>
           </div>
         </div>
@@ -178,47 +181,55 @@ export default function ProviderRegisterPage() {
         <div className="mx-auto w-full max-w-md">
           {/* Header */}
           <div className="mb-8">
-            <h2 className="text-3xl font-extrabold text-gray-900">{L.title}</h2>
-            <p className="mt-1 text-gray-500">{L.subtitle}</p>
+            {isClient && (
+              <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
+                <Briefcase className="h-4 w-4 flex-shrink-0" />
+                {tpr("loggedInAsClient")}
+              </div>
+            )}
+            <h2 className="text-3xl font-extrabold text-gray-900">{tpr("title")}</h2>
+            <p className="mt-1 text-gray-500">{tpr("subtitle")}</p>
           </div>
 
-          {/* Step indicator */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              {[1, 2].map(s => (
-                <div key={s} className="flex items-center gap-2 flex-1">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-all ${
-                    step > s ? 'bg-green-600 text-white' :
-                    step === s ? 'bg-green-600 text-white ring-4 ring-green-100' :
-                    'bg-gray-100 text-gray-400'
-                  }`}>
-                    {step > s ? <CheckCircle className="h-4 w-4" /> : s}
+          {/* Step indicator — only for guests */}
+          {!isClient && (
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-3">
+                {[1, 2].map(s => (
+                  <div key={s} className="flex items-center gap-2 flex-1">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-all ${
+                      step > s ? 'bg-green-600 text-white' :
+                      step === s ? 'bg-green-600 text-white ring-4 ring-green-100' :
+                      'bg-gray-100 text-gray-400'
+                    }`}>
+                      {step > s ? <CheckCircle className="h-4 w-4" /> : s}
+                    </div>
+                    <span className={`text-sm font-medium ${step >= s ? 'text-gray-800' : 'text-gray-400'}`}>
+                      {s === 1 ? tpr("step1") : tpr("step2")}
+                    </span>
+                    {s < 2 && <div className={`flex-1 h-0.5 rounded ${step > s ? 'bg-green-600' : 'bg-gray-200'}`} />}
                   </div>
-                  <span className={`text-sm font-medium ${step >= s ? 'text-gray-800' : 'text-gray-400'}`}>
-                    {s === 1 ? L.step1 : L.step2}
-                  </span>
-                  {s < 2 && <div className={`flex-1 h-0.5 rounded ${step > s ? 'bg-green-600' : 'bg-gray-200'}`} />}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Step 1: Account info */}
-          {step === 1 && (
+          {/* Step 1: Account info — guests only */}
+          {!isClient && step === 1 && (
             <form className="space-y-5" onSubmit={handleStep1}>
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.fullName}</Label>
+                <Label className="text-sm font-medium text-gray-700">{tpr("fullName")}</Label>
                 <Input
                   value={form.name}
                   onChange={e => set("name", e.target.value)}
                   required
-                  placeholder={isRtl ? 'الاسم الكامل' : 'Votre nom complet'}
+                  placeholder={tpr("fullName")}
                   className="h-11 rounded-xl border-gray-200 focus:border-green-500"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.email}</Label>
+                <Label className="text-sm font-medium text-gray-700">{tpr("email")}</Label>
                 <Input
                   type="email"
                   value={form.email}
@@ -230,7 +241,7 @@ export default function ProviderRegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.password}</Label>
+                <Label className="text-sm font-medium text-gray-700">{tpr("password")}</Label>
                 <div className="relative">
                   <Input
                     type={showPass ? "text" : "password"}
@@ -238,7 +249,7 @@ export default function ProviderRegisterPage() {
                     onChange={e => set("password", e.target.value)}
                     required
                     minLength={8}
-                    placeholder="••••••••"
+                    placeholder=""
                     className="h-11 rounded-xl border-gray-200 focus:border-green-500 pe-10"
                   />
                   <button type="button" onClick={() => setShowPass(v => !v)} className="absolute inset-y-0 end-0 flex items-center px-3 text-gray-400 hover:text-gray-600">
@@ -248,14 +259,14 @@ export default function ProviderRegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.confirm}</Label>
+                <Label className="text-sm font-medium text-gray-700">{tpr("confirmPassword")}</Label>
                 <div className="relative">
                   <Input
                     type={showConfirm ? "text" : "password"}
                     value={form.confirm}
                     onChange={e => set("confirm", e.target.value)}
                     required
-                    placeholder="••••••••"
+                    placeholder=""
                     className="h-11 rounded-xl border-gray-200 focus:border-green-500 pe-10"
                   />
                   <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute inset-y-0 end-0 flex items-center px-3 text-gray-400 hover:text-gray-600">
@@ -274,29 +285,29 @@ export default function ProviderRegisterPage() {
                 className="w-full h-11 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold shadow-sm flex items-center justify-center gap-2"
                 type="submit"
               >
-                {L.next}
+                {tpr("next")}
                 {isRtl ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
               </Button>
             </form>
           )}
 
-          {/* Step 2: Business info */}
-          {step === 2 && (
+          {/* Step 2: Business info — clients start here, guests come from step 1 */}
+          {(isClient || step === 2) && (
             <form className="space-y-5" onSubmit={e => { e.preventDefault(); setLocalError(""); registerMutation.mutate() }}>
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.businessName}</Label>
+                <Label className="text-sm font-medium text-gray-700">{tpr("businessName")}</Label>
                 <Input
                   value={form.businessName}
                   onChange={e => set("businessName", e.target.value)}
                   required
-                  placeholder={isRtl ? 'اسم نشاطك أو شركتك' : locale === 'fr' ? 'Votre nom ou celui de votre entreprise' : 'Your name or business name'}
+                  placeholder={tpr("businessName")}
                   className="h-11 rounded-xl border-gray-200 focus:border-green-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-gray-700">{L.phone}</Label>
+                  <Label className="text-sm font-medium text-gray-700">{tpr("phone")}</Label>
                   <Input
                     type="tel"
                     value={form.phone}
@@ -307,7 +318,7 @@ export default function ProviderRegisterPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-gray-700">{L.whatsapp}</Label>
+                  <Label className="text-sm font-medium text-gray-700">{tpr("whatsapp")}</Label>
                   <Input
                     type="tel"
                     value={form.whatsapp}
@@ -320,19 +331,16 @@ export default function ProviderRegisterPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-gray-700">{L.city}</Label>
-                  <select
+                  <Label className="text-sm font-medium text-gray-700">{tpr("city")}</Label>
+                  <CityCombobox
                     value={form.cityId}
-                    onChange={e => set("cityId", e.target.value)}
+                    onChange={v => set("cityId", v)}
                     required
-                    className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm bg-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                  >
-                    <option value="">{L.selectCity}</option>
-                    {cities.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
+                    placeholder={tpr("selectCity")}
+                  />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-sm font-medium text-gray-700">{L.experience}</Label>
+                  <Label className="text-sm font-medium text-gray-700">{tpr("experience")}</Label>
                   <Input
                     type="number"
                     min="0"
@@ -346,25 +354,22 @@ export default function ProviderRegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.category}</Label>
-                <select
+                <Label className="text-sm font-medium text-gray-700">{tpr("category")}</Label>
+                <CategoryCombobox
                   value={form.categoryId}
-                  onChange={e => set("categoryId", e.target.value)}
+                  onChange={v => set("categoryId", v)}
                   required
-                  className="w-full h-11 border border-gray-200 rounded-xl px-3 text-sm bg-white focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                >
-                  <option value="">{L.selectCat}</option>
-                  {categories.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
+                  placeholder={tpr("selectCategory")}
+                />
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm font-medium text-gray-700">{L.bio}</Label>
+                <Label className="text-sm font-medium text-gray-700">{tpr("bio")}</Label>
                 <Textarea
                   value={form.bio}
                   onChange={e => set("bio", e.target.value)}
                   rows={3}
-                  placeholder={L.bioPlaceholder}
+                  placeholder={tpr("bioPlaceholder")}
                   className="rounded-xl border-gray-200 focus:border-green-500 resize-none"
                 />
               </div>
@@ -376,20 +381,22 @@ export default function ProviderRegisterPage() {
               )}
 
               <div className="flex gap-3">
+                {!isClient && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1 h-11 rounded-xl border-gray-200 flex items-center justify-center gap-2"
+                    onClick={() => setStep(1)}
+                  >
+                    {isRtl ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+                    {tpr("back")}
+                  </Button>
+                )}
                 <Button
-                  type="button"
-                  variant="outline"
-                  className="flex-1 h-11 rounded-xl border-gray-200 flex items-center justify-center gap-2"
-                  onClick={() => setStep(1)}
-                >
-                  {isRtl ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
-                  {L.back}
-                </Button>
-                <Button
-                  className="flex-1 h-11 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold shadow-sm"
+                  className={`h-11 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold shadow-sm ${isClient ? "w-full" : "flex-1"}`}
                   disabled={registerMutation.isPending}
                 >
-                  {registerMutation.isPending ? L.registering : L.register}
+                  {registerMutation.isPending ? tpr("registering") : tpr("register")}
                 </Button>
               </div>
             </form>
@@ -397,17 +404,27 @@ export default function ProviderRegisterPage() {
 
           {/* Footer links */}
           <div className="mt-6 text-center text-sm text-gray-500 space-y-2">
-            <p>
-              {L.hasAccount}{" "}
-              <Link href="/login" className="font-semibold text-green-700 hover:text-green-600 hover:underline">
-                {L.loginLink}
-              </Link>
-            </p>
-            <p>
-              <Link href="/register" className="font-medium text-gray-400 hover:text-gray-600 hover:underline text-xs">
-                {L.clientRegister}
-              </Link>
-            </p>
+            {isClient ? (
+              <p>
+                <Link href="/client/dashboard" className="font-medium text-gray-400 hover:text-gray-600 hover:underline text-xs">
+                  ← {tpr("backToDashboard")}
+                </Link>
+              </p>
+            ) : (
+              <>
+                <p>
+                  {tpr("hasAccount")}{" "}
+                  <Link href="/login" className="font-semibold text-green-700 hover:text-green-600 hover:underline">
+                    {tpr("loginLink")}
+                  </Link>
+                </p>
+                <p>
+                  <Link href="/register" className="font-medium text-gray-400 hover:text-gray-600 hover:underline text-xs">
+                    {tpr("clientRegister")}
+                  </Link>
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>

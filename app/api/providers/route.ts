@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         where,
         skip,
         take: limit,
-        orderBy: [{ rating: 'desc' }, { reviewCount: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }, { rating: 'desc' }, { reviewCount: 'desc' }],
         include: {
           city:     true,
           category: true,

@@ -34,7 +34,10 @@ export async function POST(req: NextRequest) {
       { expiresIn: "7d" }
     )
 
-    const response = NextResponse.json({ message: "Compte créé avec succès" })
+    const response = NextResponse.json({
+      message: "Compte créé avec succès",
+      user: { id: result.id, name: result.name, email: result.email, role: result.role, phone: result.phone },
+    })
     response.cookies.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

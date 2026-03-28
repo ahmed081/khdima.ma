@@ -96,6 +96,8 @@ model City {
   nameAr    String
   nameFr    String
   countryId Int
+  isActive  Boolean    @default(true)
+  order     Int        @default(0)
   country   Country    @relation(fields: [countryId], references: [id])
   users     User[]
   providers Provider[]
@@ -264,6 +266,20 @@ model Report {
 // =====================================
 //   CONTACT LOGS (analytics)
 // =====================================
+// =====================================
+//   PASSWORD RESET TOKENS
+// =====================================
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
 model ContactLog {
   id         Int         @id @default(autoincrement())
   providerId Int

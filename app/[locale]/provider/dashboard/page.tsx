@@ -83,6 +83,7 @@ function QuickAction({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ProviderDashboardPage() {
   const t      = useTranslations("provider")
+  const td     = useTranslations("providerDashboard")
   const locale = useLocale()
   const qc     = useQueryClient()
   const isRTL  = locale === "ar"
@@ -128,7 +129,7 @@ export default function ProviderDashboardPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-3" />
-          <p className="text-red-600">{data?.error ?? "Error loading dashboard"}</p>
+          <p className="text-red-600">{data?.error ?? td("errorLoading")}</p>
         </div>
       </div>
     )
@@ -142,8 +143,6 @@ export default function ProviderDashboardPage() {
     isAvailable ? { label: t("available"), color: "bg-green-500", text: "text-green-700", bg: "bg-green-50", border: "border-green-200" } :
     isBusy      ? { label: t("busy"),      color: "bg-amber-500", text: "text-amber-700", bg: "bg-amber-50",  border: "border-amber-200"  } :
                   { label: t("inactive"),   color: "bg-gray-400",  text: "text-gray-600",  bg: "bg-gray-50",   border: "border-gray-200"   }
-
-  const l = (ar: string, fr: string, en: string) => locale === "ar" ? ar : locale === "fr" ? fr : en
 
   return (
     <main className="min-h-screen bg-slate-50 pb-16" dir={isRTL ? "rtl" : "ltr"}>
@@ -180,7 +179,7 @@ export default function ProviderDashboardPage() {
                 {provider?.isVerified && (
                   <span className="flex items-center gap-1 text-xs font-semibold bg-white/15 border border-white/25 text-white px-2 py-0.5 rounded-full">
                     <CheckCircle className="h-3 w-3" />
-                    {l("موثوق", "Vérifié", "Verified")}
+                    {td("verifiedBadge")}
                   </span>
                 )}
               </div>
@@ -235,7 +234,7 @@ export default function ProviderDashboardPage() {
             <div>
               <p className="font-semibold text-amber-800 text-sm">{t("pendingApproval")}</p>
               <p className="text-amber-600 text-xs mt-0.5">
-                {l("سيتم مراجعة ملفك الشخصي من قِبل الإدارة قريباً.", "Votre profil est en cours de vérification par notre équipe.", "Your profile is being reviewed by our team.")}
+                {td("pendingMessage")}
               </p>
             </div>
           </div>
@@ -252,22 +251,22 @@ export default function ProviderDashboardPage() {
           <StatCard
             icon={<Star className="h-5 w-5 text-amber-500 fill-amber-500" />}
             value={stats?.rating?.toFixed(1) ?? "—"}
-            label={l("التقييم", "Note", "Rating")}
-            sublabel={`${stats?.reviewCount ?? 0} ${l("تقييم", "avis", "reviews")}`}
+            label={td("rating")}
+            sublabel={`${stats?.reviewCount ?? 0} ${td("reviews")}`}
             color="bg-amber-500"
           />
           <StatCard
             icon={<MessageCircle className="h-5 w-5 text-green-600" />}
             value={contactStats?.whatsapp ?? 0}
             label="WhatsApp"
-            sublabel={l("آخر 30 يوم", "30 derniers jours", "Last 30 days")}
+            sublabel={td("last30Days")}
             color="bg-green-500"
           />
           <StatCard
             icon={<Phone className="h-5 w-5 text-purple-600" />}
             value={contactStats?.call ?? 0}
-            label={l("مكالمات", "Appels", "Calls")}
-            sublabel={l("آخر 30 يوم", "30 derniers jours", "Last 30 days")}
+            label={td("calls")}
+            sublabel={td("last30Days")}
             color="bg-purple-500"
           />
         </div>
@@ -281,10 +280,10 @@ export default function ProviderDashboardPage() {
               <div>
                 <h2 className="font-bold text-gray-900 flex items-center gap-2">
                   <BarChart2 className="h-4 w-4 text-green-600" />
-                  {l("نشاط التواصل", "Activité des contacts", "Contact Activity")}
+                  {td("contactActivity")}
                 </h2>
                 <p className="text-xs text-gray-400 mt-0.5">
-                  {l("آخر 7 أيام", "7 derniers jours", "Last 7 days")}
+                  {td("last7Days")}
                 </p>
               </div>
               <div className="flex items-center gap-3 text-xs">
@@ -294,7 +293,7 @@ export default function ProviderDashboardPage() {
                 </span>
                 <span className="flex items-center gap-1.5 text-gray-500">
                   <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                  {l("مكالمات", "Appels", "Calls")}
+                  {td("calls")}
                 </span>
               </div>
             </div>
@@ -319,7 +318,7 @@ export default function ProviderDashboardPage() {
                   stroke="#22c55e" strokeWidth={2} fill="url(#gradWhatsapp)"
                 />
                 <Area
-                  type="monotone" dataKey="call" name={l("مكالمات", "Appels", "Calls")}
+                  type="monotone" dataKey="call" name={td("calls")}
                   stroke="#3b82f6" strokeWidth={2} fill="url(#gradCall)"
                 />
               </AreaChart>
@@ -329,26 +328,26 @@ export default function ProviderDashboardPage() {
           {/* Quick actions */}
           <div className="space-y-3">
             <h2 className="font-bold text-gray-900 text-sm px-1">
-              {l("إجراءات سريعة", "Actions rapides", "Quick Actions")}
+              {td("quickActions")}
             </h2>
             <QuickAction
               href="/provider/dashboard/edit"
               icon={<Edit className="h-4 w-4 text-white" />}
               label={t("editProfile")}
-              description={l("تحديث معلوماتك", "Mettre à jour votre profil", "Update your info")}
+              description={td("updateProfile")}
               variant="primary"
             />
             <QuickAction
               href="/provider/dashboard/edit"
               icon={<Images className="h-4 w-4 text-purple-600" />}
-              label={l("معرض الأعمال", "Portfolio", "Portfolio")}
-              description={l("إدارة صورك", "Gérer vos photos", "Manage your photos")}
+              label={td("portfolio")}
+              description={td("managePhotos")}
             />
             <QuickAction
               href={`/services/${provider?.category?.slug}`}
               icon={<Eye className="h-4 w-4 text-blue-600" />}
-              label={l("عرض الملف العام", "Voir mon profil public", "View public profile")}
-              description={l("كما يراه العملاء", "Comme vu par les clients", "As clients see it")}
+              label={td("viewPublicProfile")}
+              description={td("asSeenByClients")}
             />
           </div>
         </div>
@@ -362,7 +361,7 @@ export default function ProviderDashboardPage() {
             </h2>
             {recentReviews?.length > 0 && (
               <span className="text-xs text-gray-400">
-                {l("آخر 5 تقييمات", "5 derniers avis", "Last 5 reviews")}
+                {td("last5Reviews")}
               </span>
             )}
           </div>
@@ -373,7 +372,7 @@ export default function ProviderDashboardPage() {
                 <Star className="h-8 w-8 text-amber-200" />
               </div>
               <p className="text-gray-400 text-sm">
-                {l("لا توجد تقييمات بعد.", "Aucun avis pour le moment.", "No reviews yet.")}
+                {td("noReviews")}
               </p>
             </div>
           ) : (
@@ -416,7 +415,7 @@ export default function ProviderDashboardPage() {
         <div className="mt-6 flex items-center gap-2 text-xs text-gray-400">
           <Clock className="h-3.5 w-3.5" />
           <span>
-            {l("تم التسجيل", "Membre depuis", "Member since")}:&nbsp;
+            {td("memberSince")}:&nbsp;
             {provider?.createdAt
               ? new Date(provider.createdAt).toLocaleDateString(
                   locale === "ar" ? "ar-MA" : locale === "fr" ? "fr-MA" : "en-US",

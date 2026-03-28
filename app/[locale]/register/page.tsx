@@ -4,7 +4,7 @@ import { Link, useRouter } from "@/i18n/navigation"
 import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { registerRequest, selectAuthLoading, selectUser, selectAuthInitialized } from "@/store/slices/authSlice"
-import { Wrench, Eye, EyeOff, CheckCircle, Users, Star, Shield, ArrowRight } from "lucide-react"
+import { Wrench, Eye, EyeOff, CheckCircle, Users, Star, Shield, ArrowRight, UserCheck, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -133,6 +133,24 @@ export default function RegisterPage() {
             <p className="mt-2 text-gray-500">{t('description')}</p>
           </div>
 
+          {/* Account type selector */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-green-500 bg-green-50 cursor-default">
+              <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center">
+                <UserCheck className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-sm font-semibold text-green-700">{t('typeClient')}</span>
+              <span className="text-xs text-green-600 text-center">{t('typeClientDesc')}</span>
+            </div>
+            <Link href="/provider/register" className="group flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-xl bg-gray-200 group-hover:bg-amber-500 flex items-center justify-center transition-colors">
+                <Briefcase className="h-5 w-5 text-gray-500 group-hover:text-white transition-colors" />
+              </div>
+              <span className="text-sm font-semibold text-gray-600 group-hover:text-amber-700">{t('typeProvider')}</span>
+              <span className="text-xs text-gray-400 group-hover:text-amber-600 text-center">{t('typeProviderDesc')}</span>
+            </Link>
+          </div>
+
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium text-gray-700">{t('fullName')}</Label>
@@ -176,7 +194,7 @@ export default function RegisterPage() {
                   value={form.password}
                   onChange={e => updateField("password", e.target.value)}
                   required
-                  placeholder="••••••••"
+                  placeholder=""
                   className="h-11 rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 pe-10"
                 />
                 <button
@@ -197,7 +215,7 @@ export default function RegisterPage() {
                   value={form.confirm}
                   onChange={e => updateField("confirm", e.target.value)}
                   required
-                  placeholder="••••••••"
+                  placeholder=""
                   className="h-11 rounded-xl border-gray-200 focus:border-green-500 focus:ring-green-500 pe-10"
                 />
                 <button

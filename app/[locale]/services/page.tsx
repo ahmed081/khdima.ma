@@ -60,22 +60,14 @@ export default async function ServicesPage({ searchParams }: Props) {
         <div className="relative container mx-auto px-4 py-16 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-semibold mb-6">
             <Wrench className="h-4 w-4" />
-            {locale === "ar" ? "جميع الخدمات" : locale === "fr" ? "Nos Services" : "All Services"}
+            {t("allServices")}
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white mb-3">
-            {locale === "ar"
-              ? "اعثر على المحترف المناسب"
-              : locale === "fr"
-              ? "Trouvez le bon professionnel"
-              : "Find the right professional"}
+            {t("servicesHeroTitle")}
           </h1>
           <p className="text-green-100 text-lg mb-8 max-w-xl mx-auto">
-            {locale === "ar"
-              ? `${totalProviders}+ محترف نشط في ${categories.length} فئة`
-              : locale === "fr"
-              ? `${totalProviders}+ professionnels actifs dans ${categories.length} catégories`
-              : `${totalProviders}+ active professionals across ${categories.length} categories`}
+            {t("servicesHeroSub", { totalProviders, count: categories.length })}
           </p>
 
           {/* Search bar */}
@@ -85,20 +77,14 @@ export default async function ServicesPage({ searchParams }: Props) {
               <input
                 name="q"
                 defaultValue={q}
-                placeholder={
-                  locale === "ar"
-                    ? "ابحث عن خدمة..."
-                    : locale === "fr"
-                    ? "Rechercher un service..."
-                    : "Search for a service..."
-                }
+                placeholder={t("servicesSearchPlaceholder")}
                 className="w-full h-14 pl-12 pr-32 rounded-2xl bg-white text-gray-800 text-base shadow-xl focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-gray-400"
               />
               <button
                 type="submit"
                 className="absolute right-2 flex items-center gap-2 h-10 px-5 rounded-xl bg-green-600 hover:bg-green-500 text-white font-semibold text-sm transition-colors"
               >
-                {locale === "ar" ? "بحث" : locale === "fr" ? "Chercher" : "Search"}
+                {t("search")}
                 <ArrowRight className="h-4 w-4" />
               </button>
             </div>
@@ -112,14 +98,10 @@ export default async function ServicesPage({ searchParams }: Props) {
         {q && (
           <div className="mb-6 flex items-center gap-3">
             <p className="text-gray-600">
-              {locale === "ar"
-                ? `نتائج البحث عن: "${q}" — ${filtered.length} فئة`
-                : locale === "fr"
-                ? `Résultats pour "${q}" — ${filtered.length} catégorie(s)`
-                : `Results for "${q}" — ${filtered.length} category(s)`}
+              {t("searchResults", { q, count: filtered.length })}
             </p>
             <Link href="/services" className="text-sm text-green-700 hover:underline font-medium">
-              {locale === "ar" ? "مسح البحث" : locale === "fr" ? "Effacer" : "Clear"}
+              {t("clearSearch")}
             </Link>
           </div>
         )}
@@ -128,7 +110,7 @@ export default async function ServicesPage({ searchParams }: Props) {
         {!q && (
           <div className="mb-8">
             <h2 className="text-2xl font-extrabold text-gray-900">
-              {locale === "ar" ? "تصفح حسب الفئة" : locale === "fr" ? "Parcourir par catégorie" : "Browse by category"}
+              {t("browseByCategory")}
             </h2>
             <p className="text-gray-500 mt-1">{t("categoriesSubtitle")}</p>
           </div>
@@ -139,7 +121,7 @@ export default async function ServicesPage({ searchParams }: Props) {
           <div className="text-center py-20 text-gray-400">
             <Search className="h-12 w-12 mx-auto mb-4 opacity-30" />
             <p className="text-lg font-medium">
-              {locale === "ar" ? "لم يتم العثور على خدمات" : locale === "fr" ? "Aucun service trouvé" : "No services found"}
+              {t("noServicesFound")}
             </p>
           </div>
         ) : (
@@ -172,10 +154,7 @@ export default async function ServicesPage({ searchParams }: Props) {
                         <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${
                           count > 0 ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-50 text-gray-400 border-gray-200"
                         }`}>
-                          {count > 0
-                            ? (locale === "ar" ? `${count} محترف` : locale === "fr" ? `${count} pro${count > 1 ? "s" : ""}` : `${count} pro${count > 1 ? "s" : ""}`)
-                            : (locale === "ar" ? "قريباً" : locale === "fr" ? "Bientôt" : "Coming soon")
-                          }
+                          {count > 0 ? t("proCount", { count }) : t("comingSoon")}
                         </span>
                         <ArrowRight className="h-4 w-4 text-gray-300 group-hover:text-green-600 group-hover:translate-x-0.5 transition-all" />
                       </div>
@@ -193,21 +172,17 @@ export default async function ServicesPage({ searchParams }: Props) {
           <div className="absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-white/10" />
           <div className="relative">
             <h3 className="text-2xl font-extrabold mb-2">
-              {locale === "ar" ? "أنت محترف؟" : locale === "fr" ? "Vous êtes un professionnel ?" : "Are you a professional?"}
+              {t("becomeProvider")}
             </h3>
             <p className="text-green-100 mb-6 max-w-md mx-auto">
-              {locale === "ar"
-                ? "انضم إلى آلاف المحترفين على khdimti.com واحصل على عملاء جدد كل يوم"
-                : locale === "fr"
-                ? "Rejoignez des milliers de professionnels sur khdimti.com et recevez de nouveaux clients chaque jour"
-                : "Join thousands of professionals on khdimti.com and get new clients every day"}
+              {t("joinProsText")}
             </p>
             <Link
               href="/provider/register"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white text-green-700 font-bold hover:bg-green-50 transition-colors shadow-lg"
             >
               <Wrench className="h-5 w-5" />
-              {locale === "ar" ? "أضف نشاطك التجاري" : locale === "fr" ? "Référencer mon activité" : "List your business"}
+              {t("becomeProviderCta")}
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

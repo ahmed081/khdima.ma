@@ -302,7 +302,7 @@ export default function ProfilePage() {
                     className="ps-9 pe-10 h-10 border-gray-200"
                     value={newPass}
                     onChange={e => setNewPass(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder=""
                     minLength={6}
                     required
                   />
@@ -321,7 +321,7 @@ export default function ProfilePage() {
                     className="ps-9 pe-10 h-10 border-gray-200"
                     value={confirmPass}
                     onChange={e => setConfirmPass(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder=""
                     minLength={6}
                     required
                   />

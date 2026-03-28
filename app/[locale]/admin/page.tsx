@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation"
 import {
   Users, Briefcase, BarChart3, Languages, Tag,
   Clock, Flag, CheckCircle, AlertCircle, TrendingUp,
-  Eye, Shield, ChevronRight, Activity, Phone,
+  Eye, Shield, ChevronRight, Activity, Phone, MapPin,
 } from "lucide-react"
 import { AdminCharts } from "@/components/admin/AdminCharts"
 
@@ -109,6 +109,15 @@ export default async function AdminDashboardPage() {
       badge: null,
       color: "text-cyan-600",
       bg: "bg-cyan-50",
+    },
+    {
+      href: "/admin/cities",
+      icon: MapPin,
+      label: "Cities",
+      desc: "Manage Moroccan cities",
+      badge: null,
+      color: "text-green-600",
+      bg: "bg-green-50",
     },
   ]
 
