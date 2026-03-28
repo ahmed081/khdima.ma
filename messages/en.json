@@ -240,7 +240,10 @@
       "website": "Website",
       "websitePlaceholder": "https://yourwebsite.com",
       "selectCategory": "Select a category",
-      "selectCity": "Select a city"
+      "selectCity": "Select a city",
+      "contactTitle": "Contact Details",
+      "uploading": "Uploading...",
+      "clickToUpload": "Click to upload"
     },
     "about": {
       "title": "About Your Business",
@@ -256,7 +259,8 @@
       "title": "Specialties & Skills",
       "subtitle": "Select the specific services you offer within your category",
       "noSubcategories": "No specialties available for your category",
-      "selected": "selected"
+      "selected": "selected",
+      "selectCategoryFirst": "Select a category first"
     },
     "hours": {
       "title": "Working Hours",
@@ -284,7 +288,8 @@
         "FRI": "Fri",
         "SAT": "Sat",
         "SUN": "Sun"
-      }
+      },
+      "preview": "Preview"
     },
     "photos": {
       "title": "Portfolio Photos",
@@ -300,7 +305,12 @@
       "hint": "Use before/after photos to showcase the quality of your work.",
       "delete": "Delete",
       "before": "Before",
-      "count": "{n} / 10 photos"
+      "count": "{n} / 10 photos",
+      "uploading": "Uploading...",
+      "clickToUpload": "Click to upload a photo",
+      "captionPlaceholder": "Optional description",
+      "noPhotoError": "Please upload a photo first",
+      "saving": "Saving..."
     },
     "save": "Save Changes",
     "saving": "Saving...",
@@ -339,7 +349,9 @@
     "formError": "Failed to send message. Please try again.",
     "sentTitle": "Message sent!",
     "sentDesc": "Thank you for your message. We will get back to you as soon as possible.",
-    "sendAnother": "Send another message"
+    "sendAnother": "Send another message",
+    "defaultAddress": "Casablanca, Morocco",
+    "defaultHours": "Mon–Fri, 9am–6pm"
   },
   "profile": {
     "tabInfo": "Personal info",
@@ -510,6 +522,38 @@
     "benefit3": "Instant visibility in searches",
     "benefit4": "100% free to start",
     "forProfessionals": "For Professionals",
-    "passwordsNoMatch": "Passwords do not match"
+    "passwordsNoMatch": "Passwords do not match",
+    "loggedInAsClient": "You're logged in as a client — just add your business info below",
+    "backToDashboard": "Back to my dashboard"
+  },
+  "forgotPassword": {
+    "title": "Forgot password?",
+    "subtitle": "Enter your email and we'll send you a reset link",
+    "emailLabel": "Email",
+    "sendBtn": "Send reset link",
+    "sending": "Sending...",
+    "backToLogin": "Back to login",
+    "successTitle": "Email sent!",
+    "successText": "If this email is registered, you'll receive a reset link shortly. Check your spam folder if needed.",
+    "checkSpam": "Didn't receive the email?",
+    "resend": "Resend",
+    "connectionError": "Connection error"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "subtitle": "Enter your new password",
+    "passLabel": "New password",
+    "confirmLabel": "Confirm password",
+    "submitBtn": "Set password",
+    "submitting": "Saving...",
+    "mismatch": "Passwords do not match",
+    "tooShort": "At least 8 characters",
+    "invalidToken": "This reset link is invalid or has expired",
+    "doneTitle": "Password changed!",
+    "doneText": "You can now log in with your new password.",
+    "loginBtn": "Sign in",
+    "requestNew": "Request a new link",
+    "verifying": "Verifying...",
+    "networkError": "Network error"
   }
 }

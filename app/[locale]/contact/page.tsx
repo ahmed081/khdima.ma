@@ -39,12 +39,12 @@ export default function ContactPage() {
   const info = {
     phone:   contactInfo["CONTACT_PHONE"]   || "+212 6 00 00 00 00",
     email:   contactInfo["CONTACT_EMAIL"]   || "contact@khdimti.com",
-    address: contactInfo["CONTACT_ADDRESS"] || (locale === "ar" ? "الدار البيضاء، المغرب" : locale === "fr" ? "Casablanca, Maroc" : "Casablanca, Morocco"),
+    address: contactInfo["CONTACT_ADDRESS"] || t("defaultAddress"),
     whatsapp:  contactInfo["CONTACT_WHATSAPP"]  || "",
     facebook:  contactInfo["CONTACT_FACEBOOK"]  || "",
     instagram: contactInfo["CONTACT_INSTAGRAM"] || "",
     linkedin:  contactInfo["CONTACT_LINKEDIN"]  || "",
-    hours:     contactInfo["CONTACT_HOURS"]     || (locale === "ar" ? "الاثنين - الجمعة، 9ص – 6م" : locale === "fr" ? "Lun–Ven, 9h–18h" : "Mon–Fri, 9am–6pm"),
+    hours:     contactInfo["CONTACT_HOURS"]     || t("defaultHours"),
   }
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>

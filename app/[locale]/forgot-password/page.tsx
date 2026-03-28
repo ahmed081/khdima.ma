@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Link } from "@/i18n/navigation"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Wrench, Mail, ArrowRight, CheckCircle, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,24 +11,12 @@ import { Label } from "@/components/ui/label"
 export default function ForgotPasswordPage() {
   const locale = useLocale()
   const isRtl  = locale === "ar"
+  const ui     = useTranslations("forgotPassword")
 
   const [email,   setEmail]   = useState("")
   const [loading, setLoading] = useState(false)
   const [sent,    setSent]    = useState(false)
   const [error,   setError]   = useState("")
-
-  const ui = {
-    title:       locale === "ar" ? "نسيت كلمة المرور؟" : locale === "fr" ? "Mot de passe oublié ?" : "Forgot password?",
-    subtitle:    locale === "ar" ? "أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين" : locale === "fr" ? "Saisissez votre email et nous vous enverrons un lien de réinitialisation" : "Enter your email and we'll send you a reset link",
-    emailLabel:  locale === "ar" ? "البريد الإلكتروني" : locale === "fr" ? "Email" : "Email",
-    sendBtn:     locale === "ar" ? "إرسال الرابط" : locale === "fr" ? "Envoyer le lien" : "Send reset link",
-    sending:     locale === "ar" ? "جارٍ الإرسال..." : locale === "fr" ? "Envoi en cours..." : "Sending...",
-    backToLogin: locale === "ar" ? "العودة إلى تسجيل الدخول" : locale === "fr" ? "Retour à la connexion" : "Back to login",
-    successTitle:locale === "ar" ? "تم الإرسال!" : locale === "fr" ? "Email envoyé !" : "Email sent!",
-    successText: locale === "ar" ? "إذا كان هذا البريد الإلكتروني مسجلاً، ستتلقى رابط إعادة التعيين خلال دقائق. تحقق من صندوق الوارد والبريد العشوائي." : locale === "fr" ? "Si cet email est bien enregistré, vous recevrez un lien de réinitialisation dans quelques minutes. Vérifiez vos spams si nécessaire." : "If this email is registered, you'll receive a reset link shortly. Check your spam folder if needed.",
-    checkSpam:   locale === "ar" ? "لم يصلك الرابط؟" : locale === "fr" ? "Vous n'avez pas reçu l'email ?" : "Didn't receive the email?",
-    resend:      locale === "ar" ? "إعادة الإرسال" : locale === "fr" ? "Renvoyer" : "Resend",
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,7 +35,7 @@ export default function ForgotPasswordPage() {
         setSent(true)
       }
     } catch {
-      setError(locale === "ar" ? "خطأ في الاتصال" : locale === "fr" ? "Erreur de connexion" : "Connection error")
+      setError(ui("connectionError"))
     } finally {
       setLoading(false)
     }

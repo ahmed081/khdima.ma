@@ -535,9 +535,9 @@ export default function EditProviderProfilePage() {
                           }}
                         />
                         {avatarUploading ? (
-                          <><Loader2 className="h-5 w-5 text-green-600 animate-spin" /><span className="text-xs text-gray-500">{locale === "ar" ? "جارٍ الرفع..." : locale === "fr" ? "Envoi en cours..." : "Uploading..."}</span></>
+                          <><Loader2 className="h-5 w-5 text-green-600 animate-spin" /><span className="text-xs text-gray-500">{t("business.uploading")}</span></>
                         ) : (
-                          <><Upload className="h-5 w-5 text-gray-400" /><span className="text-xs font-medium text-gray-500">{locale === "ar" ? "اضغط لرفع صورة" : locale === "fr" ? "Cliquez pour télécharger" : "Click to upload"}</span><span className="text-[10px] text-gray-400">JPG, PNG, WebP — max 5 MB</span></>
+                          <><Upload className="h-5 w-5 text-gray-400" /><span className="text-xs font-medium text-gray-500">{t("business.clickToUpload")}</span><span className="text-[10px] text-gray-400">JPG, PNG, WebP — max 5 MB</span></>
                         )}
                       </label>
                     </div>
@@ -551,7 +551,7 @@ export default function EditProviderProfilePage() {
               <div className="border-b border-slate-100 bg-slate-50/60 px-6 py-4">
                 <h2 className="flex items-center gap-2 font-bold text-gray-800">
                   <Phone className="h-4 w-4 text-green-600" />
-                  {locale === "ar" ? "بيانات التواصل" : locale === "en" ? "Contact Details" : "Coordonnées"}
+                  {t("business.contactTitle")}
                 </h2>
               </div>
 
@@ -699,7 +699,7 @@ export default function EditProviderProfilePage() {
                   <div className="flex flex-col items-center py-10 text-center text-gray-400">
                     <Sparkles className="h-10 w-10 mb-3 opacity-30" />
                     <p className="text-sm">
-                      {locale === "ar" ? "اختر فئة أولاً" : locale === "en" ? "Select a category first" : "Choisissez d'abord une catégorie"}
+                      {t("specialties.selectCategoryFirst")}
                     </p>
                   </div>
                 ) : subcategories.length === 0 ? (
@@ -774,17 +774,16 @@ export default function EditProviderProfilePage() {
               <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                 <div className="border-b border-slate-100 bg-slate-50/60 px-6 py-3">
                   <h3 className="text-sm font-semibold text-gray-700">
-                    {locale === "ar" ? "معاينة" : locale === "en" ? "Preview" : "Aperçu"}
+                    {t("hours.preview")}
                   </h3>
                 </div>
                 <div className="p-4 flex flex-wrap gap-2">
                   {(["MON","TUE","WED","THU","FRI","SAT","SUN"] as const).map(day => {
                     const s = workingHours[day]
                     if (!s?.open) return null
-                    const labels = { MON: locale === "ar" ? "الاثنين" : locale === "en" ? "Mon" : "Lun", TUE: locale === "ar" ? "الثلاثاء" : locale === "en" ? "Tue" : "Mar", WED: locale === "ar" ? "الأربعاء" : locale === "en" ? "Wed" : "Mer", THU: locale === "ar" ? "الخميس" : locale === "en" ? "Thu" : "Jeu", FRI: locale === "ar" ? "الجمعة" : locale === "en" ? "Fri" : "Ven", SAT: locale === "ar" ? "السبت" : locale === "en" ? "Sat" : "Sam", SUN: locale === "ar" ? "الأحد" : locale === "en" ? "Sun" : "Dim" }
                     return (
                       <div key={day} className="flex items-center gap-1.5 rounded-xl bg-green-50 border border-green-200 px-3 py-1.5 text-xs font-medium text-green-800">
-                        <span className="font-bold">{labels[day]}</span>
+                        <span className="font-bold">{t(`hours.daysShort.${day}`)}</span>
                         <span className="text-green-600">{s.from}–{s.to}</span>
                       </div>
                     )
@@ -876,7 +875,7 @@ export default function EditProviderProfilePage() {
                           {photoUploading ? (
                             <>
                               <Loader2 className="h-8 w-8 text-green-600 animate-spin" />
-                              <span className="text-sm text-gray-500">{locale === "ar" ? "جارٍ الرفع..." : locale === "fr" ? "Envoi en cours..." : "Uploading..."}</span>
+                              <span className="text-sm text-gray-500">{t("photos.uploading")}</span>
                             </>
                           ) : (
                             <>
@@ -885,7 +884,7 @@ export default function EditProviderProfilePage() {
                               </div>
                               <div>
                                 <p className="text-sm font-medium text-gray-600">
-                                  {locale === "ar" ? "اضغط لرفع صورة" : locale === "fr" ? "Cliquez pour télécharger une photo" : "Click to upload a photo"}
+                                  {t("photos.clickToUpload")}
                                 </p>
                                 <p className="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP — max 5 MB</p>
                               </div>
@@ -904,7 +903,7 @@ export default function EditProviderProfilePage() {
                         type="text"
                         value={photoForm.caption}
                         onChange={e => setPhotoForm(p => ({ ...p, caption: e.target.value }))}
-                        placeholder={locale === "ar" ? "وصف اختياري" : locale === "fr" ? "Description optionnelle" : "Optional description"}
+                        placeholder={t("photos.captionPlaceholder")}
                         className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition"
                       />
                     </div>
@@ -935,7 +934,7 @@ export default function EditProviderProfilePage() {
                       onClick={() => {
                         setPhotoErr("")
                         if (!photoForm.url) {
-                          setPhotoErr(locale === "ar" ? "يرجى رفع صورة أولاً" : locale === "fr" ? "Veuillez d'abord télécharger une photo" : "Please upload a photo first")
+                          setPhotoErr(t("photos.noPhotoError"))
                           return
                         }
                         addPhotoMutation.mutate()
@@ -944,7 +943,7 @@ export default function EditProviderProfilePage() {
                       className="flex items-center gap-2 rounded-xl bg-green-600 hover:bg-green-500 text-white px-5 py-2.5 text-sm font-semibold shadow-md transition active:scale-95 disabled:opacity-60"
                     >
                       {addPhotoMutation.isPending
-                        ? <><Loader2 className="h-4 w-4 animate-spin" />{locale === "ar" ? "جارٍ الحفظ..." : locale === "fr" ? "Enregistrement..." : "Saving..."}</>
+                        ? <><Loader2 className="h-4 w-4 animate-spin" />{t("photos.saving")}</>
                         : <><CheckCircle className="h-4 w-4" />{t("photos.save")}</>
                       }
                     </button>

@@ -240,7 +240,10 @@
       "website": "Site web",
       "websitePlaceholder": "https://votresite.com",
       "selectCategory": "Choisir une catégorie",
-      "selectCity": "Choisir une ville"
+      "selectCity": "Choisir une ville",
+      "contactTitle": "Coordonnées",
+      "uploading": "Envoi en cours...",
+      "clickToUpload": "Cliquez pour télécharger"
     },
     "about": {
       "title": "À propos de votre activité",
@@ -256,7 +259,8 @@
       "title": "Spécialités & Compétences",
       "subtitle": "Sélectionnez les services spécifiques que vous proposez dans votre catégorie",
       "noSubcategories": "Aucune spécialité disponible pour votre catégorie",
-      "selected": "sélectionné(s)"
+      "selected": "sélectionné(s)",
+      "selectCategoryFirst": "Choisissez d'abord une catégorie"
     },
     "photos": {
       "title": "Photos du portfolio",
@@ -272,7 +276,12 @@
       "hint": "Les photos avant/après montrent la qualité de votre travail.",
       "delete": "Supprimer",
       "before": "Avant",
-      "count": "{n} / 10 photos"
+      "count": "{n} / 10 photos",
+      "uploading": "Envoi en cours...",
+      "clickToUpload": "Cliquez pour télécharger une photo",
+      "captionPlaceholder": "Description optionnelle",
+      "noPhotoError": "Veuillez d'abord télécharger une photo",
+      "saving": "Enregistrement..."
     },
     "hours": {
       "title": "Horaires de travail",
@@ -300,7 +309,8 @@
         "FRI": "Ven",
         "SAT": "Sam",
         "SUN": "Dim"
-      }
+      },
+      "preview": "Aperçu"
     },
     "save": "Enregistrer",
     "saving": "Enregistrement...",
@@ -339,7 +349,9 @@
     "formError": "Échec de l'envoi. Veuillez réessayer.",
     "sentTitle": "Message envoyé !",
     "sentDesc": "Merci pour votre message. Nous vous répondrons dans les plus brefs délais.",
-    "sendAnother": "Envoyer un autre message"
+    "sendAnother": "Envoyer un autre message",
+    "defaultAddress": "Casablanca, Maroc",
+    "defaultHours": "Lun–Ven, 9h–18h"
   },
   "profile": {
     "tabInfo": "Informations",
@@ -510,6 +522,38 @@
     "benefit3": "Visibilité immédiate sur les recherches",
     "benefit4": "Inscription 100% gratuite",
     "forProfessionals": "Espace Professionnel",
-    "passwordsNoMatch": "Les mots de passe ne correspondent pas"
+    "passwordsNoMatch": "Les mots de passe ne correspondent pas",
+    "loggedInAsClient": "Vous êtes connecté en tant que client — ajoutez simplement vos infos professionnelles",
+    "backToDashboard": "Retour à mon tableau de bord"
+  },
+  "forgotPassword": {
+    "title": "Mot de passe oublié ?",
+    "subtitle": "Saisissez votre email et nous vous enverrons un lien de réinitialisation",
+    "emailLabel": "Email",
+    "sendBtn": "Envoyer le lien",
+    "sending": "Envoi en cours...",
+    "backToLogin": "Retour à la connexion",
+    "successTitle": "Email envoyé !",
+    "successText": "Si cet email est bien enregistré, vous recevrez un lien de réinitialisation dans quelques minutes. Vérifiez vos spams si nécessaire.",
+    "checkSpam": "Vous n'avez pas reçu l'email ?",
+    "resend": "Renvoyer",
+    "connectionError": "Erreur de connexion"
+  },
+  "resetPassword": {
+    "title": "Nouveau mot de passe",
+    "subtitle": "Choisissez votre nouveau mot de passe",
+    "passLabel": "Nouveau mot de passe",
+    "confirmLabel": "Confirmer le mot de passe",
+    "submitBtn": "Enregistrer",
+    "submitting": "Enregistrement...",
+    "mismatch": "Les mots de passe ne correspondent pas",
+    "tooShort": "8 caractères minimum",
+    "invalidToken": "Ce lien de réinitialisation est invalide ou expiré",
+    "doneTitle": "Mot de passe modifié !",
+    "doneText": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+    "loginBtn": "Se connecter",
+    "requestNew": "Demander un nouveau lien",
+    "verifying": "Vérification...",
+    "networkError": "Erreur réseau"
   }
 }

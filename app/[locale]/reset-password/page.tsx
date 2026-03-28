@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Link, useRouter } from "@/i18n/navigation"
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Wrench, Eye, EyeOff, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ function ResetPasswordForm() {
   const locale       = useLocale()
   const router       = useRouter()
   const isRtl        = locale === "ar"
+  const ui           = useTranslations("resetPassword")
 
   const [password,    setPassword]    = useState("")
   const [confirm,     setConfirm]     = useState("")
@@ -25,22 +26,6 @@ function ResetPasswordForm() {
   const [tokenValid,  setTokenValid]  = useState(false)
   const [done,        setDone]        = useState(false)
   const [error,       setError]       = useState("")
-
-  const ui = {
-    title:      locale === "ar" ? "إعادة تعيين كلمة المرور" : locale === "fr" ? "Nouveau mot de passe" : "Reset your password",
-    subtitle:   locale === "ar" ? "أدخل كلمة المرور الجديدة" : locale === "fr" ? "Choisissez votre nouveau mot de passe" : "Enter your new password",
-    passLabel:  locale === "ar" ? "كلمة المرور الجديدة" : locale === "fr" ? "Nouveau mot de passe" : "New password",
-    confirmLabel: locale === "ar" ? "تأكيد كلمة المرور" : locale === "fr" ? "Confirmer le mot de passe" : "Confirm password",
-    submitBtn:  locale === "ar" ? "تعيين كلمة المرور" : locale === "fr" ? "Enregistrer" : "Set password",
-    submitting: locale === "ar" ? "جارٍ الحفظ..." : locale === "fr" ? "Enregistrement..." : "Saving...",
-    mismatch:   locale === "ar" ? "كلمتا المرور غير متطابقتين" : locale === "fr" ? "Les mots de passe ne correspondent pas" : "Passwords do not match",
-    tooShort:   locale === "ar" ? "8 أحرف على الأقل" : locale === "fr" ? "8 caractères minimum" : "At least 8 characters",
-    invalidToken: locale === "ar" ? "رابط إعادة التعيين غير صالح أو منتهي الصلاحية" : locale === "fr" ? "Ce lien de réinitialisation est invalide ou expiré" : "This reset link is invalid or has expired",
-    doneTitle:  locale === "ar" ? "تم تغيير كلمة المرور!" : locale === "fr" ? "Mot de passe modifié !" : "Password changed!",
-    doneText:   locale === "ar" ? "يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة." : locale === "fr" ? "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe." : "You can now log in with your new password.",
-    loginBtn:   locale === "ar" ? "تسجيل الدخول" : locale === "fr" ? "Se connecter" : "Sign in",
-    requestNew: locale === "ar" ? "طلب رابط جديد" : locale === "fr" ? "Demander un nouveau lien" : "Request a new link",
-  }
 
   useEffect(() => {
     if (!token) { setValidating(false); setTokenValid(false); return }
@@ -67,7 +52,7 @@ function ResetPasswordForm() {
       setDone(true)
       setTimeout(() => router.replace("/login"), 3000)
     } catch {
-      setError(locale === "ar" ? "خطأ في الاتصال" : locale === "fr" ? "Erreur réseau" : "Network error")
+      setError(ui("networkError"))
     } finally {
       setLoading(false)
     }
@@ -93,7 +78,7 @@ function ResetPasswordForm() {
             <div className="flex flex-col items-center py-8">
               <Loader2 className="h-8 w-8 text-green-600 animate-spin mb-3" />
               <p className="text-gray-500 text-sm">
-                {locale === "ar" ? "جارٍ التحقق..." : locale === "fr" ? "Vérification..." : "Verifying..."}
+                {ui("verifying")}
               </p>
             </div>
           ) : !tokenValid ? (
