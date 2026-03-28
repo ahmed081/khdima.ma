@@ -4,19 +4,14 @@ import { useRouter } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search, ArrowRight, CheckCircle } from 'lucide-react'
-import { useTranslations, useLocale } from 'next-intl'
+import { useTranslations } from 'next-intl'
 
 export function HeroSection() {
   const t      = useTranslations('home')
-  const locale = useLocale()
   const router = useRouter()
   const [query, setQuery] = useState('')
 
-  const badges = [
-    t('badge1') || (locale === 'ar' ? 'محترفون موثوقون' : locale === 'fr' ? 'Pros vérifiés' : 'Verified pros'),
-    t('badge2') || (locale === 'ar' ? 'بدون وسيط' : locale === 'fr' ? 'Sans intermédiaire' : 'No middleman'),
-    t('badge3') || (locale === 'ar' ? 'مجاني للعملاء' : locale === 'fr' ? 'Gratuit pour clients' : 'Free for clients'),
-  ]
+  const badges = [t('badge1'), t('badge2'), t('badge3')]
 
   return (
     <section className="relative min-h-[560px] flex items-center justify-center overflow-hidden">
@@ -39,7 +34,7 @@ export function HeroSection() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur border border-white/20 rounded-full px-4 py-1.5 text-sm font-medium text-white/90 mb-6">
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          {locale === 'ar' ? 'المنصة المغربية الأولى للمحترفين' : locale === 'fr' ? 'La 1ère plateforme marocaine de pros' : 'Morocco\'s #1 professional services platform'}
+          {t('platformBadge')}
         </div>
 
         <h1 className="text-4xl md:text-6xl font-extrabold mb-5 leading-tight tracking-tight">
@@ -67,7 +62,7 @@ export function HeroSection() {
             onClick={() => router.push(`/services?q=${query}`)}
           >
             <Search className="h-5 w-5 me-2" />
-            {locale === 'ar' ? 'بحث' : locale === 'fr' ? 'Chercher' : 'Search'}
+            {t('search')}
           </Button>
         </div>
 

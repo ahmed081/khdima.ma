@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default function AdminReportsPage() {
+  const t = useTranslations("admin")
   const [filter, setFilter] = useState('')
   const [note, setNote]   = useState<Record<number, string>>({})
   const qc = useQueryClient()
@@ -37,8 +39,8 @@ export default function AdminReportsPage() {
     <main className="min-h-screen bg-gray-50 py-10">
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex items-center gap-4 mb-6">
-          <Link href="/admin" className="text-gray-500 hover:text-gray-700 text-sm">← Dashboard</Link>
-          <h1 className="text-2xl font-bold text-gray-900">Reports & Disputes</h1>
+          <Link href="/admin" className="text-gray-500 hover:text-gray-700 text-sm">← {t("dashboardTitle")}</Link>
+          <h1 className="text-2xl font-bold text-gray-900">{t("reportsTitle")}</h1>
         </div>
 
         {/* Filter tabs */}
@@ -53,7 +55,7 @@ export default function AdminReportsPage() {
                   : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
               }`}
             >
-              {s || 'All'}
+              {s || t("allFilter")}
             </button>
           ))}
         </div>
@@ -65,7 +67,7 @@ export default function AdminReportsPage() {
             ))}
           </div>
         ) : reports.length === 0 ? (
-          <p className="text-center text-gray-500 py-16">No reports found</p>
+          <p className="text-center text-gray-500 py-16">{t("noReports")}</p>
         ) : (
           <div className="space-y-4">
             {reports.map((r: any) => (
@@ -88,18 +90,18 @@ export default function AdminReportsPage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-700">Reason: <span className="font-normal">{r.reason}</span></p>
+                    <p className="text-sm font-medium text-gray-700">{t("reasonLabel")} <span className="font-normal">{r.reason}</span></p>
                     {r.details && <p className="text-sm text-gray-600 mt-1">{r.details}</p>}
                   </div>
                   {r.adminNote && (
                     <p className="text-sm bg-amber-50 border border-amber-200 rounded p-2 text-amber-800">
-                      Admin note: {r.adminNote}
+                      {t("adminNoteLabel")} {r.adminNote}
                     </p>
                   )}
                   <div className="flex gap-2 flex-wrap items-end">
                     <input
                       className="flex-1 min-w-[180px] border rounded px-3 py-1.5 text-sm"
-                      placeholder="Add admin note (optional)"
+                      placeholder={t("notePlaceholder")}
                       value={note[r.id] ?? ''}
                       onChange={e => setNote(n => ({ ...n, [r.id]: e.target.value }))}
                     />
@@ -107,25 +109,25 @@ export default function AdminReportsPage() {
                       <Button size="sm" className="bg-amber-600 hover:bg-amber-500 text-white"
                         disabled={patch.isPending}
                         onClick={() => patch.mutate({ id: r.id, status: 'REVIEWED', adminNote: note[r.id] ?? r.adminNote })}>
-                        Mark Reviewed
+                        {t("markReviewed")}
                       </Button>
                     )}
                     {r.status !== 'DISMISSED' && (
                       <Button size="sm" variant="outline"
                         disabled={patch.isPending}
                         onClick={() => patch.mutate({ id: r.id, status: 'DISMISSED', adminNote: note[r.id] ?? r.adminNote })}>
-                        Dismiss
+                        {t("dismissBtn")}
                       </Button>
                     )}
                     {r.status !== 'OPEN' && (
                       <Button size="sm" variant="outline" className="border-red-300 text-red-700"
                         disabled={patch.isPending}
                         onClick={() => patch.mutate({ id: r.id, status: 'OPEN' })}>
-                        Reopen
+                        {t("reopenBtn")}
                       </Button>
                     )}
                     <Button size="sm" variant="outline" asChild>
-                      <Link href={`/services/${r.provider?.id}`} target="_blank">View Profile</Link>
+                      <Link href={`/services/${r.provider?.id}`} target="_blank">{t("viewProfileBtn")}</Link>
                     </Button>
                   </div>
                 </CardContent>

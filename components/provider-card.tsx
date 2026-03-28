@@ -82,7 +82,7 @@ export function ProviderCard({ provider }: { provider: Provider }) {
           <Button size="sm" variant="outline" className="flex-1 border-green-300 text-green-700 hover:bg-green-50" asChild>
             <a href={`tel:${provider.phone}`}>
               <Phone className="h-4 w-4 mr-1" />
-              {locale === 'ar' ? 'اتصل' : locale === 'fr' ? 'Appeler' : 'Call'}
+              {t('call')}
             </a>
           </Button>
         </div>

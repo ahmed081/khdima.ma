@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import {
   Phone, Mail, MapPin, MessageCircle, Clock, Globe,
   Save, Check, AlertCircle, Eye, Trash2, RefreshCw,
@@ -11,21 +12,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-const CONTACT_KEYS = [
-  { key: "CONTACT_PHONE",     icon: Phone,         label: "Phone" },
-  { key: "CONTACT_EMAIL",     icon: Mail,          label: "Email" },
-  { key: "CONTACT_WHATSAPP",  icon: MessageCircle, label: "WhatsApp" },
-  { key: "CONTACT_ADDRESS",   icon: MapPin,        label: "Address" },
-  { key: "CONTACT_HOURS",     icon: Clock,         label: "Opening hours" },
-  { key: "CONTACT_FACEBOOK",  icon: Facebook,      label: "Facebook URL" },
-  { key: "CONTACT_INSTAGRAM", icon: Instagram,     label: "Instagram URL" },
-  { key: "CONTACT_LINKEDIN",  icon: Linkedin,      label: "LinkedIn URL" },
-  { key: "CONTACT_WEBSITE",   icon: Globe,         label: "Website URL" },
-]
-
 type Submission = { name: string; email: string; phone?: string; subject?: string; message: string; createdAt: string }
 
 function SubmissionRow({ sub, paramKey, onDelete }: { sub: Submission; paramKey: string; onDelete: (k: string) => void }) {
+  const t = useTranslations("admin")
   const [expanded, setExpanded] = useState(false)
   return (
     <div className="border border-gray-100 rounded-xl overflow-hidden">
@@ -39,7 +29,7 @@ function SubmissionRow({ sub, paramKey, onDelete }: { sub: Submission; paramKey:
           </div>
           <div className="min-w-0">
             <p className="font-semibold text-sm text-gray-900">{sub.name}</p>
-            <p className="text-xs text-gray-400 truncate">{sub.email} · {sub.subject || "No subject"}</p>
+            <p className="text-xs text-gray-400 truncate">{sub.email} · {sub.subject || t("noSubject")}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 ms-4 flex-shrink-0">
@@ -58,18 +48,18 @@ function SubmissionRow({ sub, paramKey, onDelete }: { sub: Submission; paramKey:
       {expanded && (
         <div className="px-5 pb-5 border-t border-gray-50 bg-gray-50/30">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4 text-sm mb-3">
-            <div><span className="text-gray-400 text-xs">Phone:</span><p className="font-medium text-gray-800">{sub.phone || "—"}</p></div>
-            <div><span className="text-gray-400 text-xs">Subject:</span><p className="font-medium text-gray-800">{sub.subject || "—"}</p></div>
-            <div><span className="text-gray-400 text-xs">Date:</span><p className="font-medium text-gray-800">{new Date(sub.createdAt).toLocaleString("fr-MA")}</p></div>
+            <div><span className="text-gray-400 text-xs">{t("fieldPhone")}</span><p className="font-medium text-gray-800">{sub.phone || "—"}</p></div>
+            <div><span className="text-gray-400 text-xs">{t("fieldSubject")}</span><p className="font-medium text-gray-800">{sub.subject || "—"}</p></div>
+            <div><span className="text-gray-400 text-xs">{t("fieldDate")}</span><p className="font-medium text-gray-800">{new Date(sub.createdAt).toLocaleString("fr-MA")}</p></div>
           </div>
           <div>
-            <span className="text-gray-400 text-xs">Message:</span>
+            <span className="text-gray-400 text-xs">{t("fieldMessage")}</span>
             <p className="text-gray-800 text-sm mt-1 bg-white rounded-lg p-3 border border-gray-100 leading-relaxed">{sub.message}</p>
           </div>
           <div className="flex gap-2 mt-3">
             <a href={`mailto:${sub.email}?subject=Re: ${sub.subject || "Your message"}`}
               className="flex items-center gap-1.5 text-xs font-semibold text-green-700 hover:text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 transition-colors">
-              <Mail className="h-3 w-3" /> Reply by email
+              <Mail className="h-3 w-3" /> {t("replyByEmail")}
             </a>
           </div>
         </div>
@@ -89,7 +79,21 @@ async function fetchSubmissions(): Promise<{ key: string; value: string }[]> {
 }
 
 export default function AdminContactPage() {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
+
+  const CONTACT_KEYS = [
+    { key: "CONTACT_PHONE",     icon: Phone,         label: t("contactKeyPhone") },
+    { key: "CONTACT_EMAIL",     icon: Mail,          label: t("contactKeyEmail") },
+    { key: "CONTACT_WHATSAPP",  icon: MessageCircle, label: t("contactKeyWhatsApp") },
+    { key: "CONTACT_ADDRESS",   icon: MapPin,        label: t("contactKeyAddress") },
+    { key: "CONTACT_HOURS",     icon: Clock,         label: t("contactKeyHours") },
+    { key: "CONTACT_FACEBOOK",  icon: Facebook,      label: t("contactKeyFacebook") },
+    { key: "CONTACT_INSTAGRAM", icon: Instagram,     label: t("contactKeyInstagram") },
+    { key: "CONTACT_LINKEDIN",  icon: Linkedin,      label: t("contactKeyLinkedIn") },
+    { key: "CONTACT_WEBSITE",   icon: Globe,         label: t("contactKeyWebsite") },
+  ]
+
   const [values,  setValues]  = useState<Record<string, string>>({})
   const [loaded,  setLoaded]  = useState(false)
   const [success, setSuccess] = useState(false)

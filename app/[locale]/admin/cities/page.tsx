@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import {
   ArrowLeft, Plus, Search, MapPin, Users, Briefcase,
@@ -31,6 +32,7 @@ function CityModal({
   city?: City
   onClose: () => void
 }) {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
   const isEdit = !!city
 
@@ -73,7 +75,7 @@ function CityModal({
           <div className="flex items-center gap-2">
             <MapPin className="h-5 w-5 text-green-600" />
             <h2 className="font-bold text-gray-900">
-              {isEdit ? "Edit city" : "Add city"}
+              {isEdit ? t("editCity") : t("addCity")}
             </h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100">
@@ -88,7 +90,7 @@ function CityModal({
         >
           {!isEdit && (
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-gray-700">Code *</Label>
+              <Label className="text-sm font-medium text-gray-700">{t("fieldCode")} *</Label>
               <Input
                 value={form.code}
                 onChange={e => set("code", e.target.value.toUpperCase())}
@@ -96,27 +98,27 @@ function CityModal({
                 placeholder="CASA"
                 className="h-10 uppercase"
               />
-              <p className="text-xs text-gray-400">Unique identifier, e.g. CASA, RABAT</p>
+              <p className="text-xs text-gray-400">{t("codeHintCity")}</p>
             </div>
           )}
 
           <div className="grid grid-cols-1 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-gray-700">Name (EN) *</Label>
+              <Label className="text-sm font-medium text-gray-700">{t("fieldNameEn")} *</Label>
               <Input value={form.name}   onChange={e => set("name",   e.target.value)} required placeholder="Casablanca" className="h-10" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-gray-700">Name (FR) *</Label>
+              <Label className="text-sm font-medium text-gray-700">{t("fieldNameFr")} *</Label>
               <Input value={form.nameFr} onChange={e => set("nameFr", e.target.value)} required placeholder="Casablanca" className="h-10" />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-gray-700">Name (AR) *</Label>
+              <Label className="text-sm font-medium text-gray-700">{t("fieldNameAr")} *</Label>
               <Input value={form.nameAr} onChange={e => set("nameAr", e.target.value)} required placeholder="الدار البيضاء" className="h-10" dir="rtl" />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">Order (lower = first)</Label>
+            <Label className="text-sm font-medium text-gray-700">{t("fieldOrder")}</Label>
             <Input
               type="number"
               min="0"
@@ -133,14 +135,14 @@ function CityModal({
           )}
 
           <div className="flex items-center justify-end gap-3 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={onClose}>{t("cancelBtn")}</Button>
             <Button
               type="submit"
               disabled={mutation.isPending}
               className="bg-green-600 hover:bg-green-500 text-white"
             >
               {mutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-              {isEdit ? "Save changes" : "Add city"}
+              {isEdit ? t("saveChangesBtn") : t("addCity")}
             </Button>
           </div>
         </form>
@@ -152,6 +154,7 @@ function CityModal({
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function AdminCitiesPage() {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
   const [search, setSearch]     = useState("")
   const [editCity, setEditCity] = useState<City | null>(null)
@@ -220,7 +223,7 @@ export default function AdminCitiesPage() {
             </Link>
             <div className="flex items-center gap-2">
               <MapPin className="h-5 w-5 text-green-600" />
-              <h1 className="text-xl font-bold text-gray-900">City Management</h1>
+              <h1 className="text-xl font-bold text-gray-900">{t("cityMgmt")}</h1>
             </div>
           </div>
           <Button
@@ -228,7 +231,7 @@ export default function AdminCitiesPage() {
             className="bg-green-600 hover:bg-green-500 text-white gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add city
+            {t("addCity")}
           </Button>
         </div>
       </div>
@@ -238,9 +241,9 @@ export default function AdminCitiesPage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Active cities",   value: activeCities,   icon: MapPin,    color: "text-green-600 bg-green-50" },
-            { label: "Total users",     value: totalUsers,     icon: Users,     color: "text-blue-600  bg-blue-50" },
-            { label: "Total providers", value: totalProviders, icon: Briefcase, color: "text-purple-600 bg-purple-50" },
+            { label: t("activeCities"),       value: activeCities,   icon: MapPin,    color: "text-green-600 bg-green-50" },
+            { label: t("totalUsersLabel"),    value: totalUsers,     icon: Users,     color: "text-blue-600  bg-blue-50" },
+            { label: t("totalProvidersLabel"), value: totalProviders, icon: Briefcase, color: "text-purple-600 bg-purple-50" },
           ].map(({ label, value, icon: Icon, color }) => (
             <div key={label} className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
               <div className={`w-11 h-11 rounded-xl ${color} flex items-center justify-center`}>
@@ -261,7 +264,7 @@ export default function AdminCitiesPage() {
             <Input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search cities..."
+              placeholder={t("searchCities")}
               className="ps-9 h-9"
             />
           </div>
@@ -272,9 +275,9 @@ export default function AdminCitiesPage() {
               onChange={e => setShowInactive(e.target.checked)}
               className="rounded"
             />
-            Show inactive
+            {t("showInactive")}
           </label>
-          <span className="text-xs text-gray-400 ms-auto">{sorted.length} cities</span>
+          <span className="text-xs text-gray-400 ms-auto">{t("citiesCount", { count: sorted.length })}</span>
         </div>
 
         {/* Table */}
@@ -286,19 +289,19 @@ export default function AdminCitiesPage() {
           ) : sorted.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-gray-400">
               <MapPin className="h-10 w-10 mb-3 opacity-20" />
-              <p className="text-sm">No cities found</p>
+              <p className="text-sm">{t("noCitiesFound")}</p>
             </div>
           ) : (
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 bg-gray-50/50">
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide w-12">Order</th>
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">City</th>
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Arabic</th>
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Code</th>
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Users</th>
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Providers</th>
-                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide w-12">{t("colOrder")}</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("colCity")}</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">{t("colArabic")}</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">{t("colCode")}</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("colUsers")}</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("providers")}</th>
+                  <th className="text-start px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("colStatus")}</th>
                   <th className="px-5 py-3 w-24" />
                 </tr>
               </thead>
@@ -368,7 +371,7 @@ export default function AdminCitiesPage() {
 
                     <td className="px-5 py-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${city.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                        {city.isActive ? "Active" : "Inactive"}
+                        {city.isActive ? t("statusActive") : t("statusInactive")}
                       </span>
                     </td>
 
