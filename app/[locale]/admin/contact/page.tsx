@@ -161,8 +161,8 @@ export default function AdminContactPage() {
             </div>
             <span className="text-xs text-white/50 uppercase tracking-widest">Admin</span>
           </div>
-          <h1 className="text-2xl font-extrabold">Contact Management</h1>
-          <p className="text-white/50 text-sm mt-1">Edit site contact info · View form submissions</p>
+          <h1 className="text-2xl font-extrabold">{t("contactMgmt")}</h1>
+          <p className="text-white/50 text-sm mt-1">{t("contactMgmtDesc")}</p>
         </div>
         <div className="h-6 bg-slate-50 mt-6" style={{ clipPath: "ellipse(100% 100% at 50% 100%)" }} />
       </div>
@@ -172,8 +172,8 @@ export default function AdminContactPage() {
         {/* Contact info editor */}
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-            <h2 className="font-bold text-gray-900">Site Contact Info</h2>
-            <span className="text-xs text-gray-400">Changes appear on the public contact page</span>
+            <h2 className="font-bold text-gray-900">{t("siteContactInfo")}</h2>
+            <span className="text-xs text-gray-400">{t("changesAppear")}</span>
           </div>
 
           {paramsLoading ? (
@@ -206,7 +206,7 @@ export default function AdminContactPage() {
               success ? "bg-green-50 border border-green-200 text-green-700" : "bg-red-50 border border-red-200 text-red-700"
             }`}>
               {success ? <Check className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
-              {success ? "Changes saved successfully!" : error}
+              {success ? t("savedSuccess") : error}
             </div>
           )}
 
@@ -220,7 +220,7 @@ export default function AdminContactPage() {
                 ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 : <Save className="h-4 w-4" />
               }
-              Save Changes
+              {t("saveChangesBtn")}
             </Button>
           </div>
         </div>
@@ -230,7 +230,7 @@ export default function AdminContactPage() {
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageCircle className="h-4 w-4 text-gray-400" />
-              <h2 className="font-bold text-gray-900">Contact Form Submissions</h2>
+              <h2 className="font-bold text-gray-900">{t("contactFormSubmissions")}</h2>
               {submissions.length > 0 && (
                 <span className="ml-2 bg-green-100 text-green-700 text-xs font-bold px-2 py-0.5 rounded-full">
                   {submissions.length}
@@ -239,7 +239,7 @@ export default function AdminContactPage() {
             </div>
             <button onClick={() => refetchSubs()} className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600">
               <RefreshCw className="h-3.5 w-3.5" />
-              Refresh
+              {t("refreshBtn")}
             </button>
           </div>
 
@@ -252,7 +252,7 @@ export default function AdminContactPage() {
           ) : submissions.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-14 text-gray-400">
               <MessageCircle className="h-10 w-10 mb-3 opacity-20" />
-              <p className="text-sm">No submissions yet</p>
+              <p className="text-sm">{t("noSubmissions")}</p>
             </div>
           ) : (
             <div className="p-4 space-y-2">

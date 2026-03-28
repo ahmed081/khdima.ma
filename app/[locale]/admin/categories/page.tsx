@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import {
   ArrowLeft, Plus, Pencil, ToggleLeft, ToggleRight,
@@ -132,6 +133,7 @@ function CategoryForm({
   isPending: boolean
   error: string
 }) {
+  const t = useTranslations("admin")
   const [form, setForm] = useState(initial)
   const [tab, setTab]   = useState<"details" | "translations">("details")
   const [emojiOpen, setEmojiOpen] = useState(false)
@@ -154,14 +156,14 @@ function CategoryForm({
     <form onSubmit={e => { e.preventDefault(); onSave(form) }} className="space-y-5">
       {/* Tab switcher */}
       <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-        {(["details", "translations"] as const).map(t => (
+        {(["details", "translations"] as const).map(tabId => (
           <button
-            key={t}
+            key={tabId}
             type="button"
-            onClick={() => setTab(t)}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all capitalize ${tab === t ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-700"}`}
+            onClick={() => setTab(tabId)}
+            className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-all capitalize ${tab === tabId ? "bg-white shadow-sm text-gray-900" : "text-gray-500 hover:text-gray-700"}`}
           >
-            {t === "details" ? "Details" : "Translations"}
+            {tabId === "details" ? t("detailsTab") : t("translationsTab")}
           </button>
         ))}
       </div>
@@ -170,7 +172,7 @@ function CategoryForm({
         <div className="space-y-4">
           {/* Icon picker */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">Icon</label>
+            <label className="block text-sm font-semibold text-gray-700">{t("iconLabel")}</label>
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -180,8 +182,8 @@ function CategoryForm({
                 {form.icon || "➕"}
               </button>
               <div className="flex-1">
-                <p className="text-sm text-gray-600 font-medium">{form.icon ? `Selected: ${form.icon}` : "No icon selected"}</p>
-                <p className="text-xs text-gray-400">Click to choose an emoji</p>
+                <p className="text-sm text-gray-600 font-medium">{form.icon ? t("iconSelected", { icon: form.icon }) : t("iconNone")}</p>
+                <p className="text-xs text-gray-400">{t("iconHint")}</p>
               </div>
               {form.icon && (
                 <button type="button" onClick={() => set("icon", "")} className="p-1.5 rounded-lg hover:bg-gray-100">
@@ -222,7 +224,7 @@ function CategoryForm({
               <label className="block text-sm font-semibold text-gray-700">
                 <Hash className="inline h-3.5 w-3.5 text-gray-400 me-1" />
                 Code <span className="text-red-500">*</span>
-                <span className="text-xs font-normal text-gray-400 ms-1">uppercase, e.g. PLUMBING</span>
+                <span className="text-xs font-normal text-gray-400 ms-1">{t("codeHintCat")}</span>
               </label>
               <input
                 value={form.code}
@@ -238,8 +240,8 @@ function CategoryForm({
           {!isEdit && (
             <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-gray-700">
-                Slug <span className="text-red-500">*</span>
-                <span className="text-xs font-normal text-gray-400 ms-1">url-friendly, auto-generated</span>
+                {t("fieldSlug")} <span className="text-red-500">*</span>
+                <span className="text-xs font-normal text-gray-400 ms-1">{t("slugHint")}</span>
               </label>
               <input
                 value={form.slug}
@@ -253,7 +255,7 @@ function CategoryForm({
 
           {/* Order */}
           <div className="space-y-1.5">
-            <label className="block text-sm font-semibold text-gray-700">Display order</label>
+            <label className="block text-sm font-semibold text-gray-700">{t("fieldOrderDisplay")}</label>
             <input
               type="number"
               value={form.order}
@@ -268,7 +270,7 @@ function CategoryForm({
       {tab === "translations" && (
         <div className="space-y-4">
           <p className="text-xs text-gray-500 bg-blue-50 border border-blue-100 rounded-xl p-3">
-            Translations are used to display category names in the correct language across the platform.
+            {t("translationsNote")}
           </p>
 
           {[
@@ -304,7 +306,7 @@ function CategoryForm({
         className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold shadow-sm transition-all disabled:opacity-60"
       >
         {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-        {isPending ? "Saving…" : "Save"}
+        {isPending ? t("savingBtn") : t("saveBtn")}
       </button>
     </form>
   )
@@ -313,6 +315,7 @@ function CategoryForm({
 // ─── Subcategory panel ──────────────────────────────────────────────────────
 
 function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categoryCode: string }) {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
   const [addOpen,  setAddOpen]  = useState(false)
   const [editItem, setEditItem] = useState<SubcatRow | null>(null)
@@ -353,7 +356,7 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
       setEditItem(null)
       setForm({ code: "", slug: "", fr: "", en: "", ar: "" })
       setErr("")
-      setToast({ msg: editItem ? "Subcategory updated" : "Subcategory added", type: "success" })
+      setToast({ msg: editItem ? t("subcatUpdated") : t("subcatAdded"), type: "success" })
     },
     onError: (e: any) => setErr(e.message),
   })
@@ -368,7 +371,7 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: key })
       qc.invalidateQueries({ queryKey: ["admin-categories"] })
-      setToast({ msg: "Subcategory deleted", type: "success" })
+      setToast({ msg: t("subcatDeleted"), type: "success" })
     },
     onError: (e: any) => setToast({ msg: e.message, type: "error" }),
   })
@@ -387,25 +390,25 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
       <div className="flex items-center justify-between mb-3">
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide flex items-center gap-1.5">
           <Layers className="h-3.5 w-3.5" />
-          Subcategories ({subcats.length})
+          {t("subcategoriesSection", { count: subcats.length })}
         </p>
         <button
           onClick={() => { setAddOpen(v => !v); setEditItem(null); setForm({ code: "", slug: "", fr: "", en: "", ar: "" }) }}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold transition-colors"
         >
-          <Plus className="h-3.5 w-3.5" /> Add
+          <Plus className="h-3.5 w-3.5" /> {t("addSubcatBtn")}
         </button>
       </div>
 
       {/* Add / Edit inline form */}
       {addOpen && (
         <div className="mb-3 rounded-2xl border border-green-200 bg-green-50/40 p-4 space-y-3">
-          <p className="text-sm font-semibold text-gray-700">{editItem ? `Edit: ${editItem.code}` : "New Subcategory"}</p>
+          <p className="text-sm font-semibold text-gray-700">{editItem ? `Edit: ${editItem.code}` : t("newSubcat")}</p>
 
           {!editItem && (
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Code *</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">{t("fieldCode")} *</label>
                 <input
                   value={form.code}
                   onChange={e => setForm(p => ({ ...p, code: e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "") }))}
@@ -414,7 +417,7 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-600 mb-1">Slug</label>
+                <label className="block text-xs font-semibold text-gray-600 mb-1">{t("fieldSlug")}</label>
                 <input
                   value={form.slug || autoSlug(form.fr)}
                   onChange={e => setForm(p => ({ ...p, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") }))}
@@ -454,14 +457,14 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white text-xs font-semibold transition-colors disabled:opacity-60"
             >
               {saveMutation.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
-              {editItem ? "Update" : "Create"}
+              {editItem ? t("updateBtn") : t("createBtn")}
             </button>
             <button
               type="button"
               onClick={() => { setAddOpen(false); setEditItem(null); setErr("") }}
               className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t("cancelBtn")}
             </button>
           </div>
         </div>
@@ -473,7 +476,7 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
           {[1, 2, 3].map(i => <div key={i} className="h-8 bg-gray-100 rounded-xl animate-pulse" />)}
         </div>
       ) : subcats.length === 0 ? (
-        <p className="text-xs text-gray-400 text-center py-4">No subcategories yet</p>
+        <p className="text-xs text-gray-400 text-center py-4">{t("noSubcatsYet")}</p>
       ) : (
         <div className="space-y-1.5">
           {subcats.map(s => (
@@ -487,7 +490,7 @@ function SubcatPanel({ categoryId, categoryCode }: { categoryId: number; categor
                 </div>
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-xs text-gray-400 mr-1">{s.providerCount} pros</span>
+                <span className="text-xs text-gray-400 mr-1">{t("prosCount", { count: s.providerCount })}</span>
                 <button
                   onClick={() => openEdit(s)}
                   className="flex h-7 w-7 items-center justify-center rounded-lg hover:bg-white hover:shadow-sm transition-all"
@@ -521,6 +524,7 @@ function CategoryCard({
   onEdit: (c: CategoryRow) => void
   onToggle: (c: CategoryRow) => void
 }) {
+  const t = useTranslations("admin")
   const [expanded, setExpanded] = useState(false)
   const grad = GRAD[cat.code] ?? defaultGrad
 
@@ -544,7 +548,7 @@ function CategoryCard({
                 {cat.translations.fr ?? cat.code}
               </span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${cat.isActive ? "bg-green-50 text-green-700 border-green-200" : "bg-gray-100 text-gray-500 border-gray-200"}`}>
-                {cat.isActive ? "Active" : "Inactive"}
+                {cat.isActive ? t("statusActive") : t("statusInactive")}
               </span>
             </div>
 
@@ -592,14 +596,14 @@ function CategoryCard({
               <Users className="h-3.5 w-3.5 text-blue-500" />
             </div>
             <span className="font-semibold text-gray-700">{cat.providerCount}</span>
-            <span className="text-gray-400 text-xs">providers</span>
+            <span className="text-gray-400 text-xs">{t("providerCount")}</span>
           </div>
           <div className="flex items-center gap-1.5 text-sm">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-50">
               <Layers className="h-3.5 w-3.5 text-purple-500" />
             </div>
             <span className="font-semibold text-gray-700">{cat.subcategoryCount}</span>
-            <span className="text-gray-400 text-xs">subcategories</span>
+            <span className="text-gray-400 text-xs">{t("subcatCount")}</span>
           </div>
           <div className="ms-auto">
             <span className="text-xs text-gray-400">Order: {cat.order}</span>
@@ -612,7 +616,7 @@ function CategoryCard({
           className="mt-3 w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-dashed border-gray-200 text-xs font-medium text-gray-400 hover:text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
         >
           {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-          {expanded ? "Hide" : "Manage"} subcategories
+          {expanded ? t("hideSubcats") : t("manageSubcats")}
         </button>
 
         {expanded && <SubcatPanel categoryId={cat.id} categoryCode={cat.code} />}
@@ -624,6 +628,7 @@ function CategoryCard({
 // ─── Main page ───────────────────────────────────────────────────────────────
 
 export default function AdminCategoriesPage() {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
   const [drawerMode,  setDrawerMode]  = useState<DrawerMode>(null)
   const [editTarget,  setEditTarget]  = useState<CategoryRow | null>(null)
@@ -651,7 +656,7 @@ export default function AdminCategoriesPage() {
       setDrawerMode(null)
       setEditTarget(null)
       setDrawerError("")
-      setToast({ msg: editTarget ? "Category updated" : "Category created", type: "success" })
+      setToast({ msg: editTarget ? t("categoryUpdated") : t("categoryCreated"), type: "success" })
     },
     onError: (e: any) => setDrawerError(e.message),
   })
@@ -665,7 +670,7 @@ export default function AdminCategoriesPage() {
       }).then(r => r.json()),
     onSuccess: (_, cat) => {
       qc.invalidateQueries({ queryKey: ["admin-categories"] })
-      setToast({ msg: cat.isActive ? "Category deactivated" : "Category activated", type: "success" })
+      setToast({ msg: cat.isActive ? t("categoryDeactivated") : t("categoryActivated"), type: "success" })
     },
   })
 
@@ -694,7 +699,7 @@ export default function AdminCategoriesPage() {
   const totalSubcats    = categories.reduce((s, c) => s + c.subcategoryCount, 0)
 
   const drawerOpen  = drawerMode === "create-cat" || drawerMode === "edit-cat"
-  const drawerTitle = drawerMode === "create-cat" ? "New Category" : `Edit: ${editTarget?.translations.fr ?? editTarget?.code ?? ""}`
+  const drawerTitle = drawerMode === "create-cat" ? t("newCategory") : `Edit: ${editTarget?.translations.fr ?? editTarget?.code ?? ""}`
 
   const initialForm = editTarget ? {
     code:  editTarget.code,
@@ -726,26 +731,26 @@ export default function AdminCategoriesPage() {
         <div className="container mx-auto max-w-6xl px-4 py-5">
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-1">
             <Link href="/admin" className="hover:text-gray-700 transition-colors flex items-center gap-1">
-              <ArrowLeft className="h-3.5 w-3.5" /> Dashboard
+              <ArrowLeft className="h-3.5 w-3.5" /> {t("dashboardTitle")}
             </Link>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-gray-700 font-medium">Categories</span>
+            <span className="text-gray-700 font-medium">{t("categories")}</span>
           </div>
 
           <div className="flex items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl font-extrabold text-gray-900 flex items-center gap-2">
                 <Tag className="h-6 w-6 text-green-600" />
-                Service Categories
+                {t("categoriesPageTitle")}
               </h1>
-              <p className="text-sm text-gray-500 mt-0.5">Manage categories, icons, translations and subcategories</p>
+              <p className="text-sm text-gray-500 mt-0.5">{t("categoriesPageSubtitle")}</p>
             </div>
             <button
               onClick={openCreate}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-semibold text-sm shadow-sm transition-all active:scale-95"
             >
               <Plus className="h-4 w-4" />
-              New Category
+              {t("newCategory")}
             </button>
           </div>
         </div>
@@ -755,10 +760,10 @@ export default function AdminCategoriesPage() {
         {/* ── Summary cards ───────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Total",        value: categories.length, icon: Tag,     color: "text-violet-600", bg: "bg-violet-50",  border: "border-violet-100" },
-            { label: "Active",       value: active,            icon: Sparkles, color: "text-green-600",  bg: "bg-green-50",   border: "border-green-100" },
-            { label: "Inactive",     value: inactive,          icon: X,        color: "text-gray-500",   bg: "bg-gray-50",    border: "border-gray-200" },
-            { label: "Subcategories",value: totalSubcats,      icon: Layers,   color: "text-blue-600",   bg: "bg-blue-50",    border: "border-blue-100" },
+            { label: t("catTotal"),        value: categories.length, icon: Tag,     color: "text-violet-600", bg: "bg-violet-50",  border: "border-violet-100" },
+            { label: t("catActive"),       value: active,            icon: Sparkles, color: "text-green-600",  bg: "bg-green-50",   border: "border-green-100" },
+            { label: t("catInactive"),     value: inactive,          icon: X,        color: "text-gray-500",   bg: "bg-gray-50",    border: "border-gray-200" },
+            { label: t("catSubcategories"),value: totalSubcats,      icon: Layers,   color: "text-blue-600",   bg: "bg-blue-50",    border: "border-blue-100" },
           ].map(({ label, value, icon: Icon, color, bg, border }) => (
             <div key={label} className={`rounded-2xl border p-4 ${bg} ${border}`}>
               <Icon className={`h-5 w-5 mb-2 ${color}`} />

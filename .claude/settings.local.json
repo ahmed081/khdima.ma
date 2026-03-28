@@ -4,7 +4,13 @@
       "Bash(grep -E '\\\\.\\(ts|tsx|js|json|sql|prisma|env|yaml|yml\\)$')",
       "Bash(pnpm add:*)",
       "Bash(pnpm run:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\pc\\\\Desktop\\\\projects\\\\Nouveau dossier\\\\khdima.ma\\\\app\\\\[locale]\\\\forgot-password\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\pc\\\\Desktop\\\\projects\\\\Nouveau dossier\\\\khdima.ma\\\\app\\\\[locale]\\\\reset-password\")",
+      "Bash(grep -r \"locale === ['''']ar[''''] ?\" 'C:\\\\Users\\\\pc\\\\Desktop\\\\projects\\\\Nouveau dossier\\\\khdima.ma\\\\app' --include=*.tsx --include=*.ts)",
+      "Bash(grep -rn 'locale === .*ar' 'C:\\\\Users\\\\pc\\\\Desktop\\\\projects\\\\Nouveau dossier\\\\khdima.ma\\\\app' --include=*.tsx --include=*.ts)",
+      "Bash(find '/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma' -name *upload* -type f)",
+      "Bash(find '/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma/app/[locale]' -name *.tsx -type f)"
     ]
   }
 }

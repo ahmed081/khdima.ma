@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { Link } from "@/i18n/navigation"
+import { getTranslations } from "next-intl/server"
 import {
   Users, Briefcase, BarChart3, Languages, Tag,
   Clock, Flag, CheckCircle, AlertCircle, TrendingUp,
@@ -55,12 +56,14 @@ export default async function AdminDashboardPage() {
     { status: "SUSPENDED", count: suspendedProviders },
   ]
 
+  const t = await getTranslations("admin")
+
   const navItems = [
     {
       href: "/admin/providers",
       icon: Briefcase,
-      label: "Providers",
-      desc: "Approve & manage providers",
+      label: t("providers"),
+      desc: t("providersDesc"),
       badge: pendingCount > 0 ? pendingCount : null,
       color: "text-blue-600",
       bg: "bg-blue-50",
@@ -68,8 +71,8 @@ export default async function AdminDashboardPage() {
     {
       href: "/admin/categories",
       icon: Tag,
-      label: "Categories",
-      desc: "Manage service categories",
+      label: t("categories"),
+      desc: t("categoriesDesc"),
       badge: null,
       color: "text-purple-600",
       bg: "bg-purple-50",
@@ -77,8 +80,8 @@ export default async function AdminDashboardPage() {
     {
       href: "/admin/translations",
       icon: Languages,
-      label: "Translations",
-      desc: "Manage i18n strings",
+      label: t("translations"),
+      desc: t("translationsDesc"),
       badge: null,
       color: "text-teal-600",
       bg: "bg-teal-50",
@@ -86,8 +89,8 @@ export default async function AdminDashboardPage() {
     {
       href: "/admin/analytics",
       icon: BarChart3,
-      label: "Analytics",
-      desc: "Platform statistics",
+      label: t("analytics"),
+      desc: t("analyticsDesc"),
       badge: null,
       color: "text-indigo-600",
       bg: "bg-indigo-50",
@@ -95,8 +98,8 @@ export default async function AdminDashboardPage() {
     {
       href: "/admin/reports",
       icon: Flag,
-      label: "Reports",
-      desc: "Handle abuse reports",
+      label: t("reportsLabel"),
+      desc: t("reportsDesc"),
       badge: openReports > 0 ? openReports : null,
       color: "text-red-600",
       bg: "bg-red-50",
@@ -104,8 +107,8 @@ export default async function AdminDashboardPage() {
     {
       href: "/admin/contact",
       icon: Phone,
-      label: "Contact",
-      desc: "Contact info & form submissions",
+      label: t("contactLabel"),
+      desc: t("contactDesc"),
       badge: null,
       color: "text-cyan-600",
       bg: "bg-cyan-50",
@@ -113,8 +116,8 @@ export default async function AdminDashboardPage() {
     {
       href: "/admin/cities",
       icon: MapPin,
-      label: "Cities",
-      desc: "Manage Moroccan cities",
+      label: t("citiesLabel"),
+      desc: t("citiesDesc"),
       badge: null,
       color: "text-green-600",
       bg: "bg-green-50",
@@ -139,14 +142,14 @@ export default async function AdminDashboardPage() {
                   <Shield className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xs font-semibold text-white/50 uppercase tracking-widest">
-                  Admin Panel
+                  {t("adminTitle")}
                 </span>
               </div>
               <h1 className="text-3xl font-extrabold text-white tracking-tight mb-1">
-                Dashboard
+                {t("dashboardTitle")}
               </h1>
               <p className="text-white/50 text-sm">
-                Platform overview and management tools
+                {t("platformOverview")}
               </p>
             </div>
 
@@ -155,13 +158,13 @@ export default async function AdminDashboardPage() {
               {pendingCount > 0 && (
                 <div className="flex items-center gap-2 bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold px-3 py-2 rounded-xl">
                   <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                  {pendingCount} pending review
+                  {t("pendingReview", { count: pendingCount })}
                 </div>
               )}
               {openReports > 0 && (
                 <div className="flex items-center gap-2 bg-red-500/20 border border-red-400/30 text-red-300 text-xs font-semibold px-3 py-2 rounded-xl">
                   <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
-                  {openReports} open report{openReports > 1 ? "s" : ""}
+                  {t("openReportsAlert", { count: openReports })}
                 </div>
               )}
             </div>
@@ -184,12 +187,12 @@ export default async function AdminDashboardPage() {
               <Clock className="h-4 w-4 text-amber-600" />
             </div>
             <p className="text-2xl font-extrabold text-amber-600">{pendingCount}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Pending</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("pending")}</p>
             <Link
               href="/admin/providers?status=PENDING"
               className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700"
             >
-              Review <ChevronRight className="h-3 w-3" />
+              {t("reviewBtn")} <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
 
@@ -200,7 +203,7 @@ export default async function AdminDashboardPage() {
               <CheckCircle className="h-4 w-4 text-green-600" />
             </div>
             <p className="text-2xl font-extrabold text-green-600">{activeProviders}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Active providers</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("statActiveProviders")}</p>
           </div>
 
           {/* Customers */}
@@ -210,7 +213,7 @@ export default async function AdminDashboardPage() {
               <Users className="h-4 w-4 text-blue-600" />
             </div>
             <p className="text-2xl font-extrabold text-blue-600">{totalUsers}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Customers</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("statCustomers")}</p>
           </div>
 
           {/* Contacts */}
@@ -220,7 +223,7 @@ export default async function AdminDashboardPage() {
               <TrendingUp className="h-4 w-4 text-purple-600" />
             </div>
             <p className="text-2xl font-extrabold text-purple-600">{totalContacts}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Contacts (30d)</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("statContacts30d")}</p>
           </div>
 
           {/* Open reports */}
@@ -230,13 +233,13 @@ export default async function AdminDashboardPage() {
               <AlertCircle className={`h-4 w-4 ${openReports > 0 ? "text-red-600" : "text-gray-400"}`} />
             </div>
             <p className={`text-2xl font-extrabold ${openReports > 0 ? "text-red-600" : "text-gray-400"}`}>{openReports}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Open reports</p>
+            <p className="text-xs text-gray-500 mt-0.5">{t("statOpenReports")}</p>
             {openReports > 0 && (
               <Link
                 href="/admin/reports"
                 className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700"
               >
-                View <ChevronRight className="h-3 w-3" />
+                {t("viewBtn")} <ChevronRight className="h-3 w-3" />
               </Link>
             )}
           </div>
@@ -246,15 +249,15 @@ export default async function AdminDashboardPage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="h-4 w-4 text-gray-500" />
-            <h2 className="font-bold text-gray-900">Activity Overview</h2>
-            <span className="text-xs text-gray-400">· Last 30 days</span>
+            <h2 className="font-bold text-gray-900">{t("activityOverview")}</h2>
+            <span className="text-xs text-gray-400">· {t("last30days")}</span>
           </div>
           <AdminCharts contactStats={contactStats} statusStats={statusStats} />
         </div>
 
         {/* ── NAV CARDS ─────────────────────────────────────────────────── */}
         <div className="mb-8">
-          <h2 className="font-bold text-gray-900 mb-4">Management Tools</h2>
+          <h2 className="font-bold text-gray-900 mb-4">{t("managementTools")}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             {navItems.map(item => (
               <Link key={item.href} href={item.href} className="group">
@@ -279,30 +282,30 @@ export default async function AdminDashboardPage() {
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
             <Activity className="h-4 w-4 text-gray-400" />
-            <h2 className="font-bold text-gray-900 text-sm">Recent Contact Logs</h2>
+            <h2 className="font-bold text-gray-900 text-sm">{t("recentContactLogs")}</h2>
           </div>
 
           {recentContacts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-gray-400">
               <Eye className="h-10 w-10 mb-3 opacity-30" />
-              <p className="text-sm">No contact logs yet.</p>
+              <p className="text-sm">{t("noContactLogs")}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-50">
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Provider</th>
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">User</th>
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Type</th>
-                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Date</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t("colProvider")}</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t("colUser")}</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t("colType")}</th>
+                    <th className="text-left px-6 py-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">{t("colDate")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {recentContacts.map(log => (
                     <tr key={log.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-3.5 font-semibold text-gray-800">{log.provider.businessName}</td>
-                      <td className="px-6 py-3.5 text-gray-500">{log.user?.name ?? "Anonymous"}</td>
+                      <td className="px-6 py-3.5 text-gray-500">{log.user?.name ?? t("anonymous")}</td>
                       <td className="px-6 py-3.5">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
                           log.type === "WHATSAPP"
@@ -334,10 +337,10 @@ export default async function AdminDashboardPage() {
           {recentContacts.length > 0 && (
             <div className="px-6 py-3 border-t border-gray-50">
               <Link
-                href="/admin/analytics"
+                href="/admin/ analytics"
                 className="text-xs font-semibold text-green-700 hover:text-green-600 flex items-center gap-1"
               >
-                View full analytics <ChevronRight className="h-3 w-3" />
+                {t("viewFullAnalytics")} <ChevronRight className="h-3 w-3" />
               </Link>
             </div>
           )}

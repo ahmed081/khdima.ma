@@ -9,14 +9,6 @@ const nextConfig: NextConfig = {
     // has a false-positive error with top-level [locale] dynamic segments.
     ignoreBuildErrors: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: "/uploads/:path*",
-        destination: "/public/uploads/:path*",
-      },
-    ];
-  },
 };
 
 export default withNextIntl(nextConfig);
