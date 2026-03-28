@@ -18,7 +18,8 @@ export async function GET(req: NextRequest) {
       include: {
         user: { select: { name: true, email: true } },
         city: { select: { name: true } },
-        category: { select: { code: true, slug: true } }
+        category: { select: { code: true, slug: true } },
+        _count: { select: { contactLogs: true, portfolioImages: true, reviews: true } },
       }
     })
 

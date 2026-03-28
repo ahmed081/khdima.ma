@@ -442,7 +442,7 @@ export default function AdminProvidersPage() {
                   <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-400">
                     <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{provider.city.name}</span>
                     <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{provider.profileViews} views</span>
-                    <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{provider._count.contactLogs} contacts</span>
+                    <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{provider._count?.contactLogs ?? 0} contacts</span>
                   </div>
                 </div>
 
