@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import {
@@ -12,6 +13,7 @@ import { TrendingUp, Users, Briefcase, MessageCircle } from "lucide-react"
 const COLORS = ['#b91c1c', '#d97706', '#059669', '#2563eb', '#7c3aed', '#db2777', '#0891b2', '#65a30d']
 
 export default function AdminAnalyticsPage() {
+  const t = useTranslations("admin")
   const { data, isLoading } = useQuery({
     queryKey: ['admin-analytics'],
     queryFn: () => fetch('/api/admin/analytics').then(r => r.json()),
@@ -30,7 +32,7 @@ export default function AdminAnalyticsPage() {
   }
 
   if (!data || data.error) {
-    return <main className="min-h-screen flex items-center justify-center text-red-600">{data?.error ?? 'Failed to load'}</main>
+    return <main className="min-h-screen flex items-center justify-center text-red-600">{data?.error ?? t("failedToLoad")}</main>
   }
 
   const { overview, contactsByType, providersByCategory, providersByCity, topProviders, dailyContacts } = data
@@ -39,21 +41,21 @@ export default function AdminAnalyticsPage() {
     <main className="min-h-screen bg-gray-50 py-10">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/admin" className="text-gray-500 hover:text-gray-700 text-sm">← Dashboard</Link>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+          <Link href="/admin" className="text-gray-500 hover:text-gray-700 text-sm">← {t("dashboardTitle")}</Link>
+          <h1 className="text-2xl font-bold text-gray-900">{t("analyticsTitle")}</h1>
         </div>
 
         {/* KPI Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Active Providers', value: overview.activeProviders,    icon: Briefcase,    color: 'text-blue-600'   },
-            { label: 'Pending Review',   value: overview.pendingProviders,   icon: TrendingUp,   color: 'text-amber-600'  },
-            { label: 'Customers',        value: overview.totalUsers,         icon: Users,        color: 'text-green-600'  },
-            { label: '30-Day Contacts',  value: overview.recentContacts,     icon: MessageCircle, color: 'text-purple-600' },
-            { label: 'Total Reviews',    value: overview.totalReviews,       icon: TrendingUp,   color: 'text-pink-600'   },
-            { label: 'Total Contacts',   value: overview.totalContacts,      icon: MessageCircle, color: 'text-green-600' },
-            { label: 'Suspended',        value: overview.suspendedProviders, icon: Briefcase,    color: 'text-gray-500'   },
-            { label: 'All Providers',    value: overview.totalProviders,     icon: Briefcase,    color: 'text-indigo-600' },
+            { label: t("statActiveProviders"), value: overview.activeProviders,    icon: Briefcase,     color: 'text-blue-600'   },
+            { label: t("pending"),             value: overview.pendingProviders,   icon: TrendingUp,    color: 'text-amber-600'  },
+            { label: t("statCustomers"),       value: overview.totalUsers,         icon: Users,         color: 'text-green-600'  },
+            { label: t("statContacts30d"),     value: overview.recentContacts,     icon: MessageCircle, color: 'text-purple-600' },
+            { label: t("statTotalReviews"),    value: overview.totalReviews,       icon: TrendingUp,    color: 'text-pink-600'   },
+            { label: t("statTotalContacts"),   value: overview.totalContacts,      icon: MessageCircle, color: 'text-green-600'  },
+            { label: t("suspended"),           value: overview.suspendedProviders, icon: Briefcase,     color: 'text-gray-500'   },
+            { label: t("statAllProviders"),    value: overview.totalProviders,     icon: Briefcase,     color: 'text-indigo-600' },
           ].map(item => (
             <Card key={item.label}>
               <CardContent className="p-5">
@@ -68,7 +70,7 @@ export default function AdminAnalyticsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Daily contacts (7 days) */}
           <Card>
-            <CardHeader><CardTitle className="text-base">Daily Contacts (7 days)</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">{t("chartDailyContacts")}</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={dailyContacts}>
@@ -84,7 +86,7 @@ export default function AdminAnalyticsPage() {
 
           {/* Contacts by type */}
           <Card>
-            <CardHeader><CardTitle className="text-base">Contact Types (30 days)</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">{t("chartContactTypes")}</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
@@ -102,7 +104,7 @@ export default function AdminAnalyticsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Providers by category */}
           <Card>
-            <CardHeader><CardTitle className="text-base">Providers by Category</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">{t("chartProvidersByCategory")}</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={providersByCategory} layout="vertical">
@@ -118,7 +120,7 @@ export default function AdminAnalyticsPage() {
 
           {/* Providers by city */}
           <Card>
-            <CardHeader><CardTitle className="text-base">Providers by City</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">{t("chartProvidersByCity")}</CardTitle></CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={providersByCity} layout="vertical">
@@ -135,19 +137,19 @@ export default function AdminAnalyticsPage() {
 
         {/* Top providers */}
         <Card>
-          <CardHeader><CardTitle className="text-base">Top Rated Providers</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">{t("chartTopProviders")}</CardTitle></CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b text-xs uppercase text-gray-500">
                     <th className="text-left py-2 pr-4">#</th>
-                    <th className="text-left py-2 pr-4">Provider</th>
-                    <th className="text-left py-2 pr-4">Category</th>
-                    <th className="text-left py-2 pr-4">City</th>
-                    <th className="text-right py-2 pr-4">Rating</th>
-                    <th className="text-right py-2 pr-4">Reviews</th>
-                    <th className="text-right py-2">Views</th>
+                    <th className="text-left py-2 pr-4">{t("colProvider")}</th>
+                    <th className="text-left py-2 pr-4">{t("colCategory")}</th>
+                    <th className="text-left py-2 pr-4">{t("colCityHeader")}</th>
+                    <th className="text-right py-2 pr-4">{t("colRating")}</th>
+                    <th className="text-right py-2 pr-4">{t("colReviews")}</th>
+                    <th className="text-right py-2">{t("colViews")}</th>
                   </tr>
                 </thead>
                 <tbody>

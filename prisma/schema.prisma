@@ -1,6 +1,3 @@
-// =====================================
-//   GENERATOR & DATASOURCE
-// =====================================
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -10,9 +7,200 @@ datasource db {
   provider = "postgresql"
 }
 
-// =====================================
-//   ENUMS
-// =====================================
+model Translation {
+  id        Int               @id @default(autoincrement())
+  code      String
+  locale    TranslationLocale
+  text      String
+  namespace String            @default("general")
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([code, locale])
+  @@index([namespace])
+  @@index([code])
+}
+
+model Param {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String
+  description String?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Country {
+  id     Int    @id @default(autoincrement())
+  code   String @unique
+  name   String @unique
+  nameAr String
+  nameFr String
+  cities City[]
+}
+
+model City {
+  id        Int        @id @default(autoincrement())
+  code      String     @unique
+  name      String
+  nameAr    String
+  nameFr    String
+  countryId Int
+  isActive  Boolean    @default(true)
+  order     Int        @default(0)
+  country   Country    @relation(fields: [countryId], references: [id])
+  providers Provider[]
+  users     User[]
+
+  @@unique([name, countryId])
+}
+
+model ServiceCategory {
+  id            Int                  @id @default(autoincrement())
+  code          String               @unique
+  slug          String               @unique
+  icon          String?
+  order         Int                  @default(0)
+  isActive      Boolean              @default(true)
+  createdAt     DateTime             @default(now())
+  providers     Provider[]
+  subcategories ServiceSubcategory[]
+}
+
+model ServiceSubcategory {
+  id         Int                   @id @default(autoincrement())
+  code       String                @unique
+  slug       String                @unique
+  categoryId Int
+  createdAt  DateTime              @default(now())
+  providers  ProviderSubcategory[]
+  category   ServiceCategory       @relation(fields: [categoryId], references: [id])
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String
+  email       String       @unique
+  phone       String?
+  password    String
+  role        UserRole     @default(CUSTOMER)
+  avatarUrl   String?
+  cityId      Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  contactLogs ContactLog[]
+  provider    Provider?
+  reports     Report[]
+  reviews     Review[]
+  city        City?        @relation(fields: [cityId], references: [id])
+}
+
+model Provider {
+  id              Int                   @id @default(autoincrement())
+  userId          Int                   @unique
+  businessName    String
+  bio             String?
+  bioAr           String?
+  bioFr           String?
+  phone           String
+  whatsapp        String?
+  website         String?
+  avatarUrl       String?
+  cityId          Int
+  categoryId      Int
+  yearsExperience Int?
+  status          ProviderStatus        @default(PENDING)
+  availability    AvailabilityStatus    @default(AVAILABLE)
+  isVerified      Boolean               @default(false)
+  profileViews    Int                   @default(0)
+  rating          Float                 @default(0)
+  reviewCount     Int                   @default(0)
+  adminNotes      String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  workingHours    Json?
+  contactLogs     ContactLog[]
+  portfolioImages PortfolioImage[]
+  category        ServiceCategory       @relation(fields: [categoryId], references: [id])
+  city            City                  @relation(fields: [cityId], references: [id])
+  user            User                  @relation(fields: [userId], references: [id])
+  subcategories   ProviderSubcategory[]
+  reports         Report[]
+  reviews         Review[]
+}
+
+model ProviderSubcategory {
+  providerId    Int
+  subcategoryId Int
+  provider      Provider           @relation(fields: [providerId], references: [id])
+  subcategory   ServiceSubcategory @relation(fields: [subcategoryId], references: [id])
+
+  @@id([providerId, subcategoryId])
+}
+
+model PortfolioImage {
+  id         Int      @id @default(autoincrement())
+  providerId Int
+  url        String
+  caption    String?
+  isBefore   Boolean  @default(false)
+  pairId     String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  provider   Provider @relation(fields: [providerId], references: [id])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  providerId Int
+  userId     Int
+  rating     Int
+  comment    String?
+  isVisible  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  provider   Provider @relation(fields: [providerId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@unique([providerId, userId])
+}
+
+model Report {
+  id         Int          @id @default(autoincrement())
+  providerId Int
+  reporterId Int?
+  reason     String
+  details    String?
+  status     ReportStatus @default(OPEN)
+  adminNote  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  provider   Provider     @relation(fields: [providerId], references: [id])
+  reporter   User?        @relation(fields: [reporterId], references: [id])
+}
+
+model PasswordResetToken {
+  id        Int       @id @default(autoincrement())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+}
+
+model ContactLog {
+  id         Int         @id @default(autoincrement())
+  providerId Int
+  userId     Int?
+  type       ContactType
+  ipAddress  String?
+  createdAt  DateTime    @default(now())
+  provider   Provider    @relation(fields: [providerId], references: [id])
+  user       User?       @relation(fields: [userId], references: [id])
+}
+
 enum UserRole {
   CUSTOMER
   PROVIDER
@@ -43,250 +231,8 @@ enum TranslationLocale {
   ar
 }
 
-// =====================================
-//   I18N — TRANSLATIONS & PARAMS
-// =====================================
-
-// Stores all translatable text by code + locale.
-// code format: "<NAMESPACE>_<KEY>"  e.g. "CAT_PLUMBING", "SUBCAT_PLUMBING_REPAIR"
-model Translation {
-  id        Int               @id @default(autoincrement())
-  code      String            // e.g. "CAT_PLUMBING"
-  locale    TranslationLocale // en | fr | ar
-  text      String            // e.g. "Plomberie"
-  namespace String            @default("general") // "category" | "subcategory" | "city" | "ui" | etc.
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-
-  @@unique([code, locale])
-  @@index([namespace])
-  @@index([code])
-}
-
-// System-wide configuration & transcodification params.
-// Used for admin-managed settings, feature flags, and any
-// key-value pair that needs to be translated or configured
-// without a code deploy.
-model Param {
-  id          Int      @id @default(autoincrement())
-  key         String   @unique // e.g. "SITE_NAME", "MAX_PROVIDERS_PER_CITY"
-  value       String   // default / fallback value
-  description String?  // for admin UI
-  isPublic    Boolean  @default(false) // exposed to frontend
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-// =====================================
-//   GEOGRAPHY
-// =====================================
-model Country {
-  id     Int    @id @default(autoincrement())
-  code   String @unique // "MA", "FR" — used as translation key prefix
-  name   String @unique // canonical name for internal use
-  nameAr String
-  nameFr String
-  cities City[]
-}
-
-model City {
-  id        Int        @id @default(autoincrement())
-  code      String     @unique // "CASA", "RABAT" — translation key
-  name      String     // canonical (usually French spelling)
-  nameAr    String
-  nameFr    String
-  countryId Int
-  isActive  Boolean    @default(true)
-  order     Int        @default(0)
-  country   Country    @relation(fields: [countryId], references: [id])
-  users     User[]
-  providers Provider[]
-
-  @@unique([name, countryId])
-}
-
-// =====================================
-//   SERVICE CATEGORIES
-//   NO hardcoded translated text here.
-//   Use the Translation table with code "CAT_<CODE>"
-// =====================================
-model ServiceCategory {
-  id            Int                  @id @default(autoincrement())
-  code          String               @unique // "PLUMBING", "ELECTRICITY" — translation key prefix
-  slug          String               @unique // url-friendly
-  icon          String?
-  order         Int                  @default(0)
-  isActive      Boolean              @default(true)
-  subcategories ServiceSubcategory[]
-  providers     Provider[]
-  createdAt     DateTime             @default(now())
-
-  // To get the name: SELECT text FROM Translation WHERE code = 'CAT_' || upper(code) AND locale = 'fr'
-}
-
-// =====================================
-//   SERVICE SUBCATEGORIES
-//   Translation key: "SUBCAT_<CODE>"
-// =====================================
-model ServiceSubcategory {
-  id         Int                   @id @default(autoincrement())
-  code       String                @unique // "PLUMBING_REPAIR", "ELEC_SOLAR"
-  slug       String                @unique
-  categoryId Int
-  category   ServiceCategory       @relation(fields: [categoryId], references: [id])
-  providers  ProviderSubcategory[]
-  createdAt  DateTime              @default(now())
-
-  // To get the name: SELECT text FROM Translation WHERE code = 'SUBCAT_' || upper(code) AND locale = 'fr'
-}
-
-// =====================================
-//   USERS
-// =====================================
-model User {
-  id          Int          @id @default(autoincrement())
-  name        String
-  email       String       @unique
-  phone       String?
-  password    String
-  role        UserRole     @default(CUSTOMER)
-  avatarUrl   String?
-  cityId      Int?
-  city        City?        @relation(fields: [cityId], references: [id])
-  provider    Provider?
-  reviews     Review[]
-  contactLogs ContactLog[]
-  reports     Report[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-// =====================================
-//   PROVIDERS
-// =====================================
-model Provider {
-  id              Int                   @id @default(autoincrement())
-  userId          Int                   @unique
-  user            User                  @relation(fields: [userId], references: [id])
-  businessName    String
-  // bio is free-text entered by the provider; stored in all 3 locales
-  bio             String?
-  bioAr           String?
-  bioFr           String?
-  phone           String
-  whatsapp        String?
-  website         String?
-  avatarUrl       String?
-  cityId          Int
-  city            City                  @relation(fields: [cityId], references: [id])
-  categoryId      Int
-  category        ServiceCategory       @relation(fields: [categoryId], references: [id])
-  subcategories   ProviderSubcategory[]
-  yearsExperience Int?
-  status          ProviderStatus        @default(PENDING)
-  availability    AvailabilityStatus    @default(AVAILABLE)
-  isVerified      Boolean               @default(false)
-  profileViews    Int                   @default(0)
-  rating          Float                 @default(0)
-  reviewCount     Int                   @default(0)
-  adminNotes      String?
-  workingHours    Json?                 // {"MON":{"open":true,"from":"09:00","to":"18:00"}, ...}
-  portfolioImages PortfolioImage[]
-  reviews         Review[]
-  contactLogs     ContactLog[]
-  reports         Report[]
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-}
-
-model ProviderSubcategory {
-  providerId    Int
-  subcategoryId Int
-  provider      Provider           @relation(fields: [providerId], references: [id])
-  subcategory   ServiceSubcategory @relation(fields: [subcategoryId], references: [id])
-
-  @@id([providerId, subcategoryId])
-}
-
-// =====================================
-//   PORTFOLIO
-// =====================================
-model PortfolioImage {
-  id         Int      @id @default(autoincrement())
-  providerId Int
-  provider   Provider @relation(fields: [providerId], references: [id])
-  url        String
-  caption    String?
-  isBefore   Boolean  @default(false)
-  pairId     String?  // links before/after images together
-  order      Int      @default(0)
-  createdAt  DateTime @default(now())
-}
-
-// =====================================
-//   REVIEWS
-// =====================================
-model Review {
-  id         Int      @id @default(autoincrement())
-  providerId Int
-  provider   Provider @relation(fields: [providerId], references: [id])
-  userId     Int
-  user       User     @relation(fields: [userId], references: [id])
-  rating     Int      // 1–5
-  comment    String?
-  isVisible  Boolean  @default(true)
-  createdAt  DateTime @default(now())
-
-  @@unique([providerId, userId])
-}
-
-// =====================================
-//   REPORTS / DISPUTES
-// =====================================
 enum ReportStatus {
   OPEN
   REVIEWED
   DISMISSED
-}
-
-model Report {
-  id         Int          @id @default(autoincrement())
-  providerId Int
-  provider   Provider     @relation(fields: [providerId], references: [id])
-  reporterId Int?
-  reporter   User?        @relation(fields: [reporterId], references: [id])
-  reason     String
-  details    String?
-  status     ReportStatus @default(OPEN)
-  adminNote  String?
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-}
-
-// =====================================
-//   CONTACT LOGS (analytics)
-// =====================================
-// =====================================
-//   PASSWORD RESET TOKENS
-// =====================================
-model PasswordResetToken {
-  id        Int      @id @default(autoincrement())
-  email     String
-  token     String   @unique
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime @default(now())
-
-  @@index([email])
-}
-
-model ContactLog {
-  id         Int         @id @default(autoincrement())
-  providerId Int
-  provider   Provider    @relation(fields: [providerId], references: [id])
-  userId     Int?
-  user       User?       @relation(fields: [userId], references: [id])
-  type       ContactType
-  ipAddress  String?
-  createdAt  DateTime    @default(now())
 }

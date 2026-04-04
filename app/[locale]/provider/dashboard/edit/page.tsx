@@ -58,6 +58,7 @@ const AVAILABILITY_OPTIONS = ["AVAILABLE", "BUSY", "INACTIVE"]
 // ─── Notification pill ────────────────────────────────────────────────────
 
 function SaveNotification({ status }: { status: "idle" | "saving" | "saved" | "error" }) {
+  const t = useTranslations("editProfile")
   if (status === "idle") return null
   return (
     <div className={`fixed top-4 right-4 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl shadow-lg text-sm font-medium transition-all duration-300 ${
@@ -69,7 +70,7 @@ function SaveNotification({ status }: { status: "idle" | "saving" | "saved" | "e
       {status === "saved"  && <CheckCircle className="h-4 w-4" />}
       {status === "error"  && <AlertCircle className="h-4 w-4" />}
       <span>
-        {status === "saving" ? "Saving…" : status === "saved" ? "Saved!" : "Save failed"}
+        {status === "saving" ? t("saving") : status === "saved" ? t("saved") : t("saveError")}
       </span>
     </div>
   )
@@ -287,7 +288,7 @@ export default function EditProviderProfilePage() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-          <p className="text-sm text-gray-500">Loading profile…</p>
+          <p className="text-sm text-gray-500">{t("loadingProfile")}</p>
         </div>
       </div>
     )

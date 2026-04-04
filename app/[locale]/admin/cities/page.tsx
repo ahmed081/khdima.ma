@@ -11,6 +11,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useDispatch } from "react-redux"
+import { showToast } from "@/store/slices/toastSlice"
 
 interface City {
   id: number
@@ -156,10 +158,12 @@ function CityModal({
 export default function AdminCitiesPage() {
   const t = useTranslations("admin")
   const qc = useQueryClient()
-  const [search, setSearch]     = useState("")
-  const [editCity, setEditCity] = useState<City | null>(null)
-  const [adding, setAdding]     = useState(false)
+  const [search, setSearch]         = useState("")
+  const [editCity, setEditCity]     = useState<City | null>(null)
+  const [adding, setAdding]         = useState(false)
   const [showInactive, setShowInactive] = useState(false)
+  const [togglingId, setTogglingId] = useState<number | null>(null)
+  const dispatch = useDispatch()
 
   const { data: cities = [], isLoading } = useQuery<City[]>({
     queryKey: ["admin-cities"],
@@ -168,6 +172,7 @@ export default function AdminCitiesPage() {
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
+      setTogglingId(id)
       const res = await fetch(`/api/admin/cities/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -177,19 +182,27 @@ export default function AdminCitiesPage() {
       if (!res.ok) throw new Error(data.error ?? "Error")
       return data
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-cities"] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-cities"] })
+      setTogglingId(null)
+    },
+    onError: (err: any) => {
+      dispatch(showToast({ message: err.message, type: "error" }))
+      setTogglingId(null)
+    },
   })
 
   const reorder = useMutation({
-    mutationFn: async ({ id, order }: { id: number; order: number }) => {
-      const res = await fetch(`/api/admin/cities/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ order }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? "Error")
-      return data
+    mutationFn: async (moves: { id: number; order: number }[]) => {
+      for (const { id, order } of moves) {
+        const res = await fetch(`/api/admin/cities/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error ?? "Error")
+      }
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-cities"] }),
   })
@@ -241,11 +254,11 @@ export default function AdminCitiesPage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: t("activeCities"),       value: activeCities,   icon: MapPin,    color: "text-green-600 bg-green-50" },
-            { label: t("totalUsersLabel"),    value: totalUsers,     icon: Users,     color: "text-blue-600  bg-blue-50" },
-            { label: t("totalProvidersLabel"), value: totalProviders, icon: Briefcase, color: "text-purple-600 bg-purple-50" },
-          ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
+            { key: "cities",    label: t("activeCities"),        value: activeCities,   icon: MapPin,    color: "text-green-600 bg-green-50" },
+            { key: "users",     label: t("totalUsersLabel"),     value: totalUsers,     icon: Users,     color: "text-blue-600  bg-blue-50" },
+            { key: "providers", label: t("totalProvidersLabel"), value: totalProviders, icon: Briefcase, color: "text-purple-600 bg-purple-50" },
+          ].map(({ key, label, value, icon: Icon, color }) => (
+            <div key={key} className="bg-white rounded-2xl border border-gray-100 p-5 flex items-center gap-4">
               <div className={`w-11 h-11 rounded-xl ${color} flex items-center justify-center`}>
                 <Icon className="h-5 w-5" />
               </div>
@@ -316,7 +329,10 @@ export default function AdminCitiesPage() {
                           disabled={idx === 0 || reorder.isPending}
                           onClick={() => {
                             const prev = sorted[idx - 1]
-                            reorder.mutate({ id: city.id, order: prev.order - 1 })
+                            reorder.mutate([
+                              { id: city.id, order: prev.order },
+                              { id: prev.id, order: city.order },
+                            ])
                           }}
                           className="text-gray-300 hover:text-gray-600 disabled:opacity-30"
                         >
@@ -328,7 +344,10 @@ export default function AdminCitiesPage() {
                           disabled={idx === sorted.length - 1 || reorder.isPending}
                           onClick={() => {
                             const next = sorted[idx + 1]
-                            reorder.mutate({ id: city.id, order: next.order + 1 })
+                            reorder.mutate([
+                              { id: city.id, order: next.order },
+                              { id: next.id, order: city.order },
+                            ])
                           }}
                           className="text-gray-300 hover:text-gray-600 disabled:opacity-30"
                         >
@@ -381,18 +400,23 @@ export default function AdminCitiesPage() {
                           type="button"
                           onClick={() => setEditCity(city)}
                           className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Edit"
+                          title={t("editBtn")}
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
                         <button
                           type="button"
-                          disabled={toggleActive.isPending}
+                          disabled={togglingId === city.id}
                           onClick={() => toggleActive.mutate({ id: city.id, isActive: !city.isActive })}
-                          className={`p-1.5 rounded-lg transition-colors ${city.isActive ? "text-gray-400 hover:text-red-600 hover:bg-red-50" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
-                          title={city.isActive ? "Deactivate" : "Activate"}
+                          className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${city.isActive ? "text-gray-400 hover:text-red-600 hover:bg-red-50" : "text-gray-400 hover:text-green-600 hover:bg-green-50"}`}
+                          title={city.isActive ? t("deactivateBtn") : t("activateBtn")}
                         >
-                          {city.isActive ? <PowerOff className="h-3.5 w-3.5" /> : <Power className="h-3.5 w-3.5" />}
+                          {togglingId === city.id
+                            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                            : city.isActive
+                              ? <PowerOff className="h-3.5 w-3.5" />
+                              : <Power className="h-3.5 w-3.5" />
+                          }
                         </button>
                       </div>
                     </td>

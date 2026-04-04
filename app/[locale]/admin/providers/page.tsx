@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useTranslations } from "next-intl"
 import { Link } from "@/i18n/navigation"
 import {
   ArrowLeft, Search, Eye, CheckCircle, Ban, Clock,
@@ -45,14 +46,21 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const t = useTranslations("admin")
+  const STATUS_LABELS: Record<string, string> = {
+    ACTIVE:    t("statusActive"),
+    PENDING:   t("pending"),
+    SUSPENDED: t("suspended"),
+  }
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${STATUS_COLORS[status] ?? "bg-gray-100 text-gray-700"}`}>
-      {status}
+      {STATUS_LABELS[status] ?? status}
     </span>
   )
 }
 
 function ProviderDetailModal({ providerId, onClose }: { providerId: number; onClose: () => void }) {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
 
   const { data: provider, isLoading } = useQuery<ProviderDetail>({
@@ -81,7 +89,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="font-bold text-lg text-gray-900">Provider Details</h2>
+          <h2 className="font-bold text-lg text-gray-900">{t("providerDetails")}</h2>
           <button onClick={onClose} className="p-2 rounded-xl hover:bg-gray-100 transition-colors">
             <X className="h-5 w-5 text-gray-500" />
           </button>
@@ -93,7 +101,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
           </div>
         ) : !provider || (provider as any).error ? (
           <div className="flex items-center justify-center py-20 text-gray-400">
-            <AlertCircle className="h-6 w-6 me-2" /> Failed to load
+            <AlertCircle className="h-6 w-6 me-2" /> {t("failedToLoad")}
           </div>
         ) : (
           <div className="p-6 space-y-6">
@@ -114,7 +122,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                   <StatusBadge status={provider.status} />
                   {provider.isVerified && (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
-                      <BadgeCheck className="h-3 w-3" /> Verified
+                      <BadgeCheck className="h-3 w-3" /> {t("verifiedLabel")}
                     </span>
                   )}
                 </div>
@@ -122,7 +130,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                 <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-400">
                   <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{provider.city.name}</span>
                   <span className="flex items-center gap-1"><Briefcase className="h-3 w-3" />{provider.category.slug}</span>
-                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />Joined {new Date(provider.user.createdAt).toLocaleDateString('fr-FR')}</span>
+                  <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{t("joinedLabel")} {new Date(provider.user.createdAt).toLocaleDateString('fr-FR')}</span>
                 </div>
               </div>
             </div>
@@ -135,7 +143,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                   disabled={updateMutation.isPending}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition disabled:opacity-60"
                 >
-                  <CheckCircle className="h-4 w-4" /> Approve
+                  <CheckCircle className="h-4 w-4" /> {t("approve")}
                 </button>
               )}
               {provider.status !== "SUSPENDED" && (
@@ -144,7 +152,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                   disabled={updateMutation.isPending}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition disabled:opacity-60"
                 >
-                  <Ban className="h-4 w-4" /> Suspend
+                  <Ban className="h-4 w-4" /> {t("suspend")}
                 </button>
               )}
               {provider.status !== "PENDING" && (
@@ -153,7 +161,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                   disabled={updateMutation.isPending}
                   className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold transition disabled:opacity-60"
                 >
-                  <Clock className="h-4 w-4" /> Set Pending
+                  <Clock className="h-4 w-4" /> {t("setPendingBtn")}
                 </button>
               )}
               <button
@@ -166,17 +174,17 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                 }`}
               >
                 <Shield className="h-4 w-4" />
-                {provider.isVerified ? "Remove Verification" : "Verify"}
+                {provider.isVerified ? t("removeVerificationBtn") : t("verifyBtn")}
               </button>
             </div>
 
             {/* Stats cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { icon: Eye,           label: "Profile Views",  value: provider.profileViews,              color: "text-blue-600",   bg: "bg-blue-50" },
-                { icon: Phone,         label: "Calls",          value: provider.contactBreakdown?.CALL ?? 0,      color: "text-green-600",  bg: "bg-green-50" },
-                { icon: MessageCircle, label: "WhatsApp",       value: provider.contactBreakdown?.WHATSAPP ?? 0,  color: "text-emerald-600",bg: "bg-emerald-50" },
-                { icon: Star,          label: "Reviews",        value: provider._count?.reviews ?? 0,       color: "text-amber-600",  bg: "bg-amber-50" },
+                { icon: Eye,           label: t("statProfileViews"), value: provider.profileViews,                   color: "text-blue-600",    bg: "bg-blue-50" },
+                { icon: Phone,         label: t("statCalls"),        value: provider.contactBreakdown?.CALL ?? 0,    color: "text-green-600",   bg: "bg-green-50" },
+                { icon: MessageCircle, label: "WhatsApp",            value: provider.contactBreakdown?.WHATSAPP ?? 0,color: "text-emerald-600", bg: "bg-emerald-50" },
+                { icon: Star,          label: t("colReviews"),       value: provider._count?.reviews ?? 0,           color: "text-amber-600",   bg: "bg-amber-50" },
               ].map(({ icon: Icon, label, value, color, bg }) => (
                 <div key={label} className={`rounded-xl border border-gray-100 p-4 ${bg}`}>
                   <Icon className={`h-5 w-5 mb-2 ${color}`} />
@@ -191,7 +199,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
               <div className="rounded-2xl border border-gray-100 bg-white p-5">
                 <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-green-600" />
-                  Contact Activity — Last 30 Days
+                  {t("contactActivity30d")}
                 </h4>
                 <ResponsiveContainer width="100%" height={140}>
                   <AreaChart data={provider.trendData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -203,7 +211,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                     </defs>
                     <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={d => d.slice(5)} />
                     <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-                    <Tooltip formatter={(v: any) => [v, "Contacts"]} labelFormatter={l => `Date: ${l}`} />
+                    <Tooltip formatter={(v: any) => [v, t("contactsLabel")]} labelFormatter={l => `${t("colDate")} ${l}`} />
                     <Area type="monotone" dataKey="count" stroke="#16a34a" strokeWidth={2} fill="url(#trendGrad)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -213,7 +221,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
             {/* Contact info */}
             {(provider.phone || provider.whatsapp) && (
               <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5 space-y-2">
-                <h4 className="text-sm font-semibold text-gray-700 mb-3">Contact Info</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-3">{t("contactInfo")}</h4>
                 {provider.phone && (
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Phone className="h-4 w-4 text-gray-400" />
@@ -232,7 +240,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
             {/* Bio */}
             {provider.bio && (
               <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
-                <h4 className="text-sm font-semibold text-gray-700 mb-2">Bio</h4>
+                <h4 className="text-sm font-semibold text-gray-700 mb-2">{t("bioLabel")}</h4>
                 <p className="text-sm text-gray-600 leading-relaxed">{provider.bio}</p>
               </div>
             )}
@@ -242,7 +250,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
               <div className="rounded-2xl border border-gray-100 bg-white p-5">
                 <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
                   <Star className="h-4 w-4 text-amber-500" />
-                  Recent Reviews
+                  {t("recentReviews")}
                 </h4>
                 <div className="space-y-3">
                   {provider.recentReviews.map((r, i) => (
@@ -266,14 +274,14 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
                 <Camera className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-lg font-extrabold text-gray-900">{provider._count?.portfolioImages ?? 0}</p>
-                  <p className="text-xs text-gray-500">Portfolio Photos</p>
+                  <p className="text-xs text-gray-500">{t("portfolioPhotos")}</p>
                 </div>
               </div>
               <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 flex items-center gap-3">
                 <BarChart2 className="h-5 w-5 text-gray-400" />
                 <div>
                   <p className="text-lg font-extrabold text-gray-900">{provider._count?.contactLogs ?? 0}</p>
-                  <p className="text-xs text-gray-500">Total Contacts</p>
+                  <p className="text-xs text-gray-500">{t("statTotalContacts")}</p>
                 </div>
               </div>
             </div>
@@ -285,6 +293,7 @@ function ProviderDetailModal({ providerId, onClose }: { providerId: number; onCl
 }
 
 export default function AdminProvidersPage() {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
   const [statusFilter, setStatusFilter] = useState("")
   const [search, setSearch]             = useState("")
@@ -338,12 +347,12 @@ export default function AdminProvidersPage() {
           <div className="flex items-center gap-3 mb-1">
             <Link href="/admin" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
               <ArrowLeft className="h-4 w-4" />
-              Dashboard
+              {t("dashboardTitle")}
             </Link>
             <span className="text-gray-300">/</span>
-            <span className="text-sm font-medium text-gray-700">Providers</span>
+            <span className="text-sm font-medium text-gray-700">{t("providers")}</span>
           </div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Manage Providers</h1>
+          <h1 className="text-2xl font-extrabold text-gray-900">{t("manageProviders")}</h1>
         </div>
       </div>
 
@@ -351,14 +360,14 @@ export default function AdminProvidersPage() {
         {/* Summary cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: "Total",     value: counts.all,       icon: Users,        color: "text-blue-600",  bg: "bg-blue-50",  border: "border-blue-100" },
-            { label: "Pending",   value: counts.PENDING,   icon: Clock,        color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
-            { label: "Active",    value: counts.ACTIVE,    icon: CheckCircle,  color: "text-green-600", bg: "bg-green-50", border: "border-green-100" },
-            { label: "Suspended", value: counts.SUSPENDED, icon: Ban,          color: "text-red-600",   bg: "bg-red-50",   border: "border-red-100" },
-          ].map(({ label, value, icon: Icon, color, bg, border }) => (
+            { label: t("statTotal"),    value: counts.all,       icon: Users,       color: "text-blue-600",  bg: "bg-blue-50",  border: "border-blue-100",  filter: "" },
+            { label: t("pending"),      value: counts.PENDING,   icon: Clock,       color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100", filter: "PENDING" },
+            { label: t("statusActive"), value: counts.ACTIVE,    icon: CheckCircle, color: "text-green-600", bg: "bg-green-50", border: "border-green-100", filter: "ACTIVE" },
+            { label: t("suspended"),    value: counts.SUSPENDED, icon: Ban,         color: "text-red-600",   bg: "bg-red-50",   border: "border-red-100",   filter: "SUSPENDED" },
+          ].map(({ label, value, icon: Icon, color, bg, border, filter }) => (
             <button
-              key={label}
-              onClick={() => setStatusFilter(label === "Total" ? "" : label.toUpperCase())}
+              key={filter}
+              onClick={() => setStatusFilter(filter)}
               className={`rounded-2xl border p-4 text-start transition-all hover:shadow-md ${bg} ${border}`}
             >
               <Icon className={`h-5 w-5 mb-2 ${color}`} />
@@ -376,24 +385,29 @@ export default function AdminProvidersPage() {
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Search by name or email…"
+              placeholder={t("searchProviders")}
               className="w-full h-10 pl-9 pr-4 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
             />
           </div>
 
           {/* Status tabs */}
           <div className="flex gap-1 bg-gray-100 p-1 rounded-xl">
-            {["", "PENDING", "ACTIVE", "SUSPENDED"].map(s => (
+            {[
+              { value: "",          label: t("allFilter") },
+              { value: "PENDING",   label: t("pending") },
+              { value: "ACTIVE",    label: t("statusActive") },
+              { value: "SUSPENDED", label: t("suspended") },
+            ].map(({ value, label }) => (
               <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
+                key={value}
+                onClick={() => setStatusFilter(value)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  statusFilter === s
+                  statusFilter === value
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                {s || "All"}
+                {label}
               </button>
             ))}
           </div>
@@ -407,7 +421,7 @@ export default function AdminProvidersPage() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400">
             <Users className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p>No providers found</p>
+            <p>{t("noProvidersFound")}</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -434,15 +448,15 @@ export default function AdminProvidersPage() {
                     <StatusBadge status={provider.status} />
                     {provider.isVerified && (
                       <span className="flex items-center gap-0.5 text-xs text-blue-600 font-semibold">
-                        <BadgeCheck className="h-3.5 w-3.5" /> Verified
+                        <BadgeCheck className="h-3.5 w-3.5" /> {t("verifiedLabel")}
                       </span>
                     )}
                   </div>
                   <p className="text-sm text-gray-500 truncate">{provider.user.name} · {provider.user.email}</p>
                   <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-400">
                     <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{provider.city.name}</span>
-                    <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{provider.profileViews} views</span>
-                    <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{provider._count?.contactLogs ?? 0} contacts</span>
+                    <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{provider.profileViews} {t("viewsLabel")}</span>
+                    <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{provider._count?.contactLogs ?? 0} {t("contactsLabel")}</span>
                   </div>
                 </div>
 
@@ -453,7 +467,7 @@ export default function AdminProvidersPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium transition-colors"
                   >
                     <Eye className="h-4 w-4" />
-                    View
+                    {t("viewBtn")}
                   </button>
 
                   {provider.status === "PENDING" && (
@@ -463,7 +477,7 @@ export default function AdminProvidersPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors disabled:opacity-60"
                     >
                       <CheckCircle className="h-4 w-4" />
-                      Approve
+                      {t("approve")}
                     </button>
                   )}
 
@@ -474,7 +488,7 @@ export default function AdminProvidersPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium transition-colors disabled:opacity-60"
                     >
                       <Ban className="h-4 w-4" />
-                      Suspend
+                      {t("suspend")}
                     </button>
                   )}
 
@@ -485,7 +499,7 @@ export default function AdminProvidersPage() {
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium transition-colors disabled:opacity-60"
                     >
                       <CheckCircle className="h-4 w-4" />
-                      Restore
+                      {t("restoreBtn")}
                     </button>
                   )}
                 </div>

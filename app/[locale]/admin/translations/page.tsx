@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Link } from "@/i18n/navigation"
 import { Search, Pencil, Save, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 interface TranslationGroup {
   code:      string
@@ -15,6 +16,7 @@ interface TranslationGroup {
 }
 
 export default function AdminTranslationsPage() {
+  const t = useTranslations("admin")
   const qc = useQueryClient()
 
   const [q,         setQ]         = useState('')
@@ -61,9 +63,9 @@ export default function AdminTranslationsPage() {
     <main className="min-h-screen bg-gray-50 py-10">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center gap-4 mb-6">
-          <Link href="/admin" className="text-gray-500 hover:text-gray-700 text-sm">← Dashboard</Link>
-          <h1 className="text-2xl font-bold text-gray-900">Translations</h1>
-          <span className="text-sm text-gray-500">{data?.total ?? 0} entries</span>
+          <Link href="/admin" className="text-gray-500 hover:text-gray-700 text-sm">← {t("dashboardTitle")}</Link>
+          <h1 className="text-2xl font-bold text-gray-900">{t("translationsTitle")}</h1>
+          <span className="text-sm text-gray-500">{t("entriesCount", { count: data?.total ?? 0 })}</span>
         </div>
 
         {/* Filters */}
@@ -72,7 +74,7 @@ export default function AdminTranslationsPage() {
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
             <Input
               className="pl-9"
-              placeholder="Search code or text..."
+              placeholder={t("searchTranslations")}
               value={q}
               onChange={e => setQ(e.target.value)}
             />
@@ -86,7 +88,7 @@ export default function AdminTranslationsPage() {
                   namespace === ns ? 'bg-green-700 text-white border-green-700' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                 }`}
               >
-                {ns || 'All'}
+                {ns || t("allFilter")}
               </button>
             ))}
           </div>
@@ -131,7 +133,7 @@ export default function AdminTranslationsPage() {
                           ) : (
                             <>
                               <span dir={locale === 'ar' ? 'rtl' : 'ltr'} className="flex-1 text-sm text-gray-700">
-                                {text ?? <span className="text-gray-400 italic">missing</span>}
+                                {text ?? <span className="text-gray-400 italic">{t("missingTranslation")}</span>}
                               </span>
                               <button
                                 onClick={() => { setEditing({ code: group.code, locale, text: text ?? '' }); setEditText(text ?? '') }}

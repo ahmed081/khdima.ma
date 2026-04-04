@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "@/i18n/navigation"
+import { useTranslations } from "next-intl"
 import { ShieldCheck, ShieldOff } from "lucide-react"
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function AdminProviderActions({ providerId, currentStatus, isVerified }: Props) {
+  const t = useTranslations("admin")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -33,17 +35,17 @@ export function AdminProviderActions({ providerId, currentStatus, isVerified }: 
     <div className="flex gap-2 flex-shrink-0 flex-wrap">
       {currentStatus !== 'ACTIVE' && (
         <Button size="sm" className="bg-green-600 hover:bg-green-500 text-white" onClick={() => patch({ status: 'ACTIVE' })} disabled={loading}>
-          Approve
+          {t("approve")}
         </Button>
       )}
       {currentStatus !== 'SUSPENDED' && (
         <Button size="sm" variant="destructive" onClick={() => patch({ status: 'SUSPENDED' })} disabled={loading}>
-          Suspend
+          {t("suspend")}
         </Button>
       )}
       {currentStatus !== 'PENDING' && (
         <Button size="sm" variant="outline" onClick={() => patch({ status: 'PENDING' })} disabled={loading}>
-          Pending
+          {t("pending")}
         </Button>
       )}
       <Button

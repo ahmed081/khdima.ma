@@ -8,12 +8,13 @@ async function requireAdmin() {
   return user
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const admin = await requireAdmin()
     if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-    const id = Number(params.id)
+    const { id: rawId } = await params
+    const id = Number(rawId)
     const body = await req.json()
 
     const data: Record<string, any> = {}
