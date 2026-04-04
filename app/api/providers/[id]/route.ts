@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           take: 10,
           include: { user: { select: { name: true } } }
         },
-        portfolioImages: { orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] }
+        portfolioImages: { where: { status: "APPROVED" }, orderBy: [{ order: 'asc' }, { createdAt: 'asc' }] }
       }
     })
 
@@ -73,12 +73,10 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         name: translations[`SUBCAT_${ps.subcategory.code}`] ?? ps.subcategory.code,
       })),
       portfolioImages: provider.portfolioImages.map(img => ({
-        id:       img.id,
-        url:      img.url,
-        caption:  img.caption,
-        isBefore: img.isBefore,
-        pairId:   img.pairId,
-        order:    img.order,
+        id:      img.id,
+        url:     img.url,
+        caption: img.caption,
+        order:   img.order,
       })),
       reviews: provider.reviews.map(r => ({
         id:        r.id,

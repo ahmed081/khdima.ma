@@ -86,12 +86,12 @@ export interface ProviderDetail extends ProviderSummary {
 // Portfolio
 // ---------------------------------------------------------------------------
 export interface PortfolioImage {
-  id:       number
-  url:      string
-  caption?: string | null
-  isBefore: boolean
-  pairId?:  string | null
-  order:    number
+  id:        number
+  url:       string
+  caption?:  string | null
+  order:     number
+  status:    "PENDING" | "APPROVED" | "REJECTED"
+  adminNote?: string | null
 }
 
 // ---------------------------------------------------------------------------

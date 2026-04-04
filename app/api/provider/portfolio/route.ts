@@ -45,9 +45,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Maximum ${maxImages} images allowed` }, { status: 400 })
     }
 
-    const { url, caption, isBefore, pairId } = await req.json()
+    const { url, caption } = await req.json()
 
-    if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+    if (!url || typeof url !== 'string' || (!url.startsWith('http') && !url.startsWith('/'))) {
       return NextResponse.json({ error: "Valid image URL required" }, { status: 400 })
     }
 
@@ -56,9 +56,8 @@ export async function POST(req: NextRequest) {
         providerId: provider.id,
         url,
         caption: caption ?? null,
-        isBefore: isBefore ?? false,
-        pairId:   pairId ?? null,
         order:    count,
+        status:   "PENDING",
       }
     })
 

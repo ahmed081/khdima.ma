@@ -1,60 +1,86 @@
-/**
- * PublicLayout — wraps public-facing pages with a centered 1200px content area
- * and 300px ad sidebar placeholders on each side.
- *
- * Usage:  <PublicLayout>{children}</PublicLayout>
- *
- * Layout (≥ 1800px wide screens):
- *   [Ad 300px] [Content max-1200px] [Ad 300px]
- *
- * On narrower screens the sidebars collapse gracefully:
- *   ≥1600px  → both sidebars visible
- *   ≥1300px  → right sidebar only
- *   <1300px  → content full width (no sidebars)
- */
-
 import React from "react"
+import { unstable_noStore as noStore } from "next/cache"
+import { prisma } from "@/lib/prisma"
 
-function AdBox({ label }: { label: string }) {
-  return (
-    <aside
-      aria-label={label}
-      className="hidden xl:flex flex-col gap-4 w-[300px] flex-shrink-0 pt-6"
+const AD_KEYS = [
+  "AD_LEFT_ENABLED", "AD_LEFT_SIZE", "AD_LEFT_IMAGE_URL", "AD_LEFT_LINK_URL", "AD_LEFT_ALT",
+  "AD_RIGHT_ENABLED", "AD_RIGHT_SIZE", "AD_RIGHT_IMAGE_URL", "AD_RIGHT_LINK_URL", "AD_RIGHT_ALT",
+]
+
+const HEIGHT: Record<string, string> = { sm: "120px", md: "220px", lg: "350px" }
+
+function AdBox({ enabled, size, imageUrl, linkUrl, alt }: {
+  enabled: boolean; size: string; imageUrl: string; linkUrl: string; alt: string
+}) {
+  if (!enabled) return null
+
+  const height = HEIGHT[size] ?? HEIGHT.sm
+
+  const inner = imageUrl ? (
+    <img src={imageUrl} alt={alt || "advertisement"} className="w-full h-full object-cover" style={{ height }} />
+  ) : (
+    <div
+      className="w-full flex items-center justify-center text-gray-300 text-[10px] select-none"
+      style={{ height }}
     >
-      {/* Primary ad slot */}
-      <div className="w-full h-[600px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-gray-400 text-xs select-none">
-        <div className="w-12 h-12 rounded-lg bg-gray-200 mb-3 flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-            <path d="M3 9h18M9 21V9" />
-          </svg>
-        </div>
-        <p className="font-medium">300 × 600</p>
-        <p className="text-gray-300 mt-1">Espace publicitaire</p>
-      </div>
+      ad
+    </div>
+  )
 
-      {/* Secondary ad slot */}
-      <div className="w-full h-[250px] rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-gray-400 text-xs select-none">
-        <p className="font-medium">300 × 250</p>
-        <p className="text-gray-300 mt-1">Espace publicitaire</p>
+  return (
+    <aside className="hidden xl:block w-[160px] flex-shrink-0 pt-6 self-start sticky top-24">
+      <div className="w-full rounded-xl overflow-hidden border border-gray-100 bg-gray-50 shadow-sm">
+        {linkUrl ? (
+          <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="block hover:opacity-90 transition-opacity">
+            {inner}
+          </a>
+        ) : (
+          inner
+        )}
       </div>
     </aside>
   )
 }
 
-export function PublicLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex justify-center gap-6 px-4 py-0 w-full">
-      {/* Left ad sidebar */}
-      <AdBox label="Left advertisement" />
+export async function PublicLayout({ children }: { children: React.ReactNode }) {
+  noStore() // opt out of static caching so ad settings are always fresh
+  let adParams: Record<string, string> = {}
+  try {
+    const rows = await prisma.param.findMany({ where: { key: { in: AD_KEYS } } })
+    for (const r of rows) adParams[r.key] = r.value
+  } catch {
+    // silently skip if DB unavailable
+  }
 
-      {/* Main content — max 1200px */}
+  const leftEnabled  = adParams["AD_LEFT_ENABLED"]  === "true"
+  const rightEnabled = adParams["AD_RIGHT_ENABLED"] === "true"
+  const showSidebars = leftEnabled || rightEnabled
+
+  return (
+    <div className={`flex justify-center gap-4 px-4 py-0 w-full ${showSidebars ? "" : ""}`}>
+      {showSidebars && (
+        <AdBox
+          enabled={leftEnabled}
+          size={adParams["AD_LEFT_SIZE"] || "sm"}
+          imageUrl={adParams["AD_LEFT_IMAGE_URL"] || ""}
+          linkUrl={adParams["AD_LEFT_LINK_URL"] || ""}
+          alt={adParams["AD_LEFT_ALT"] || ""}
+        />
+      )}
+
       <div className="w-full max-w-[1200px] min-w-0">
         {children}
       </div>
 
-      {/* Right ad sidebar */}
-      <AdBox label="Right advertisement" />
+      {showSidebars && (
+        <AdBox
+          enabled={rightEnabled}
+          size={adParams["AD_RIGHT_SIZE"] || "sm"}
+          imageUrl={adParams["AD_RIGHT_IMAGE_URL"] || ""}
+          linkUrl={adParams["AD_RIGHT_LINK_URL"] || ""}
+          alt={adParams["AD_RIGHT_ALT"] || ""}
+        />
+      )}
     </div>
   )
 }

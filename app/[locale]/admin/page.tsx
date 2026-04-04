@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server"
 import {
   Users, Briefcase, BarChart3, Languages, Tag,
   Clock, Flag, CheckCircle, AlertCircle, TrendingUp,
-  Eye, Shield, ChevronRight, Activity, Phone, MapPin,
+  Eye, Shield, ChevronRight, Activity, Phone, MapPin, Megaphone, Camera,
 } from "lucide-react"
 import { AdminCharts } from "@/components/admin/AdminCharts"
 
@@ -121,6 +121,24 @@ export default async function AdminDashboardPage() {
       badge: null,
       color: "text-green-600",
       bg: "bg-green-50",
+    },
+    {
+      href: "/admin/ads",
+      icon: Megaphone,
+      label: t("adsTitle"),
+      desc: t("adsDesc"),
+      badge: null,
+      color: "text-orange-600",
+      bg: "bg-orange-50",
+    },
+    {
+      href: "/admin/photos",
+      icon: Camera,
+      label: t("photosTitle"),
+      desc: t("photosDesc"),
+      badge: null,
+      color: "text-purple-600",
+      bg: "bg-purple-50",
     },
   ]
 
@@ -258,7 +276,7 @@ export default async function AdminDashboardPage() {
         {/* ── NAV CARDS ─────────────────────────────────────────────────── */}
         <div className="mb-8">
           <h2 className="font-bold text-gray-900 mb-4">{t("managementTools")}</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
             {navItems.map(item => (
               <Link key={item.href} href={item.href} className="group">
                 <div className="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex flex-col items-center text-center hover:shadow-md hover:border-gray-200 transition-all group-hover:-translate-y-0.5">

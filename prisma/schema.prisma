@@ -106,8 +106,9 @@ model Provider {
   phone           String
   whatsapp        String?
   website         String?
-  avatarUrl       String?
-  cityId          Int
+  avatarUrl          String?
+  pendingAvatarUrl   String?
+  cityId             Int
   categoryId      Int
   yearsExperience Int?
   status          ProviderStatus        @default(PENDING)
@@ -140,15 +141,17 @@ model ProviderSubcategory {
 }
 
 model PortfolioImage {
-  id         Int      @id @default(autoincrement())
-  providerId Int
-  url        String
-  caption    String?
-  isBefore   Boolean  @default(false)
-  pairId     String?
-  order      Int      @default(0)
-  createdAt  DateTime @default(now())
-  provider   Provider @relation(fields: [providerId], references: [id])
+  id          Int         @id @default(autoincrement())
+  providerId  Int
+  url         String
+  caption     String?
+  order       Int         @default(0)
+  status      PhotoStatus @default(PENDING)
+  adminNote   String?
+  reviewedAt  DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  provider    Provider    @relation(fields: [providerId], references: [id])
 }
 
 model Review {
@@ -235,4 +238,10 @@ enum ReportStatus {
   OPEN
   REVIEWED
   DISMISSED
+}
+
+enum PhotoStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

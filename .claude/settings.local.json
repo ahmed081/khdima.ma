@@ -10,7 +10,19 @@
       "Bash(grep -r \"locale === ['''']ar[''''] ?\" 'C:\\\\Users\\\\pc\\\\Desktop\\\\projects\\\\Nouveau dossier\\\\khdima.ma\\\\app' --include=*.tsx --include=*.ts)",
       "Bash(grep -rn 'locale === .*ar' 'C:\\\\Users\\\\pc\\\\Desktop\\\\projects\\\\Nouveau dossier\\\\khdima.ma\\\\app' --include=*.tsx --include=*.ts)",
       "Bash(find '/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma' -name *upload* -type f)",
-      "Bash(find '/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma/app/[locale]' -name *.tsx -type f)"
+      "Bash(find '/c/Users/pc/Desktop/projects/Nouveau dossier/khdima.ma/app/[locale]' -name *.tsx -type f)",
+      "Bash(node -e \":*)",
+      "Bash(node -e \"const d=require\\(''./messages/en.json''\\); const a=d.admin; console.log\\(''editBtn:'',a.editBtn,''deactivateBtn:'',a.deactivateBtn,''activateBtn:'',a.activateBtn\\)\")",
+      "Bash(npx prisma:*)",
+      "Bash(curl -s -X PATCH http://localhost:3000/api/admin/cities/6 -H \"Content-Type: application/json\" -d '{\"\"isActive\"\":false}')",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/next/package.json''\\).version\\)\")",
+      "Bash(npx tsc:*)",
+      "Bash(node -e \"const m=require\\(''./messages/en.json''\\); console.log\\(JSON.stringify\\(Object.keys\\(m.admin\\).filter\\(k=>k.includes\\(''photo''\\)||k.includes\\(''Photo''\\)\\),null,2\\)\\)\")",
+      "Bash(node -e \"const m=require\\(''./messages/en.json''\\); console.log\\(JSON.stringify\\(Object.keys\\(m.editProfile.photos\\),null,2\\)\\)\")",
+      "Bash(node -e \"const m=require\\(''./messages/en.json''\\); console.log\\(JSON.stringify\\(m.editProfile.photos,null,2\\)\\)\")",
+      "Bash(node -e \"const m=require\\(''./messages/en.json''\\); console.log\\(JSON.stringify\\({admin:Object.keys\\(m.admin\\).slice\\(0,10\\)},null,2\\)\\)\")",
+      "Bash(node -e \"const m=require\\(''./messages/en.json''\\); const keys=Object.keys\\(m.admin\\); console.log\\(keys.slice\\(-10\\)\\)\")",
+      "Bash(npx next:*)"
     ]
   }
 }

@@ -4,12 +4,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "@/i18n/navigation"
 import { useState, useEffect, useCallback } from "react"
 import { useTranslations, useLocale } from "next-intl"
+import { useDispatch } from "react-redux"
+import { showToast } from "@/store/slices/toastSlice"
 import {
   ArrowLeft, Building2, FileText, Sparkles, Clock,
   CheckCircle, AlertCircle, Loader2, Globe, Phone,
   MessageCircle, Link as LinkIcon, MapPin, Briefcase,
   Image as ImageIcon, Zap, ChevronRight, Save,
-  Camera, Plus, Trash2, Upload, X,
+  Camera, Plus, Trash2, Upload, X, Clock3,
 } from "lucide-react"
 import { WorkingHoursEditor, type WorkingHoursData } from "@/components/provider/working-hours-editor"
 import { Link } from "@/i18n/navigation"
@@ -85,6 +87,7 @@ export default function EditProviderProfilePage() {
   const tp         = useTranslations("provider")
   const isRTL      = locale === "ar"
   const qc         = useQueryClient()
+  const dispatch   = useDispatch()
 
   const [activeTab, setActiveTab] = useState<TabId>("business")
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
@@ -109,7 +112,7 @@ export default function EditProviderProfilePage() {
   const [workingHours, setWorkingHours] = useState<WorkingHoursData>({})
 
   // ── Photos tab state ──────────────────────────────────────────────────────
-  const [photoForm, setPhotoForm] = useState({ url: "", caption: "", isBefore: false })
+  const [photoForm, setPhotoForm] = useState({ url: "", caption: "" })
   const [photoErr,  setPhotoErr]  = useState("")
   const [showPhotoForm, setShowPhotoForm] = useState(false)
   const [photoUploading, setPhotoUploading] = useState(false)
@@ -173,7 +176,7 @@ export default function EditProviderProfilePage() {
 
   // ── Portfolio queries ────────────────────────────────────────────────────
   const { data: portfolioImages = [], isLoading: loadingPhotos } = useQuery<{
-    id: number; url: string; caption: string | null; isBefore: boolean; order: number
+    id: number; url: string; caption: string | null; order: number; status: string; adminNote: string | null
   }[]>({
     queryKey: ["portfolio"],
     queryFn: () => fetch("/api/provider/portfolio").then(r => r.json()),
@@ -193,7 +196,7 @@ export default function EditProviderProfilePage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["portfolio"] })
-      setPhotoForm({ url: "", caption: "", isBefore: false })
+      setPhotoForm({ url: "", caption: "" })
       setShowPhotoForm(false)
       setPhotoErr("")
     },
@@ -528,7 +531,7 @@ export default function EditProviderProfilePage() {
                               const url = await uploadFile(file)
                               setForm(p => ({ ...p, avatarUrl: url }))
                             } catch (err: any) {
-                              alert(err.message)
+                              dispatch(showToast({ message: err.message ?? t("business.uploadError"), type: "error" }))
                             } finally {
                               setAvatarUploading(false)
                               e.target.value = ""
@@ -909,18 +912,6 @@ export default function EditProviderProfilePage() {
                       />
                     </div>
 
-                    {/* Before toggle */}
-                    <div className="flex items-center">
-                      <label className="flex items-center gap-3 cursor-pointer select-none group">
-                        <div
-                          className={`relative w-10 h-6 rounded-full transition-colors ${photoForm.isBefore ? "bg-green-600" : "bg-gray-200"}`}
-                          onClick={() => setPhotoForm(p => ({ ...p, isBefore: !p.isBefore }))}
-                        >
-                          <span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-all ${photoForm.isBefore ? "left-5" : "left-1"}`} />
-                        </div>
-                        <span className="text-sm font-medium text-gray-700">{t("photos.beforeLabel")}</span>
-                      </label>
-                    </div>
                   </div>
 
                   {photoErr && (
@@ -950,7 +941,7 @@ export default function EditProviderProfilePage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setShowPhotoForm(false); setPhotoErr(""); setPhotoForm({ url: "", caption: "", isBefore: false }) }}
+                      onClick={() => { setShowPhotoForm(false); setPhotoErr(""); setPhotoForm({ url: "", caption: "" }) }}
                       className="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
                     >
                       {t("photos.cancel")}
@@ -980,15 +971,28 @@ export default function EditProviderProfilePage() {
                     <p className="text-xs text-gray-400 mb-4">{t("photos.hint")}</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       {portfolioImages.map((img) => (
-                        <div key={img.id} className="relative group aspect-square rounded-xl overflow-hidden bg-gray-100 shadow-sm">
+                        <div key={img.id} className="flex flex-col">
+                        <div className="relative group rounded-xl overflow-hidden bg-gray-100 shadow-sm">
+                          <div className="aspect-square">
                           <img
                             src={img.url}
                             alt={img.caption ?? ""}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                          {img.isBefore && (
-                            <span className="absolute top-2 start-2 bg-gray-900/80 backdrop-blur text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                              {t("photos.before")}
+                          </div>
+                          {img.status === "PENDING" && (
+                            <span className="absolute top-2 start-2 bg-amber-500/90 backdrop-blur text-white text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                              <Clock3 className="h-2.5 w-2.5" />{t("photos.statusPending")}
+                            </span>
+                          )}
+                          {img.status === "REJECTED" && (
+                            <span className="absolute top-2 start-2 bg-red-600/90 backdrop-blur text-white text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                              <AlertCircle className="h-2.5 w-2.5" />{t("photos.statusRejected")}
+                            </span>
+                          )}
+                          {img.status === "APPROVED" && (
+                            <span className="absolute top-2 start-2 bg-green-600/90 backdrop-blur text-white text-xs px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                              <CheckCircle className="h-2.5 w-2.5" />{t("photos.statusApproved")}
                             </span>
                           )}
                           {img.caption && (
@@ -1011,6 +1015,13 @@ export default function EditProviderProfilePage() {
                               }
                             </button>
                           </div>
+                        </div>
+                        {img.status === "REJECTED" && img.adminNote && (
+                          <p className="text-xs text-red-600 mt-1 px-1 flex items-start gap-1">
+                            <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                            {img.adminNote}
+                          </p>
+                        )}
                         </div>
                       ))}
                     </div>

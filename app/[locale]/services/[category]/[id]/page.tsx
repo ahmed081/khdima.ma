@@ -84,7 +84,7 @@ export default async function ProviderProfilePage({ params }: Props) {
           take:    10,
           include: { user: { select: { name: true } } },
         },
-        portfolioImages: { orderBy: [{ order: "asc" }] },
+        portfolioImages: { where: { status: "APPROVED" }, orderBy: [{ order: "asc" }] },
       },
     }),
     prisma.review.groupBy({
@@ -132,7 +132,7 @@ export default async function ProviderProfilePage({ params }: Props) {
 
   return (
     <PublicLayout>
-      <div dir={isRTL ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-24 md:pb-0">
+      <div dir={isRTL ? "rtl" : "ltr"} className="min-h-screen bg-gray-50 pb-24 sm:pb-0">
 
         {/* ── HERO ──────────────────────────────────────────────────── */}
         <div className={`relative bg-gradient-to-br ${style.gradient} text-white overflow-hidden`}>
@@ -157,8 +157,8 @@ export default async function ProviderProfilePage({ params }: Props) {
           </div>
 
           {/* Provider hero info */}
-          <div className="relative px-6 py-8 pb-16">
-            <div className="flex flex-col sm:flex-row items-start gap-6">
+          <div className="relative px-4 sm:px-6 py-6 sm:py-8 pb-14 sm:pb-16">
+            <div className="flex flex-col sm:flex-row items-start gap-5 sm:gap-6">
               {/* Avatar */}
               <div className="relative flex-shrink-0">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-white/20 backdrop-blur-sm border-2 border-white/30 overflow-hidden shadow-xl">
@@ -294,7 +294,7 @@ export default async function ProviderProfilePage({ params }: Props) {
 
         {/* ── STATS BAR ─────────────────────────────────────────────── */}
         <div className="bg-white border-b shadow-sm -mt-2">
-          <div className="max-w-4xl mx-auto px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             {[
               {
                 icon: <Star className="h-5 w-5 text-amber-400 fill-amber-400" />,
@@ -331,7 +331,7 @@ export default async function ProviderProfilePage({ params }: Props) {
         </div>
 
         {/* ── BODY ──────────────────────────────────────────────────── */}
-        <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-4 py-5 sm:py-8 space-y-4 sm:space-y-6">
 
           {/* About */}
           {bio && (
@@ -401,11 +401,6 @@ export default async function ProviderProfilePage({ params }: Props) {
                         <div className="absolute inset-x-0 bottom-0 p-2.5 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity truncate">
                           {img.caption}
                         </div>
-                      )}
-                      {img.isBefore && (
-                        <span className="absolute top-2 start-2 bg-gray-900/80 backdrop-blur-sm text-white text-xs px-2 py-0.5 rounded-full font-medium">
-                          {tp("before")}
-                        </span>
                       )}
                     </div>
                   ))}
@@ -547,15 +542,15 @@ export default async function ProviderProfilePage({ params }: Props) {
         </div>
 
         {/* ── STICKY MOBILE CTA ─────────────────────────────────────── */}
-        <div className="fixed bottom-0 inset-x-0 sm:hidden bg-white border-t shadow-2xl px-4 py-3 z-50">
+        <div className="fixed bottom-0 inset-x-0 sm:hidden bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-2xl px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] z-50">
           <div className="flex gap-2">
             {isOwner ? (
               <Link
                 href="/provider/dashboard/edit"
-                className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-colors touch-manipulation"
               >
                 <Pencil className="h-4 w-4" />
-                {t.editProfile}
+                {tp("editProfile")}
               </Link>
             ) : (
               <>
@@ -563,7 +558,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                   <a
                     href={`https://wa.me/${provider.whatsapp.replace(/\D/g, "")}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white font-bold py-3.5 rounded-2xl text-sm transition-colors touch-manipulation"
                   >
                     <MessageCircle className="h-4 w-4" />
                     WhatsApp
@@ -572,7 +567,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                 {provider.phone && (
                   <a
                     href={`tel:${provider.phone}`}
-                    className="flex-1 flex items-center justify-center gap-2 border-2 border-gray-200 hover:border-green-300 text-gray-700 hover:text-green-700 font-semibold py-3 rounded-xl text-sm transition-colors"
+                    className="flex-1 flex items-center justify-center gap-2 border-2 border-gray-200 hover:border-green-300 active:bg-gray-50 text-gray-700 hover:text-green-700 font-bold py-3.5 rounded-2xl text-sm transition-colors touch-manipulation"
                   >
                     <Phone className="h-4 w-4" />
                     {tp("call")}
