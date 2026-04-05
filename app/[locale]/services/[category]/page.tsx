@@ -119,7 +119,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       include: {
         city:     true,
         category: true,
-        portfolioImages: { take: 1, orderBy: { order: "asc" } },
+        portfolioImages: { where: { status: "APPROVED" }, take: 1, orderBy: { order: "asc" } },
       },
     }),
     prisma.provider.count({ where }),
