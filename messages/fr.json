@@ -489,7 +489,8 @@
       "saving": "Enregistrement...",
       "statusPending": "En attente",
       "statusApproved": "Approuvée",
-      "statusRejected": "Rejetée"
+      "statusRejected": "Rejetée",
+      "uploadError": "Échec du téléchargement"
     },
     "hours": {
       "title": "Horaires de travail",

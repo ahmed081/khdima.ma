@@ -518,7 +518,8 @@
       "saving": "Saving...",
       "statusPending": "Pending review",
       "statusApproved": "Approved",
-      "statusRejected": "Rejected"
+      "statusRejected": "Rejected",
+      "uploadError": "Failed to upload photo"
     },
     "save": "Save Changes",
     "saving": "Saving...",

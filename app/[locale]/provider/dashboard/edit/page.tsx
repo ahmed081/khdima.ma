@@ -869,7 +869,7 @@ export default function EditProviderProfilePage() {
                                 const url = await uploadFile(file)
                                 setPhotoForm(p => ({ ...p, url }))
                               } catch (err: any) {
-                                setPhotoErr(err.message)
+                                dispatch(showToast({ message: err.message ?? t("photos.uploadError"), type: "error" }))
                               } finally {
                                 setPhotoUploading(false)
                                 e.target.value = ""

@@ -489,7 +489,8 @@
       "saving": "جارٍ الحفظ...",
       "statusPending": "قيد المراجعة",
       "statusApproved": "مقبولة",
-      "statusRejected": "مرفوضة"
+      "statusRejected": "مرفوضة",
+      "uploadError": "فشل رفع الصورة"
     },
     "hours": {
       "title": "ساعات العمل",

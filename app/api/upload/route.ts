@@ -4,11 +4,16 @@ import { existsSync } from "fs"
 import path from "path"
 import { getUserFromAuth } from "@/lib/auth"
 
-const MAX_SIZE   = 5 * 1024 * 1024 // 5 MB
-const ALLOWED    = new Set([
-  "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif",
-  "image/heic", "image/heif",  // iOS camera formats
-])
+const MAX_SIZE      = 5 * 1024 * 1024 // 5 MB
+const IMAGE_EXTS    = new Set(["jpg", "jpeg", "png", "webp", "gif", "heic", "heif", "avif"])
+
+function isImage(file: File): boolean {
+  // Accept any image/* MIME type (covers heic, heif, etc.)
+  if (file.type.startsWith("image/")) return true
+  // iOS/Android sometimes sends empty MIME type — fall back to extension
+  const ext = file.name.split(".").pop()?.toLowerCase() ?? ""
+  return IMAGE_EXTS.has(ext)
+}
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads")
 
 export async function POST(req: NextRequest) {
@@ -25,8 +30,8 @@ export async function POST(req: NextRequest) {
     const file     = formData.get("file") as File | null
 
     if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 })
-    if (!ALLOWED.has(file.type)) {
-      return NextResponse.json({ error: "Invalid file type. Allowed: JPEG, PNG, WebP, GIF" }, { status: 400 })
+    if (!isImage(file)) {
+      return NextResponse.json({ error: "Invalid file type. Please upload an image." }, { status: 400 })
     }
     if (file.size > MAX_SIZE) {
       return NextResponse.json({ error: "File too large (max 5 MB)" }, { status: 400 })
