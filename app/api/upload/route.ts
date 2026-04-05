@@ -5,7 +5,10 @@ import path from "path"
 import { getUserFromAuth } from "@/lib/auth"
 
 const MAX_SIZE   = 5 * 1024 * 1024 // 5 MB
-const ALLOWED    = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"])
+const ALLOWED    = new Set([
+  "image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif",
+  "image/heic", "image/heif",  // iOS camera formats
+])
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads")
 
 export async function POST(req: NextRequest) {

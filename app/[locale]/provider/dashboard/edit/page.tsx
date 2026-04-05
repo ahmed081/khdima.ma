@@ -520,7 +520,7 @@ export default function EditProviderProfilePage() {
                       <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-center hover:border-green-400 hover:bg-green-50 transition-colors">
                         <input
                           type="file"
-                          accept="image/jpeg,image/png,image/webp"
+                          accept="image/*"
                           className="sr-only"
                           disabled={avatarUploading}
                           onChange={async e => {
@@ -857,7 +857,7 @@ export default function EditProviderProfilePage() {
                         <label className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-colors ${photoUploading ? "border-green-300 bg-green-50" : "border-gray-300 bg-white hover:border-green-400 hover:bg-green-50"}`}>
                           <input
                             type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            accept="image/*"
                             className="sr-only"
                             disabled={photoUploading}
                             onChange={async e => {
