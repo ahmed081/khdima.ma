@@ -8,9 +8,10 @@ import {
   MessageCircle, Phone, Eye, ChevronRight, Calendar,
   Clock, Award, Camera, ThumbsUp, Pencil, ShieldAlert,
 } from "lucide-react"
-import { ReviewForm }    from "@/components/review-form"
-import { ContactButtons } from "@/components/contact-buttons"
-import { ReportButton }  from "@/components/report-button"
+import { ReviewForm }        from "@/components/review-form"
+import { ContactButtons }    from "@/components/contact-buttons"
+import { ReportButton }      from "@/components/report-button"
+import { PortfolioGallery }  from "@/components/portfolio-gallery"
 import { tMany }        from "@/lib/translations"
 import type { Locale }  from "@/lib/translations"
 import { Link }         from "@/i18n/navigation"
@@ -387,24 +388,7 @@ export default async function ProviderProfilePage({ params }: Props) {
                 </span>
               </div>
               <div className="p-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {provider.portfolioImages.map(img => (
-                    <div key={img.id} className="aspect-square rounded-xl overflow-hidden bg-gray-100 relative group shadow-sm">
-                      <img
-                        src={img.url}
-                        alt={img.caption ?? ""}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      {/* hover overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      {img.caption && (
-                        <div className="absolute inset-x-0 bottom-0 p-2.5 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity truncate">
-                          {img.caption}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <PortfolioGallery photos={provider.portfolioImages} label={tp("portfolio")} />
               </div>
             </section>
           )}
