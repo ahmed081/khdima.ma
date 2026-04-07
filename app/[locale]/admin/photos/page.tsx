@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
+import { useRouter } from "@/i18n/navigation"
 import { Link } from "@/i18n/navigation"
 import {
   ArrowLeft, Camera, User, Search, CheckCircle2,
-  ImageIcon, ChevronRight, Loader2,
+  ImageIcon, ChevronRight,
 } from "lucide-react"
 
 interface ProviderRow {
@@ -28,22 +29,24 @@ function Initials({ name }: { name: string }) {
     ? parts[0][0] + parts[1][0]
     : name.slice(0, 2)
   return (
-    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 uppercase">
+    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 uppercase select-none">
       {letters}
     </div>
   )
 }
 
 export default function AdminPhotosPage() {
-  const t = useTranslations("admin")
+  const t      = useTranslations("admin")
+  const router = useRouter()
+  const qc     = useQueryClient()
 
-  const [search, setSearch]   = useState("")
-  const [filter, setFilter]   = useState<FilterTab>("all")
+  const [search, setSearch] = useState("")
+  const [filter, setFilter] = useState<FilterTab>("all")
 
   const { data: providers = [], isLoading } = useQuery<ProviderRow[]>({
     queryKey: ["admin-photos-grouped"],
     queryFn: () => fetch("/api/admin/photos?grouped=true").then(r => r.json()),
-    staleTime: 30_000,
+    refetchOnWindowFocus: true,
   })
 
   const filtered = useMemo(() => {
@@ -57,8 +60,8 @@ export default function AdminPhotosPage() {
 
       const matchFilter =
         filter === "all" ||
-        (filter === "profile"    && p.pendingProfilePhotos > 0) ||
-        (filter === "portfolio"  && p.pendingPortfolioPhotos > 0)
+        (filter === "profile"   && p.pendingProfilePhotos > 0) ||
+        (filter === "portfolio" && p.pendingPortfolioPhotos > 0)
 
       return matchSearch && matchFilter
     })
@@ -85,7 +88,7 @@ export default function AdminPhotosPage() {
             <h1 className="text-lg font-bold text-gray-900 leading-none">{t("photosListTitle")}</h1>
             <p className="text-xs text-gray-400 mt-0.5">{t("photosListDesc")}</p>
           </div>
-          {!isLoading && (
+          {!isLoading && providers.length > 0 && (
             <div className="flex-shrink-0 bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold px-3 py-1.5 rounded-full">
               {providers.length} profiles
             </div>
@@ -96,7 +99,6 @@ export default function AdminPhotosPage() {
       <div className="max-w-5xl mx-auto px-6 py-6">
         {/* ── Search + Filters ────────────────────────────────────── */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          {/* Search */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
             <input
@@ -108,7 +110,6 @@ export default function AdminPhotosPage() {
             />
           </div>
 
-          {/* Filter tabs */}
           <div className="flex gap-1.5 bg-white border border-gray-200 rounded-xl p-1">
             {FILTER_TABS.map(tab => (
               <button
@@ -130,7 +131,7 @@ export default function AdminPhotosPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse h-28" />
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 p-5 animate-pulse h-32" />
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -145,9 +146,14 @@ export default function AdminPhotosPage() {
             {filtered.map(p => {
               const total = p.pendingProfilePhotos + p.pendingPortfolioPhotos
               return (
+                /* ── Card: click anywhere → provider admin profile ── */
                 <div
                   key={p.id}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-start gap-4 hover:shadow-md hover:border-gray-200 transition-all group"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => router.push(`/admin/providers` as any)}
+                  onKeyDown={e => e.key === "Enter" && router.push(`/admin/providers` as any)}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-start gap-4 cursor-pointer hover:shadow-md hover:border-purple-200 hover:-translate-y-0.5 transition-all group select-none"
                 >
                   {/* Avatar */}
                   <div className="flex-shrink-0">
@@ -172,41 +178,56 @@ export default function AdminPhotosPage() {
                         <p className="text-xs text-gray-400 truncate">{p.user.email}</p>
                       </div>
                       {/* Total badge */}
-                      <span className="flex-shrink-0 bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                      <span className="flex-shrink-0 bg-amber-100 text-amber-700 text-xs font-bold px-2.5 py-1 rounded-full ring-1 ring-amber-200">
                         {t("photosTotalPending", { count: total })}
                       </span>
                     </div>
 
-                    {/* Category + badges row */}
+                    {/* Category + per-type badges */}
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       {p.categoryCode && (
                         <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium uppercase tracking-wide">
                           {p.categoryCode}
                         </span>
                       )}
-                      {p.pendingProfilePhotos > 0 && (
-                        <span className="flex items-center gap-1 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold">
+                      {/* Profile badge — only show when > 0 */}
+                      {p.pendingProfilePhotos > 0 ? (
+                        <span className="flex items-center gap-1 text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold ring-1 ring-blue-100">
                           <User className="h-3 w-3" />
                           {t("photosPendingProfile", { count: p.pendingProfilePhotos })}
                         </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-xs bg-gray-50 text-gray-300 px-2 py-0.5 rounded-full font-medium ring-1 ring-gray-100">
+                          <User className="h-3 w-3" />
+                          {t("photosPendingProfile", { count: 0 })}
+                        </span>
                       )}
-                      {p.pendingPortfolioPhotos > 0 && (
-                        <span className="flex items-center gap-1 text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-semibold">
+                      {/* Portfolio badge — only show when > 0 */}
+                      {p.pendingPortfolioPhotos > 0 ? (
+                        <span className="flex items-center gap-1 text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full font-semibold ring-1 ring-purple-100">
                           <ImageIcon className="h-3 w-3" />
                           {t("photosPendingPortfolio", { count: p.pendingPortfolioPhotos })}
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 text-xs bg-gray-50 text-gray-300 px-2 py-0.5 rounded-full font-medium ring-1 ring-gray-100">
+                          <ImageIcon className="h-3 w-3" />
+                          {t("photosPendingPortfolio", { count: 0 })}
                         </span>
                       )}
                     </div>
 
-                    {/* CTA */}
+                    {/* Review CTA — stopPropagation so card click doesn't fire */}
                     <div className="mt-3">
-                      <Link
-                        href={`/admin/photos/${p.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors group-hover:underline"
+                      <button
+                        onClick={e => {
+                          e.stopPropagation()
+                          router.push(`/admin/photos/${p.id}` as any)
+                        }}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-2 py-1 rounded-lg transition-colors"
                       >
                         {t("photosReviewBtn")}
                         <ChevronRight className="h-3.5 w-3.5" />
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 </div>
