@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getUserFromAuth } from "@/lib/auth"
 
-// GET — list portfolio images pending review (or all with status filter)
+// GET — list portfolio images by status, OR providers grouped with pending counts
 export async function GET(req: NextRequest) {
   try {
     const user = await getUserFromAuth()
@@ -10,6 +10,47 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const grouped = req.nextUrl.searchParams.get("grouped") === "true"
+
+    if (grouped) {
+      // Return providers that have at least one pending photo (profile or portfolio)
+      const providers = await prisma.provider.findMany({
+        where: {
+          OR: [
+            { pendingAvatarUrl: { not: null } },
+            { portfolioImages: { some: { status: "PENDING" } } },
+          ],
+        },
+        select: {
+          id: true,
+          businessName: true,
+          avatarUrl: true,
+          pendingAvatarUrl: true,
+          createdAt: true,
+          category: { select: { code: true } },
+          user: { select: { name: true, email: true, createdAt: true } },
+          _count: {
+            select: { portfolioImages: { where: { status: "PENDING" } } },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      })
+
+      const result = providers.map(p => ({
+        id: p.id,
+        businessName: p.businessName,
+        avatarUrl: p.avatarUrl,
+        pendingAvatarUrl: p.pendingAvatarUrl,
+        categoryCode: p.category?.code ?? null,
+        user: p.user,
+        pendingProfilePhotos: p.pendingAvatarUrl ? 1 : 0,
+        pendingPortfolioPhotos: p._count.portfolioImages,
+      }))
+
+      return NextResponse.json(result)
+    }
+
+    // Default: flat list by status
     const status = req.nextUrl.searchParams.get("status") ?? "PENDING"
 
     const images = await prisma.portfolioImage.findMany({
